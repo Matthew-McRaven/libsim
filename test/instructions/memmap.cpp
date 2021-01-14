@@ -7,8 +7,8 @@ using im = instruction_mnemonic;
 
 std::array<instruction_mnemonic, 256> instr_array =
 {
-    im::RET,    im::SRET,	 im::MOVSPA,  im::MOVASP,  im::MOVFLGA, im::MOVAFLG, im::MOVTA,   im::NOP,		 // 0b0000'0000
-	im::USCALL, im::UNIMPL,  im::UNIMPL,  im::UNIMPL,  im::UNIMPL,  im::UNIMPL,  im::UNIMPL,  im::UNIMPL,    // 0b0000'1000
+    im::RET,    im::SRET,	 im::MOVSPA,  im::MOVASP,  im::MOVFLGA, im::MOVAFLG, im::MOVTA,   im::USCALL,		 // 0b0000'0000
+	im::NOP,    im::UNIMPL,  im::UNIMPL,  im::UNIMPL,  im::UNIMPL,  im::UNIMPL,  im::UNIMPL,  im::UNIMPL,    // 0b0000'1000
 	im::NOTA,   im::NOTX,    im::NEGA,    im::NEGX,    im::ASLA,    im::ASLX,    im::ASRA,    im::ASRX,      // 0b0001'0000
 	im::ROLA,   im::ROLX,    im::RORA,    im::RORX,    im::BR,      im::BR,      im::BRLE,    im::BRLE,      // 0b0001'1000
 

@@ -87,9 +87,21 @@ TEST_CASE( "Sanity checks on Unary ISA instructions", "[isa-def]" ) {
         REQUIRE( as_string(def.mnemonic) == "MOVTA" );
     }
 
+    SECTION( "USCALL" ) {
+        auto& def = isa.isa[(int) instruction_mnemonic::USCALL];
+        REQUIRE( def.bit_pattern == 0b0000'0111 );
+        REQUIRE( def.iformat == addressing_class::U_none );
+        bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
+        for(int it=0; it < int(CSR::MAX); it++) {
+            REQUIRE( def.CSR_modified[it] == CSR_modified[it]  );
+        }
+        REQUIRE( def.mnemonic == instruction_mnemonic::USCALL );
+        REQUIRE( as_string(def.mnemonic) == "USCALL" );
+    }
+
     SECTION( "NOP" ) {
         auto& def = isa.isa[(int) instruction_mnemonic::NOP];
-        REQUIRE( def.bit_pattern == 0b0000'0111 );
+        REQUIRE( def.bit_pattern == 0b0000'1000 );
         REQUIRE( def.iformat == addressing_class::U_none );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -99,17 +111,7 @@ TEST_CASE( "Sanity checks on Unary ISA instructions", "[isa-def]" ) {
         REQUIRE( as_string(def.mnemonic) == "NOP" );
     }
 
-    SECTION( "USCALL" ) {
-        auto& def = isa.isa[(int) instruction_mnemonic::USCALL];
-        REQUIRE( def.bit_pattern == 0b0000'1000 );
-        REQUIRE( def.iformat == addressing_class::U_none );
-        bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
-        for(int it=0; it < int(CSR::MAX); it++) {
-            REQUIRE( def.CSR_modified[it] == CSR_modified[it]  );
-        }
-        REQUIRE( def.mnemonic == instruction_mnemonic::USCALL );
-        REQUIRE( as_string(def.mnemonic) == "USCALL" );
-    }
+
 }
 
 TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {

@@ -6,8 +6,8 @@ enum class instruction_mnemonic {
 	#   undef X
 	RET, SRET,
 	MOVSPA, MOVASP, MOVFLGA, MOVAFLG, MOVTA,
-	NOP,
 	USCALL,
+	NOP,
 	
 	// FAULTS
 	UNIMPL,
