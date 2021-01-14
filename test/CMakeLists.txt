@@ -11,7 +11,9 @@ target_include_directories(RTL-Lib PUBLIC "${PROJECT_BINARY_DIR}/../")
 target_include_directories(RTL-Lib PUBLIC "${PROJECT_SOURCE_DIR}/..")
 
 
-add_executable (Test test.cpp catch.cpp)
+add_executable (Test test.cpp catch.cpp instructions/unary.cpp instructions/nonunary.cpp instructions/memmap.cpp)
+include_directories("${PROJECT_SOURCE_DIR}")
 target_link_libraries(Test RTL-Lib)
+link_directories("${PROJECT_BINARY_DIR}/../lib")
 
 add_test (NAME test-all COMMAND Test)
