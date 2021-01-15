@@ -22,6 +22,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(lib)
 add_subdirectory(sample)
+add_subdirectory(3rd-party)
+#find_package(catch REQUIRED HINTS 3rd-party/catch/CMakeLists.txt)
+#ind_package(magic_enum REQUIRED)
 
 enable_testing()
 add_subdirectory(test)

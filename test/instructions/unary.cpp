@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "lib/instruction.hpp"
+#include "pep10/instruction.hpp"
 
 TEST_CASE( "Sanity checks on Unary ISA instructions", "[isa-def]" ) {
     SECTION( "RET" ) {

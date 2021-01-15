@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "lib/instruction.hpp"
+#include "pep10/instruction.hpp"
 
 TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     SECTION( "BR" ) {

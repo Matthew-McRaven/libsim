@@ -6,7 +6,7 @@
 #include <limits>
 #include <tuple>
 
-#include "defs.hpp"
+#include "pep10/defs.hpp"
 
 template <typename instr_width>
 struct instruction_definition {

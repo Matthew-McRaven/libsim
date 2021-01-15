@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "catch.hpp"
-#include "lib/instruction.hpp"
+#include "pep10/instruction.hpp"
 using im = instruction_mnemonic;
 
 std::array<instruction_mnemonic, 256> instr_array =

@@ -1,5 +1,5 @@
 #pragma once
-#include "defs.hpp"
+#include "pep10/defs.hpp"
 template <typename addr_size_t, typename reg_size_t, typename CSR_size_t>
 struct interface {
 	void (*begin_instruction)();

@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 #include "interface.hpp"
-#include "instruction.hpp"
+#include "pep10/instruction.hpp"
 class isa_processor {
 public:
 	isa_processor(interface<uint16_t, uint16_t, bool> iface);

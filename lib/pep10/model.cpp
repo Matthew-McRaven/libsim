@@ -269,7 +269,7 @@ void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
 		}
 		break;
 	case instruction_mnemonic::BRLT:
-		if(get_NZVC(CSR::N))) {
+		if(get_NZVC(CSR::N)) {
 			_iface.write_reg((uint8_t) Registers::PC, decoded_operand);
 		}
 		break;
