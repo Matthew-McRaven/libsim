@@ -1,0 +1,32 @@
+image: docker:19
+
+stages:
+- build python
+- build dependencies
+- build library
+- test
+
+
+Build Python:
+  stage: build python
+  needs: []
+  script:
+      - echo "Done"
+
+Build Boost:
+  stage: build dependencies
+  needs: [build python]
+  script:
+      - echo "Done"
+
+Build Catch:
+  stage: build dependencies
+  needs: []
+  script:
+      - echo "Done"
+
+Build library:
+  stage: build library
+  needs: []
+  script:
+    - docker build -t ci.${CI_COMMIT_SHORT_SHA} .
