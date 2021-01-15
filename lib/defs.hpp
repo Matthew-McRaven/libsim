@@ -63,6 +63,10 @@ enum class addressing_class {
 	RAAA_noi
 
 };
+enum class memory_vectors {
+	SYSTEM_STACK,
+	TRAP,
+};
 
 enum class CSR {
 	N,
