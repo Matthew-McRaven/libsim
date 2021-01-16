@@ -1,23 +1,28 @@
 image: docker:19
 
 stages:
-- build python
 - build dependencies
 - build library
 - test
 
+variable:
+  BOOST_VERSION: 1.75.0
 
-Build Python:
-  stage: build python
-  needs: []
-  script:
-      - echo "Done"
-
-Build Boost:
+Build Python and Boost:
   stage: build dependencies
-  needs: [Build Python]
+  needs: []
+  rules:
+    - if: BOOST_VERSION =~ /^[0-9].[0-9].[0-9]*-?.*$/
   script:
-      - echo "Done"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cd dependencies
+    - | 
+      docker pull registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION}
+      || docker build -t registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION} -f BuildDeps.Dockerfile
+    - docker push registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION} 
+  after_script:
+    - docker rmi registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION}
+
 
 Build Catch:
   stage: build dependencies
@@ -25,8 +30,16 @@ Build Catch:
   script:
       - echo "Done"
 
-Build library:
-  stage: build library
+Build Magic Enum:
+  stage: build dependencies
   needs: []
   script:
+      - echo "Done"
+
+Build library:
+  stage: build library
+  needs: [Catch, Magic Enum]
+  script:
     - docker build -t ci.${CI_COMMIT_SHORT_SHA} .
+  after_script:
+    - docker rmi ci.${CI_COMMIT_SHORT_SHA}

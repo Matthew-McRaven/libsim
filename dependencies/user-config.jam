@@ -1,0 +1,1 @@
+using python : 3.9 : /usr/local/bin/python3 : /usr/local/include/python3.9 : /usr/local/lib/python3.9 : ;
