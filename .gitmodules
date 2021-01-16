@@ -1,6 +1,0 @@
-[submodule "3rd-party/boost"]
-	path = 3rd-party/boost
-	url = https://github.com/boostorg/boost
-[submodule "3rd-party/cpython"]
-	path = 3rd-party/cpython
-	url = https://github.com/python/cpython

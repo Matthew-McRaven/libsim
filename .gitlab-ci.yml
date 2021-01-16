@@ -15,7 +15,7 @@ Build Python and Boost:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - cd dependencies
     - | 
-      if $(docker pull registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION}) then
+      if $(docker pull registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION}); then
         echo success
       else
         docker build -t registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION} -f BuildDeps.Dockerfile .
