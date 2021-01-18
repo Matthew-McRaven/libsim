@@ -24,7 +24,7 @@ struct sim_interface {
 
 	std::function<csr_size_t(uint8_t)> read_csr;
 	std::function<void(uint8_t, csr_size_t)> write_csr;
-	std::function<void()> clear_csr;
+	std::function<void()> clear_csrs;
 
 	std::function<delta_t() > step;
 	std::function<delta_t()> get_delta;

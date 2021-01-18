@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 10.0)
+    message(FATAL_ERROR "Insufficient gcc version")
+  endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14.0)
+    message(FATAL_ERROR "Insufficient msvc version")
+  endif()
+endif()
+
 # Magic code from:
 # 	https://dpiepgrass.medium.com/cmake-fights-against-disabling-in-source-builds-ab1d71c1d26f
 # Do this before project() to skip the compiler config process

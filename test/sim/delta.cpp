@@ -7,10 +7,19 @@
 #include "isa/pep10/block_computer.hpp"
 #include "isa/step_delta.hpp"
 
+#include "components/reg/block.hpp"
+#include "components/reg/historian.hpp"
+#include "components/memory/block.hpp"
+#include "components/memory/historian.hpp"
+
 using namespace isa::pep10;
 
 TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
-	auto comp = isa::pep10::block_computer();
+	auto regbank = components::reg::block_register<uint16_t, bool>(7, 4);
+	auto hist_bank = components::reg::historian<decltype(regbank)>(regbank);
+	auto memory = components::memory::block_memory<uint16_t>(0xffff);
+	auto historian = components::memory::historian<decltype(memory), uint16_t>(memory);
+	auto comp = isa::pep10::block_computer<decltype(hist_bank), decltype(historian)>(hist_bank, historian);
 
 	// Init to clean slate.
 	comp.clear_memory();
@@ -70,7 +79,7 @@ TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
     }
 
 	SECTION( "Test memory delta, non-adjacent." ) {
-		REQUIRE(comp.get_delta().memory_delta.size() == 0);
+		REQUIRE(comp.get_delta().delta_mem.size() == 0);
 		auto const magic_num = 0xFE;
 		std::map<uint16_t, uint8_t> pairs = {{0x01, 0xfe}, {0x03, 0xed}};
 		for(auto [key, value] : pairs) {
@@ -80,16 +89,16 @@ TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
 		auto delta = comp.get_delta();
 
 		// Check that each register has been changed.
-		REQUIRE(delta.memory_delta.size() == pairs.size());
+		REQUIRE(delta.delta_mem.size() == pairs.size());
 		for(auto [key, value] : pairs) {
 			// Structured bindings can't be captured, must copy.
 			auto x = key;
-			using dm_t = isa::delta_memory<uint16_t>;
-			auto idx = std::find_if(delta.memory_delta.begin(), delta.memory_delta.end(), 
+			using dm_t = components::memory::delta_memory<uint16_t>;
+			auto idx = std::find_if(delta.delta_mem.begin(), delta.delta_mem.end(), 
 				[x](dm_t v){
 					return v.addr_span == std::tuple<uint16_t, uint16_t>{x,x};
 					});
-			REQUIRE(idx != delta.memory_delta.end());
+			REQUIRE(idx != delta.delta_mem.end());
 			REQUIRE(idx->old_value[0] == 0);
 			REQUIRE(idx->new_value[0] == value);
 		}
@@ -97,15 +106,15 @@ TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
 	
 		comp.clear_memory();
 		// Reset didn't reach into existing delta and destroy it.
-		REQUIRE(delta.memory_delta.size() == pairs.size());
+		REQUIRE(delta.delta_mem.size() == pairs.size());
 		delta = comp.get_delta();
 		// Check that after being cleared, no registers have deltas.
-		REQUIRE(delta.memory_delta.size() == 0);
+		REQUIRE(delta.delta_mem.size() == 0);
 		
     }
 
 	SECTION( "Test memory delta, monomerge." ) {
-		REQUIRE(comp.get_delta().memory_delta.size() == 0);
+		REQUIRE(comp.get_delta().delta_mem.size() == 0);
 		auto const magic_num = 0xFE;
 		std::map<uint16_t, uint8_t> pairs = {{0x01, 0xfe}, {0x02, 0xe2}, {0x05, 0xda}, {0x04, 0xda},{0x03, 0xed}};
 		for(auto [key, value] : pairs) {
@@ -115,20 +124,20 @@ TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
 		auto delta = comp.get_delta();
 
 		// Check that each register has been changed.
-		REQUIRE(delta.memory_delta.size() == 1);
+		REQUIRE(delta.delta_mem.size() == 1);
 		std::vector<uint8_t> results = {0xfe, 0xe2, 0xed, 0xda, 0xda};
 		for(int it=0; it < 5; it++) {
-			REQUIRE(delta.memory_delta[0].new_value[it] == results[it]);
-			REQUIRE(delta.memory_delta[0].old_value[it] == 0);
+			REQUIRE(delta.delta_mem[0].new_value[it] == results[it]);
+			REQUIRE(delta.delta_mem[0].old_value[it] == 0);
 		}
 
 	
 		comp.clear_memory();
 		// Reset didn't reach into existing delta and destroy it.
-		REQUIRE(delta.memory_delta.size() == 1);
+		REQUIRE(delta.delta_mem.size() == 1);
 		delta = comp.get_delta();
 		// Check that after being cleared, no registers have deltas.
-		REQUIRE(delta.memory_delta.size() == 0);
+		REQUIRE(delta.delta_mem.size() == 0);
 		
     }
 

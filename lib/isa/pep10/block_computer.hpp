@@ -1,4 +1,7 @@
 #pragma once
+
+#include <type_traits>
+
 #include "isa/step_delta.hpp"
 #include "isa/sim_interface.hpp"
 
@@ -7,19 +10,24 @@
 #include "isa/pep10/proc.hpp"
 namespace isa::pep10
 {
+
+template <typename regbank_t, typename mem_device_t>
 class block_computer
 {
 
 	public:
-	using delta_t = isa::delta_timestep<isa::pep10::Registers, uint16_t, 
-		isa::pep10::CSR, bool, uint16_t>;
-	using sim_interface_t = isa::sim_interface<isa::pep10::Registers, uint16_t, 
-		isa::pep10::CSR, bool, uint16_t>;
-	block_computer();
+	using delta_t = isa::delta_timestep<uint8_t, uint16_t, 
+		uint8_t, bool, uint16_t>;
+	using sim_interface_t = isa::sim_interface<uint8_t, uint16_t, 
+		uint8_t, bool, uint16_t>;
+	block_computer(regbank_t regbank, mem_device_t memory);
 	sim_interface_t sim_interface();
+
 	delta_t step();
+
+	//delta_t step();
 	delta_t apply(delta_t);
-	delta_t get_delta() const {return current_step;}
+	delta_t get_delta() const; 
 
 	public:
 	// Implement proc_interface
@@ -37,11 +45,12 @@ class block_computer
 	private:
 	delta_t current_step;
 
-	std::array<uint16_t, 8> regbank;
-	std::array<uint8_t, 0x10000> memory;
-	std::array<bool, 4> NZVC;
+	regbank_t regbank;
+	mem_device_t memory;
+
 	isa::env_interface<uint16_t, uint16_t, bool> _iface;
 	isa::pep10::isa_processor proc;
 
 };
+#include "isa/pep10/block_computer.tpp"
 } // namespace pep10::isa
