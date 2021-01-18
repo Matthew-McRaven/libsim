@@ -12,6 +12,11 @@ public:
 	void init();
 	void debug(bool);
 	void clear();
+
+	using Registers = isa::pep10::Registers;
+	using CSR = isa::pep10::CSR;
+	using reg_size_t = uint16_t;
+	using csr_size_t = bool;
 private:
 	uint16_t addr_from_vector(isa::pep10::memory_vectors vector);
 	isa::env_interface<uint16_t, uint16_t, bool> _iface;

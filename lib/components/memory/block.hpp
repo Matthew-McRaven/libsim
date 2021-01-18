@@ -4,10 +4,11 @@
 #include <vector>
 
 namespace components::memory {
-	template<typename addr_size_t>
+	template<typename _addr_size_t>
 	class block_memory 
 	{
 	public:
+	using addr_size_t = _addr_size_t;
 		block_memory(addr_size_t max_addr):
 			memory(max_addr+1)
 		{

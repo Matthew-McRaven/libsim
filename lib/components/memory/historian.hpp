@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <tuple>
 
 namespace components::memory {
 	template<typename addr_size_t>
@@ -10,10 +11,11 @@ namespace components::memory {
 		std::tuple<addr_size_t, addr_size_t> addr_span;
 		std::vector<uint8_t> old_value, new_value;
 	};
-	template <typename mem_device_t, typename addr_size_t>
+	template <typename mem_device_t, typename _addr_size_t>
 	class historian
 	{
 	public:
+		using addr_size_t = _addr_size_t;
 		using delta_mem_t = std::vector<delta_memory<addr_size_t> >;
 		historian(mem_device_t device):device(device){};
 		uint8_t read_byte(addr_size_t addr, bool disable_side_effects) const

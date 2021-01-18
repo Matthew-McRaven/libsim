@@ -3,23 +3,23 @@
 #include "catch.hpp"
 #include "magic_enum.hpp"
 
+#include "isa/pep10/proc.hpp"
 #include "isa/pep10/instruction.hpp"
-#include "isa/pep10/block_computer.hpp"
 #include "isa/step_delta.hpp"
 
 #include "components/reg/block.hpp"
 #include "components/reg/historian.hpp"
 #include "components/memory/block.hpp"
 #include "components/memory/historian.hpp"
-
-using namespace isa::pep10;
+#include "components/computer/block_computer.hpp"
 
 TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
+	using namespace isa::pep10;
 	auto regbank = components::reg::block_register<uint16_t, bool>(7, 4);
 	auto hist_bank = components::reg::historian<decltype(regbank)>(regbank);
 	auto memory = components::memory::block_memory<uint16_t>(0xffff);
 	auto historian = components::memory::historian<decltype(memory), uint16_t>(memory);
-	auto comp = isa::pep10::block_computer<decltype(hist_bank), decltype(historian)>(hist_bank, historian);
+	auto comp = components::computer::block_computer<isa::pep10::isa_processor, decltype(hist_bank), decltype(historian)>(regbank, memory);;
 
 	// Init to clean slate.
 	comp.clear_memory();

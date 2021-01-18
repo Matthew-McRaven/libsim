@@ -3,19 +3,25 @@
 #include "catch.hpp"
 #include "magic_enum.hpp"
 
+#include "isa/pep10/proc.hpp"
 #include "isa/pep10/instruction.hpp"
-#include "isa/pep10/block_computer.hpp"
+
+#include "isa/pep9/proc.hpp"
+#include "isa/pep9/instruction.hpp"
+
 #include "isa/step_delta.hpp"
 #include "components/reg/block.hpp"
 #include "components/memory/block.hpp"
+#include "components/computer/block_computer.hpp"
 
 
-using namespace isa::pep10;
+
 
 TEST_CASE( "Test init of Pep/10 ISA.", "[isa-sim]" ) {
+	using namespace isa::pep10;
 	auto regbank = components::reg::block_register<uint16_t, bool>(7, 4);
 	auto memory = components::memory::block_memory<uint16_t>(0xffff);
-	auto comp = isa::pep10::block_computer<decltype(regbank), decltype(memory)>(regbank, memory);
+	auto comp = components::computer::block_computer<isa::pep10::isa_processor, decltype(regbank), decltype(memory)>(regbank, memory);
 
 	// Init to clean slate.
 	comp.clear_memory();
@@ -88,5 +94,4 @@ TEST_CASE( "Test init of Pep/10 ISA.", "[isa-sim]" ) {
 		}
 		REQUIRE( all_cleared );
     }
-
 }
