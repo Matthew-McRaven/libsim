@@ -30,12 +30,13 @@ enum class instruction_mnemonic {
 
 enum class Registers {
 	A = 0,
-	X = 2,
-	SP = 3,
-	PC = 4,
-	IS = 5,
-	OS = 6,
-	TR = 7
+	X = 1,
+	SP = 2,
+	PC = 3,
+	IS = 4,
+	OS = 5,
+	TR = 6,
+	MAX = 7
 };
 
 enum class addressing_mode {
