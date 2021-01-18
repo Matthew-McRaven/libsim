@@ -1,5 +1,6 @@
 #pragma once
 #include "pep10/defs.hpp"
+namespace pep10::isa {
 template <typename addr_size_t, typename reg_size_t, typename CSR_size_t>
 struct interface {
 	void (*begin_instruction)();
@@ -19,4 +20,5 @@ struct interface {
 	CSR_size_t (*read_csr)(uint8_t csr);
 	void (*write_csr)(uint8_t csr, CSR_size_t value);
 	void (*clear_CSR)();	
+};
 };

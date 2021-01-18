@@ -7,8 +7,9 @@
 #include "interface.hpp"
 #include "defs.hpp"
 #include "instruction.hpp"
+using namespace pep10::isa;
 
-isa_processor::isa_processor(interface<uint16_t, uint16_t, bool> iface): _iface(iface)
+isa_processor::isa_processor(pep10::isa::interface<uint16_t, uint16_t, bool> iface): _iface(iface)
 {
 
 }
@@ -59,7 +60,7 @@ void isa_processor::clear()
 
 void isa_processor::unary_dispatch(uint8_t is)
 {
-	auto [instr, addr] = isa.riproll[is];
+	auto [instr, addr] = pep10::isa::definition.riproll[is];
 	uint16_t temp, sp, acc, idx, vector_value;
     uint8_t temp_byte;
 	sp = read_reg(Registers::SP);
@@ -246,7 +247,7 @@ void isa_processor::unary_dispatch(uint8_t is)
 }
 void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
 {
-	auto [instr, addr] = isa.riproll[is];
+	auto [instr, addr] = definition.riproll[is];
 	uint16_t temp, sp, acc, idx, vector_value;
     uint8_t temp_byte;
 	sp = read_reg(Registers::SP);

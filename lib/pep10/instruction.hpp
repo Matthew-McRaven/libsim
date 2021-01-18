@@ -8,6 +8,7 @@
 
 #include "pep10/defs.hpp"
 
+namespace pep10::isa {
 template <typename instr_width>
 struct instruction_definition {
 	instr_width bit_pattern = 0;
@@ -24,10 +25,12 @@ struct isa_definition {
 	isa_definition();
 };
 
-static const isa_definition isa;
+static const isa_definition definition;
 
 std::string as_string(instruction_mnemonic);
 bool is_opcode_unary(instruction_mnemonic);
 bool is_opcode_unary(uint8_t);
 bool is_store(instruction_mnemonic);
 bool is_store(uint8_t);
+
+};

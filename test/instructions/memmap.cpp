@@ -3,7 +3,9 @@
 
 #include "catch.hpp"
 #include "pep10/instruction.hpp"
-using im = instruction_mnemonic;
+using im = pep10::isa::instruction_mnemonic;
+
+using namespace pep10::isa;
 
 std::array<instruction_mnemonic, 256> instr_array =
 {
@@ -98,7 +100,7 @@ std::array<addressing_mode, 256> addr_array =
 TEST_CASE( "Validate instruction memory map", "[isa-def]" ) {
 	SECTION( "Instructions" ) {
 		for(int it=0; it<255; it++) {
-			auto mnemon = std::get<0>(isa.riproll[it])->mnemonic;
+			auto mnemon = std::get<0>(definition.riproll[it])->mnemonic;
 			auto assert_mnemon = instr_array[it];
 			REQUIRE(mnemon == assert_mnemon);
 		}
@@ -106,7 +108,7 @@ TEST_CASE( "Validate instruction memory map", "[isa-def]" ) {
 
 	SECTION( "Addressing Modes", "[isa-def]" ) {
 		for(int it=0; it<255; it++) {
-			auto addr_mode = std::get<1>(isa.riproll[it]);
+			auto addr_mode = std::get<1>(definition.riproll[it]);
 			auto assert_addr = addr_array[it];	
 			REQUIRE(addr_mode == assert_addr);
 		}

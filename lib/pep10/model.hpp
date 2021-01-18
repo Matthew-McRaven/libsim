@@ -2,15 +2,17 @@
 
 #include "interface.hpp"
 #include "pep10/instruction.hpp"
+namespace pep10::isa {
+
 class isa_processor {
 public:
-	isa_processor(interface<uint16_t, uint16_t, bool> iface);
+	isa_processor(pep10::isa::interface<uint16_t, uint16_t, bool> iface);
 	int step();
 	void init();
 	void debug(bool);
 	void clear();
 private:
-	interface<uint16_t, uint16_t, bool> _iface;
+	pep10::isa::interface<uint16_t, uint16_t, bool> _iface;
 	void unary_dispatch(uint8_t is);
 	void nonunary_dispatch(uint8_t is, uint16_t os);
 	uint16_t decode_load_operand(const instruction_definition<uint8_t>* is, addressing_mode mode, uint16_t addr) const;
@@ -27,4 +29,5 @@ private:
 	void set_NZVC(CSR reg, bool value);
 	uint8_t get_packed_NZVC() const;
 	bool get_NZVC(CSR reg) const;
+};
 };

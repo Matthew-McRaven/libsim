@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <algorithm>
-
+using namespace pep10::isa;
 const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> init_isa() {
 	return {{
 		{0x00, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::RET, true, ""},
@@ -145,16 +145,16 @@ isa_definition::isa_definition():
 }
 
 
-std::string as_string(instruction_mnemonic mnemon) {
+std::string pep10::isa::as_string(instruction_mnemonic mnemon) {
 	if (mnemon == instruction_mnemonic::UNIMPL || mnemon == instruction_mnemonic::MAX) {
 		throw std::invalid_argument("Not a real mnemonic");
 	}
 	return std::string(magic_enum::enum_name(mnemon));
 }
 
-bool is_opcode_unary(instruction_mnemonic mnemon)
+bool pep10::isa::is_opcode_unary(instruction_mnemonic mnemon)
 {
-	auto addr_class = isa.isa[(int) mnemon].iformat;
+	auto addr_class = definition.isa[(int) mnemon].iformat;
 	switch (addr_class)
 	{
 	case addressing_class::A_ix:
@@ -169,19 +169,19 @@ bool is_opcode_unary(instruction_mnemonic mnemon)
 	}
 	throw std::invalid_argument("Invalid opcode.");
 }
-bool is_opcode_unary(uint8_t opcode)
+bool pep10::isa::is_opcode_unary(uint8_t opcode)
 {
-	auto [inst, addr] = isa.riproll[opcode];
+	auto [inst, addr] = definition.riproll[opcode];
 	return is_opcode_unary(inst->mnemonic);
 }
-bool is_store(instruction_mnemonic mnemon)
+bool pep10::isa::is_store(instruction_mnemonic mnemon)
 {
 	if(mnemon == instruction_mnemonic::STBA ||
 		mnemon == instruction_mnemonic::STWA) return true;
 	else return false;
 }
-bool is_store(uint8_t opcode)
+bool pep10::isa::is_store(uint8_t opcode)
 {
-	auto [inst, addr] = isa.riproll[opcode];
+	auto [inst, addr] = definition.riproll[opcode];
 	return is_store(inst->mnemonic);
 }

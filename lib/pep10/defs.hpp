@@ -1,6 +1,7 @@
 #pragma once
 
 #include "magic_enum.hpp"
+namespace pep10::isa {
 enum class instruction_mnemonic {
 	#   define X(a) a,
 	#   undef X
@@ -74,4 +75,5 @@ enum class CSR {
 	V,
 	C,
 	MAX = 4
+};
 };
