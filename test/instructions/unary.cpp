@@ -1,8 +1,8 @@
 #include "catch.hpp"
 
-#include "pep10/instruction.hpp"
+#include "isa/pep10/instruction.hpp"
 
-using namespace pep10::isa;
+using namespace isa::pep10;
 
 TEST_CASE( "Sanity checks on Unary ISA instructions", "[isa-def]" ) {
     SECTION( "RET" ) {

@@ -6,9 +6,9 @@
 #include <limits>
 #include <tuple>
 
-#include "pep10/defs.hpp"
+#include "isa/pep10/defs.hpp"
 
-namespace pep10::isa {
+namespace isa::pep10 {
 template <typename instr_width>
 struct instruction_definition {
 	instr_width bit_pattern = 0;

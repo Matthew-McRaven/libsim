@@ -2,10 +2,10 @@
 #include <iostream>
 
 #include "catch.hpp"
-#include "pep10/instruction.hpp"
-using im = pep10::isa::instruction_mnemonic;
+#include "isa/pep10/instruction.hpp"
+using im = isa::pep10::instruction_mnemonic;
 
-using namespace pep10::isa;
+using namespace isa::pep10;
 
 std::array<instruction_mnemonic, 256> instr_array =
 {

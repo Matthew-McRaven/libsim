@@ -1,15 +1,15 @@
-#include "model.hpp"
+#include "isa/pep10/model.hpp"
 
 #include <iostream>
 #include <stdexcept>
 
 #include "version.hpp"
-#include "interface.hpp"
-#include "defs.hpp"
-#include "instruction.hpp"
-using namespace pep10::isa;
+#include "isa/pep10/defs.hpp"
+#include "isa/pep10/instruction.hpp"
 
-isa_processor::isa_processor(pep10::isa::interface<uint16_t, uint16_t, bool> iface): _iface(iface)
+using namespace isa::pep10;
+
+isa_processor::isa_processor(isa::interface<uint16_t, uint16_t, bool> iface): _iface(iface)
 {
 
 }
@@ -60,7 +60,7 @@ void isa_processor::clear()
 
 void isa_processor::unary_dispatch(uint8_t is)
 {
-	auto [instr, addr] = pep10::isa::definition.riproll[is];
+	auto [instr, addr] = isa::pep10::definition.riproll[is];
 	uint16_t temp, sp, acc, idx, vector_value;
     uint8_t temp_byte;
 	sp = read_reg(Registers::SP);
@@ -224,7 +224,7 @@ void isa_processor::unary_dispatch(uint8_t is)
 	case instruction_mnemonic::SCALL:
 		[[fallthrough]]
 	case instruction_mnemonic::USCALL:
-		vector_value = _iface.addr_from_vector(memory_vectors::SYSTEM_STACK);
+		vector_value = addr_from_vector(memory_vectors::SYSTEM_STACK);
 		temp = read_word(vector_value, true);
 		// Writes IS to mem[T-1].
 		write_byte(temp -1, read_reg(Registers::IS), false);
@@ -239,7 +239,7 @@ void isa_processor::unary_dispatch(uint8_t is)
         // Writes NZVC to mem[T-10].
 		write_byte(temp - 10, get_packed_NZVC(), false);
 		write_reg(Registers::SP, temp - 10);
-		vector_value = _iface.addr_from_vector(memory_vectors::TRAP);
+		vector_value = addr_from_vector(memory_vectors::TRAP);
 		write_reg(Registers::PC, read_word(vector_value, false));    
 		break;
 
@@ -532,7 +532,9 @@ void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
 	}
 }
 
-
+uint16_t isa_processor::addr_from_vector(isa::pep10::memory_vectors vec) {
+	throw std::invalid_argument("thing");
+}
 
 uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t>* instr, addressing_mode mode, uint16_t addr) const
 {

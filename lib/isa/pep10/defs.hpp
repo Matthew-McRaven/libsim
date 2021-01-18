@@ -1,10 +1,9 @@
 #pragma once
 
 #include "magic_enum.hpp"
-namespace pep10::isa {
+namespace isa::pep10 {
 enum class instruction_mnemonic {
-	#   define X(a) a,
-	#   undef X
+
 	RET, SRET,
 	MOVSPA, MOVASP, MOVFLGA, MOVAFLG, MOVTA,
 	USCALL,
