@@ -3,8 +3,8 @@
 #include "catch.hpp"
 #include "magic_enum.hpp"
 
-#include "isa/pep10/proc.hpp"
-#include "isa/pep10/instruction.hpp"
+#include "isa/pep9/proc.hpp"
+#include "isa/pep9/instruction.hpp"
 #include "isa/step_delta.hpp"
 
 #include "components/reg/block.hpp"
@@ -13,13 +13,13 @@
 #include "components/memory/historian.hpp"
 #include "components/computer/block_computer.hpp"
 
-TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
-	using namespace isa::pep10;
-	auto regbank = components::reg::block_register<uint16_t, bool>(7, 4);
+TEST_CASE( "pep/9 -- Test delta generation.", "[isa-sim]" ) {
+	using namespace isa::pep9;
+	auto regbank = components::reg::block_register<uint16_t, bool>(6, 4);
 	auto hist_bank = components::reg::historian<decltype(regbank)>(regbank);
 	auto memory = components::memory::block_memory<uint16_t>(0xffff);
 	auto historian = components::memory::historian<decltype(memory), uint16_t>(memory);
-	auto comp = components::computer::block_computer<isa::pep10::isa_processor, decltype(hist_bank), decltype(historian)>(regbank, memory);;
+	auto comp = components::computer::block_computer<isa::pep9::isa_processor, decltype(hist_bank), decltype(historian)>(regbank, memory);;
 
 	// Init to clean slate.
 	comp.clear_memory();
@@ -29,14 +29,14 @@ TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
     SECTION( "Test that registers generate deltas." ) {
 		REQUIRE(comp.get_delta().delta_reg.size() == 0);
 		auto const magic_num = 0xBEEF;
-		for(auto enu : magic_enum::enum_values<isa::pep10::Registers>()) {
-			if(enu == isa::pep10::Registers::MAX) break;
+		for(auto enu : magic_enum::enum_values<isa::pep9::Registers>()) {
+			if(enu == isa::pep9::Registers::MAX) break;
 			comp.write_reg((int) enu, magic_num);
 		}
 		
 		auto delta = comp.get_delta();
 		// Check that each register has been changed.
-		REQUIRE(delta.delta_reg.size() == 7);
+		REQUIRE(delta.delta_reg.size() == 6);
 		for(auto [name, vals]: delta.delta_reg) {
 			auto [old_val, new_val] = vals;
 			REQUIRE(old_val == 0 );
@@ -45,7 +45,7 @@ TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
 	
 		comp.clear_regs();
 		// Reset didn't reach into existing delta and destroy it.
-		REQUIRE(delta.delta_reg.size() == 7);
+		REQUIRE(delta.delta_reg.size() == 6);
 		delta = comp.get_delta();
 		// Check that after being cleared, no registers have deltas.
 		REQUIRE(delta.delta_reg.size() == 0);
@@ -55,8 +55,8 @@ TEST_CASE( "Test delta generation.", "[isa-sim]" ) {
 	SECTION( "Test that control status registers generate deltas." ) {
 		REQUIRE(comp.get_delta().delta_csr.size() == 0);
 		auto const magic_num = true;
-		for(auto enu : magic_enum::enum_values<isa::pep10::CSR>()) {
-			if(enu == isa::pep10::CSR::MAX) break;
+		for(auto enu : magic_enum::enum_values<isa::pep9::CSR>()) {
+			if(enu == isa::pep9::CSR::MAX) break;
 			comp.write_csr((int) enu, magic_num);
 		}
 	
