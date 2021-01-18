@@ -9,7 +9,7 @@
 
 using namespace isa::pep10;
 
-isa_processor::isa_processor(isa::interface<uint16_t, uint16_t, bool> iface): _iface(iface)
+isa_processor::isa_processor(isa::env_interface<uint16_t, uint16_t, bool> iface): _iface(iface)
 {
 
 }

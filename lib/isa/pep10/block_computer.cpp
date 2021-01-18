@@ -40,6 +40,42 @@ block_computer::block_computer(): proc({})
 	proc = isa::pep10::isa_processor(_iface);
 }
 
+block_computer::sim_interface_t block_computer::sim_interface() {
+	sim_interface_t ret;
+
+	// Wrap all member functions for memory inside a lambda, so `this` can be passed.
+	auto read_mem_lambda = [this](uint16_t addr, bool) {return this->memory[addr];};
+	ret.read_mem_byte = std::function<uint8_t(uint16_t, bool)>(read_mem_lambda);
+	auto write_mem_lambda = [this](uint16_t addr, uint8_t val, bool){this->memory[addr] = val;};
+	ret.write_mem_byte = std::function<void(uint16_t, uint8_t, bool)>(write_mem_lambda);
+	auto clear_mem_lambda = [this](){this->clear_memory();};
+	ret.clear_mem = std::function<void()>(clear_mem_lambda);
+
+	// Wrap all member functions for registers inside a lambda, so `this` can be passed.
+	auto read_reg_lambda = [this](uint8_t addr){return this->regbank[addr];};
+	ret.read_reg = std::function<uint16_t(uint8_t)>(read_reg_lambda);
+	auto write_reg_lambda = [this](uint8_t addr, uint16_t val){this->regbank[addr] = val;};
+	ret.write_reg = std::function<void(uint8_t, uint16_t)>(write_reg_lambda);
+	auto clear_reg_lambda = [this](){this->clear_regs();};
+	ret.clear_mem = std::function<void()>(clear_reg_lambda);
+
+	// Wrap all member functions for csrs inside a lambda, so `this` can be passed.
+	auto read_csr_lambda = [this](uint8_t addr){return this->NZVC[addr];};
+	ret.read_csr = std::function<bool(uint8_t)>(read_csr_lambda);
+	auto write_csr_lambda = [this](uint8_t addr, bool val){this->NZVC[addr] = val;};
+	ret.write_csr = std::function<void(uint8_t, bool)>(write_csr_lambda);
+	auto clear_csr_lambda = [this](){this->clear_csrs();};
+	ret.clear_mem = std::function<void()>(clear_csr_lambda);
+
+	ret.step = std::function<delta_t()> ([this](){return step();});
+	ret.get_delta = std::function<delta_t()> ([this](){return get_delta();});
+	auto apply_lambda = [this](delta_t v){return apply(v);};
+	ret.apply = std::function<delta_t(delta_t)> (apply_lambda);
+
+	ret.add_code_breakpoint = [](uint16_t){};
+	ret.remove_code_breakpoint = [](uint16_t){};
+	ret.clear_code_breakpoints = [](){};
+}
 block_computer::delta_t block_computer::step()
 {
 	delta_t temp_step;

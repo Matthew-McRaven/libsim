@@ -1,20 +1,20 @@
 #include <stdint.h>
 
-#include "isa/proc_interface.hpp"
+#include "isa/env_interface.hpp"
 #include "isa/pep10/instruction.hpp"
 #include "isa/pep10/defs.hpp"
 namespace isa::pep10 {
 
 class isa_processor {
 public:
-	isa_processor(isa::interface<uint16_t, uint16_t, bool> iface);
+	isa_processor(isa::env_interface<uint16_t, uint16_t, bool> iface);
 	int step();
 	void init();
 	void debug(bool);
 	void clear();
 private:
 	uint16_t addr_from_vector(isa::pep10::memory_vectors vector);
-	isa::interface<uint16_t, uint16_t, bool> _iface;
+	isa::env_interface<uint16_t, uint16_t, bool> _iface;
 	void unary_dispatch(uint8_t is);
 	void nonunary_dispatch(uint8_t is, uint16_t os);
 	uint16_t decode_load_operand(const instruction_definition<uint8_t>* is, addressing_mode mode, uint16_t addr) const;

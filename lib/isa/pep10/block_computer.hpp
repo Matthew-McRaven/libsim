@@ -1,5 +1,6 @@
 #pragma once
 #include "isa/step_delta.hpp"
+#include "isa/sim_interface.hpp"
 
 #include "isa/pep10/defs.hpp"
 #include "isa/pep10/instruction.hpp"
@@ -10,11 +11,12 @@ class block_computer
 {
 
 	public:
-	isa::delta_timestep<isa::pep10::Registers, uint16_t, 
-		isa::pep10::CSR, bool, uint16_t> magic;
 	using delta_t = isa::delta_timestep<isa::pep10::Registers, uint16_t, 
 		isa::pep10::CSR, bool, uint16_t>;
+	using sim_interface_t = isa::sim_interface<isa::pep10::Registers, uint16_t, 
+		isa::pep10::CSR, bool, uint16_t>;
 	block_computer();
+	sim_interface_t sim_interface();
 	delta_t step();
 	delta_t apply(delta_t);
 	delta_t get_delta() const {return current_step;}
@@ -38,7 +40,7 @@ class block_computer
 	std::array<uint16_t, 8> regbank;
 	std::array<uint8_t, 0x10000> memory;
 	std::array<bool, 4> NZVC;
-	isa::interface<uint16_t, uint16_t, bool> _iface;
+	isa::env_interface<uint16_t, uint16_t, bool> _iface;
 	isa::pep10::isa_processor proc;
 
 };

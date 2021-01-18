@@ -4,7 +4,7 @@
 
 namespace isa {
 template <typename addr_size_t, typename reg_size_t, typename csr_size_t>
-struct interface {
+struct env_interface {
 	addr_size_t max_addr = {0xffff};
 	
 	std::function<void()> begin_instruction;
