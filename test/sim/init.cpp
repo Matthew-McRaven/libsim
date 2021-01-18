@@ -1,0 +1,87 @@
+#include <iostream>
+
+#include "catch.hpp"
+#include "magic_enum.hpp"
+
+#include "isa/pep10/instruction.hpp"
+#include "isa/pep10/block_computer.hpp"
+#include "isa/step_delta.hpp"
+
+using namespace isa::pep10;
+
+TEST_CASE( "Test init of Pep/10 ISA.", "[isa-sim]" ) {
+	auto comp = isa::pep10::block_computer();
+
+	// Init to clean slate.
+	comp.clear_memory();
+	comp.clear_regs();
+	comp.clear_csrs();
+
+    SECTION( "Set  & clear all registers." ) {
+		// Test that registers can be set & read back.
+		for(auto enu : magic_enum::enum_values<isa::pep10::Registers>()) {
+			if(enu == isa::pep10::Registers::MAX) break;
+			comp.write_reg((int) enu, (int) enu+1);
+		}
+		for(auto enu : magic_enum::enum_values<isa::pep10::Registers>()) {
+			if(enu == isa::pep10::Registers::MAX) break;
+			REQUIRE( comp.read_reg((int) enu) ==  (int) enu+1 );
+		}
+
+		// Test that clearing sets all to 0.
+        comp.clear_regs();
+		bool all_cleared = true;
+		for(auto enu : magic_enum::enum_values<isa::pep10::Registers>()) {
+			if(enu == isa::pep10::Registers::MAX) break;
+			all_cleared &= comp.read_reg((int) enu) == 0;
+		}
+		REQUIRE( all_cleared );
+    }
+
+	SECTION( "Set  & clear all control status registers." ) {
+		// Test that control/status registers can be set & read back.
+		for(auto enu : magic_enum::enum_values<isa::pep10::CSR>()) {
+			if(enu == isa::pep10::CSR::MAX) break;
+			REQUIRE( comp.read_csr((int) enu) ==  false);
+			comp.write_csr((int) enu, true);
+		}
+		for(auto enu : magic_enum::enum_values<isa::pep10::CSR>()) {
+			if(enu == isa::pep10::CSR::MAX) break;
+			REQUIRE( comp.read_csr((int) enu) ==  true);
+		}
+
+		// Test that clearing sets all to 0.
+        comp.clear_csrs();
+		bool all_cleared = true;
+		for(auto enu : magic_enum::enum_values<isa::pep10::CSR>()) {
+			if(enu == isa::pep10::CSR::MAX) break;
+			all_cleared &= comp.read_csr((int) enu) == false;
+		}
+		REQUIRE( all_cleared );
+    }
+
+	SECTION( "Set  & clear all memory bytes." ) {
+		// Test that all memory addresses can be written and read back.
+		bool start_cleared = true;
+		bool all_set = true;
+		for(int it=0; it < 0x1'00'00; it++) {
+			start_cleared &= comp.read_mem_byte(it, false) == 0;
+			comp.write_mem_byte(it, it%256 ? it%256:1, false);
+		}
+		REQUIRE ( start_cleared );
+		for(int it=0; it < 0x1'00'00; it++) {
+			auto v = comp.read_mem_byte(it, false);
+			all_set &= it%256 ? v == it%256 : v==1;
+		}
+		REQUIRE ( all_set );
+
+		// Test that clearing sets all memory bytes to 0.
+        comp.clear_memory();
+		bool all_cleared = true;
+		for(int it=0; it < 0x1'00'00; it++) {
+			all_cleared &= comp.read_mem_byte(it, false) == 0;
+		}
+		REQUIRE( all_cleared );
+    }
+
+}

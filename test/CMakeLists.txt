@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Allow version header to be included
-
-add_executable (Test test.cpp instructions/unary.cpp instructions/nonunary.cpp instructions/memmap.cpp)
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS "**/*.cpp")
+add_executable (Test ${sources})
 
 target_link_libraries(Test RTL-Lib catch magic_enum)
 #link_directories("${PROJECT_BINARY_DIR}/../lib")
