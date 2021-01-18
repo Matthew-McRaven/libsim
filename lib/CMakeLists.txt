@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_library(RTL-Lib SHARED 
 	isa/pep10/proc.cpp 
 	isa/pep10/instruction.cpp
+	isa/pep9/proc.cpp
+	isa/pep9/instruction.cpp
 )
 # Allow version header to be included
 target_include_directories(RTL-Lib PUBLIC "${PROJECT_BINARY_DIR}/")

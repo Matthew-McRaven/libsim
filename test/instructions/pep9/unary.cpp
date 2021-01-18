@@ -1,13 +1,26 @@
 #include "catch.hpp"
 
-#include "isa/pep10/instruction.hpp"
+#include "isa/pep9/defs.hpp"
+#include "isa/pep9/instruction.hpp"
 
-using namespace isa::pep10;
+using namespace isa::pep9;
 
-TEST_CASE( "Sanity checks on Unary ISA instructions", "[isa-def]" ) {
+TEST_CASE( "pep/9 -- Sanity checks on Unary ISA instructions", "[isa-def-pep9]" ) {
+    SECTION( "STOP" ) {
+        auto& def = definition.isa[(int) instruction_mnemonic::STOP];
+        REQUIRE( def.bit_pattern == 0b0000'0000 );
+        REQUIRE( def.iformat == addressing_class::U_none );
+        bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
+        for(int it=0; it < int(CSR::MAX); it++) {
+            REQUIRE( def.CSR_modified[it] == CSR_modified[it]  );
+        }
+        REQUIRE( def.mnemonic == instruction_mnemonic::STOP );
+        REQUIRE( as_string(def.mnemonic) == "STOP" );
+    }
+
     SECTION( "RET" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::RET];
-        REQUIRE( def.bit_pattern == 0b0000'0000 );
+        REQUIRE( def.bit_pattern == 0b0000'0001 );
         REQUIRE( def.iformat == addressing_class::U_none );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -17,21 +30,21 @@ TEST_CASE( "Sanity checks on Unary ISA instructions", "[isa-def]" ) {
         REQUIRE( as_string(def.mnemonic) == "RET" );
     }
 
-    SECTION( "SRET" ) {
-        auto& def = definition.isa[(int) instruction_mnemonic::SRET];
-        REQUIRE( def.bit_pattern == 0b0000'0001);
+    SECTION( "RETTR" ) {
+        auto& def = definition.isa[(int) instruction_mnemonic::RETTR];
+        REQUIRE( def.bit_pattern == 0b0000'0010);
         REQUIRE( def.iformat == addressing_class::U_none );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
         for(int it=0; it < int(CSR::MAX); it++) {
             REQUIRE( def.CSR_modified[it] == CSR_modified[it]  );
         }
-        REQUIRE( def.mnemonic == instruction_mnemonic::SRET );
-        REQUIRE( as_string(def.mnemonic) == "SRET" );
+        REQUIRE( def.mnemonic == instruction_mnemonic::RETTR );
+        REQUIRE( as_string(def.mnemonic) == "RETTR" );
     }
 
     SECTION( "MOVSPA" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::MOVSPA];
-        REQUIRE( def.bit_pattern == 0b0000'0010 );
+        REQUIRE( def.bit_pattern == 0b0000'0011 );
         REQUIRE( def.iformat == addressing_class::U_none );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -39,18 +52,6 @@ TEST_CASE( "Sanity checks on Unary ISA instructions", "[isa-def]" ) {
         }
         REQUIRE( def.mnemonic == instruction_mnemonic::MOVSPA );
         REQUIRE( as_string(def.mnemonic) == "MOVSPA" );
-    }
-
-    SECTION( "MOVASP" ) {
-        auto& def = definition.isa[(int) instruction_mnemonic::MOVASP];
-        REQUIRE( def.bit_pattern == 0b0000'0011 );
-        REQUIRE( def.iformat == addressing_class::U_none );
-        bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
-        for(int it=0; it < int(CSR::MAX); it++) {
-            REQUIRE( def.CSR_modified[it] == CSR_modified[it]  );
-        }
-        REQUIRE( def.mnemonic == instruction_mnemonic::MOVASP );
-        REQUIRE( as_string(def.mnemonic) == "MOVASP" );
     }
 
     SECTION( "MOVFLGA" ) {
@@ -76,50 +77,12 @@ TEST_CASE( "Sanity checks on Unary ISA instructions", "[isa-def]" ) {
         REQUIRE( def.mnemonic == instruction_mnemonic::MOVAFLG );
         REQUIRE( as_string(def.mnemonic) == "MOVAFLG" );
     }
-
-    SECTION( "MOVTA" ) {
-        auto& def = definition.isa[(int) instruction_mnemonic::MOVTA];
-        REQUIRE( def.bit_pattern == 0b0000'0110 );
-        REQUIRE( def.iformat == addressing_class::U_none );
-        bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
-        for(int it=0; it < int(CSR::MAX); it++) {
-            REQUIRE( def.CSR_modified[it] == CSR_modified[it]  );
-        }
-        REQUIRE( def.mnemonic == instruction_mnemonic::MOVTA );
-        REQUIRE( as_string(def.mnemonic) == "MOVTA" );
-    }
-
-    SECTION( "USCALL" ) {
-        auto& def = definition.isa[(int) instruction_mnemonic::USCALL];
-        REQUIRE( def.bit_pattern == 0b0000'0111 );
-        REQUIRE( def.iformat == addressing_class::U_none );
-        bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
-        for(int it=0; it < int(CSR::MAX); it++) {
-            REQUIRE( def.CSR_modified[it] == CSR_modified[it]  );
-        }
-        REQUIRE( def.mnemonic == instruction_mnemonic::USCALL );
-        REQUIRE( as_string(def.mnemonic) == "USCALL" );
-    }
-
-    SECTION( "NOP" ) {
-        auto& def = definition.isa[(int) instruction_mnemonic::NOP];
-        REQUIRE( def.bit_pattern == 0b0000'1000 );
-        REQUIRE( def.iformat == addressing_class::U_none );
-        bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
-        for(int it=0; it < int(CSR::MAX); it++) {
-            REQUIRE( def.CSR_modified[it] == CSR_modified[it]  );
-        }
-        REQUIRE( def.mnemonic == instruction_mnemonic::NOP );
-        REQUIRE( as_string(def.mnemonic) == "NOP" );
-    }
-
-
 }
 
-TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
+TEST_CASE( "pep/9 -- Sanity checks on Unary `R`-type ISA instructions", "[isa-def-pep9]" ) {
     SECTION( "NOTA" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::NOTA];
-        REQUIRE( def.bit_pattern == 0b0001'0000 );
+        REQUIRE( def.bit_pattern == 0b0000'0110 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -131,7 +94,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
 
     SECTION( "NOTX" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::NOTX];
-        REQUIRE( def.bit_pattern == 0b0001'0001);
+        REQUIRE( def.bit_pattern == 0b0000'0111);
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -143,7 +106,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
 
     SECTION( "NEGA" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::NEGA];
-        REQUIRE( def.bit_pattern == 0b0001'0010 );
+        REQUIRE( def.bit_pattern == 0b0000'1000 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, false};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -155,7 +118,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
 
     SECTION( "NEGX" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::NEGX];
-        REQUIRE( def.bit_pattern == 0b0001'0011 );
+        REQUIRE( def.bit_pattern == 0b0000'1001 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, false};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -167,7 +130,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
 
     SECTION( "ASLA" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::ASLA];
-        REQUIRE( def.bit_pattern == 0b0001'0100 );
+        REQUIRE( def.bit_pattern == 0b0000'1010 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -179,7 +142,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
 
     SECTION( "ASLX" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::ASLX];
-        REQUIRE( def.bit_pattern == 0b0001'0101 );
+        REQUIRE( def.bit_pattern == 0b0000'1011 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -191,7 +154,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
 
     SECTION( "ASRA" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::ASRA];
-        REQUIRE( def.bit_pattern == 0b0001'0110 );
+        REQUIRE( def.bit_pattern == 0b0000'1100 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, true};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -203,7 +166,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
 
     SECTION( "ASRX" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::ASRX];
-        REQUIRE( def.bit_pattern == 0b0001'0111 );
+        REQUIRE( def.bit_pattern == 0b0000'1101 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, true};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -215,7 +178,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
 
     SECTION( "ROLA" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::ROLA];
-        REQUIRE( def.bit_pattern == 0b0001'1000 );
+        REQUIRE( def.bit_pattern == 0b0000'1110 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, true};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -226,7 +189,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
     }
     SECTION( "ROLX" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::ROLX];
-        REQUIRE( def.bit_pattern == 0b0001'1001 );
+        REQUIRE( def.bit_pattern == 0b0000'1111 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, true};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -237,7 +200,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
     }
     SECTION( "RORA" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::RORA];
-        REQUIRE( def.bit_pattern == 0b0001'1010 );
+        REQUIRE( def.bit_pattern == 0b0001'0000 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, true};
         for(int it=0; it < int(CSR::MAX); it++) {
@@ -248,7 +211,7 @@ TEST_CASE( "Sanity checks on Unary `R`-type ISA instructions", "[isa-def]" ) {
     }
     SECTION( "RORX" ) {
         auto& def = definition.isa[(int) instruction_mnemonic::RORX];
-        REQUIRE( def.bit_pattern == 0b0001'1011 );
+        REQUIRE( def.bit_pattern == 0b0001'0001 );
         REQUIRE( def.iformat == addressing_class::R_none );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, true};
         for(int it=0; it < int(CSR::MAX); it++) {
