@@ -1,4 +1,4 @@
-#include "isa/pep10/model.hpp"
+#include "isa/pep10/proc.hpp"
 
 #include <iostream>
 #include <stdexcept>
