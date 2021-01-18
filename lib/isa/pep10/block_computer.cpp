@@ -85,6 +85,10 @@ block_computer::delta_t block_computer::step()
 	current_step = {};
 	return temp_step;
 }
+block_computer::delta_t block_computer::apply(block_computer::delta_t)
+{
+	throw std::invalid_argument("Not implemented");
+}
 
 uint8_t block_computer::read_mem_byte(uint16_t addr, bool) const
 {
