@@ -92,7 +92,7 @@ void isa_processor::unary_dispatch(uint8_t is)
 	case instruction_mnemonic::MOVSPA:
 		write_reg(Registers::A, sp);
 		break;
-	case instruction_mnemonic::MOVASP:break;
+	case instruction_mnemonic::MOVASP:
 		write_reg(Registers::SP, acc);
 		break;
 
