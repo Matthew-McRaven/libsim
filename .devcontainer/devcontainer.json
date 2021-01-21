@@ -21,5 +21,4 @@
 		"--security-opt",
 		"seccomp=unconfined"
 	],
-	"remoteUser": "vscode",
 }
