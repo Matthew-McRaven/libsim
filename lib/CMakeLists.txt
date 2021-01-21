@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # add the executable
-add_library(RTL-Lib SHARED 
+add_library(RTL-Lib STATIC 
 	isa/pep10/proc.cpp 
 	isa/pep10/instruction.cpp
 	isa/pep9/proc.cpp

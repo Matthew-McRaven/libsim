@@ -60,7 +60,9 @@ void isa_processor::clear()
 
 void isa_processor::unary_dispatch(uint8_t is)
 {
-	auto [instr, addr] = isa::pep10::definition.riproll[is];
+	auto definition = isa::pep10::isa_definition::get_definition();
+
+	auto [instr, addr] = definition.riproll[is];
 	uint16_t temp, sp, acc, idx, vector_value;
     uint8_t temp_byte;
 	sp = read_reg(Registers::SP);
@@ -222,7 +224,6 @@ void isa_processor::unary_dispatch(uint8_t is)
 		set_NZVC(CSR::C, idx & 0x1);
         break;
 	case instruction_mnemonic::SCALL:
-		[[fallthrough]]
 	case instruction_mnemonic::USCALL:
 		vector_value = addr_from_vector(memory_vectors::SYSTEM_STACK);
 		temp = read_word(vector_value, true);
@@ -247,6 +248,7 @@ void isa_processor::unary_dispatch(uint8_t is)
 }
 void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
 {
+	auto definition = isa::pep10::isa_definition::get_definition();
 	auto [instr, addr] = definition.riproll[is];
 	uint16_t temp, sp, acc, idx, vector_value;
     uint8_t temp_byte;

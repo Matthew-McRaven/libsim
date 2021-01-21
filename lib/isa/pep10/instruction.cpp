@@ -138,12 +138,18 @@ std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>,2
 	return riproll;
 }
 
+static const isa_definition definition = isa::pep10::isa_definition();
+
 isa_definition::isa_definition():
 	isa(isa_map), riproll(init_mmap())
 {
 
 }
 
+const isa_definition&  isa_definition::get_definition()
+{
+	return definition;
+}
 
 std::string isa::pep10::as_string(instruction_mnemonic mnemon) {
 	if (mnemon == instruction_mnemonic::UNIMPL || mnemon == instruction_mnemonic::MAX) {

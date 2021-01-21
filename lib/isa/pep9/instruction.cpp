@@ -2,8 +2,9 @@
 
 #include <iostream>
 #include <algorithm>
-namespace isa::pep9{
-const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> init_isa() {
+using namespace isa::pep9;
+const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> pep9_init_isa() {
+	using namespace isa::pep9;
 	return {{
 		{0x00, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::STOP, true, ""},
 		{0x01, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::RET, true, ""},
@@ -75,9 +76,9 @@ const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MA
 	}};
 }
 
-static const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> isa_map = init_isa();
+static const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> isa_map = pep9_init_isa();
 
-std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>,256> init_mmap() {
+std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>,256> pep9_init_mmap() {
 	using instr = instruction_definition<uint8_t>;
 	std::array<std::tuple<const instr*, addressing_mode>,256> riproll = {};
 	for(int it=0; it<256; it++) {
@@ -90,8 +91,9 @@ std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>,2
 			auto lb = ub - 1;
 
 
-			addressing_mode mode = addressing_mode::INVALID;
+			auto mode = addressing_mode::INVALID;
 
+			using namespace isa::pep9;
 			switch (lb->iformat) {
 			case addressing_class::R_none:
 				[[fallthrough]]; 
@@ -139,23 +141,30 @@ std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>,2
 	return riproll;
 }
 
-isa_definition::isa_definition():
-	isa(isa::pep9::isa_map), riproll(init_mmap())
-{
+static const isa_definition definition = isa::pep9::isa_definition();
 
+isa_definition::isa_definition():
+	isa(isa_map), riproll(pep9_init_mmap())
+{
+	
+}
+
+const isa_definition& isa_definition::get_definition()
+{
+	return definition;
 }
 
 
-std::string as_string(instruction_mnemonic mnemon) {
+std::string isa::pep9::as_string(instruction_mnemonic mnemon) {
 	if (mnemon == instruction_mnemonic::MAX) {
 		throw std::invalid_argument("Not a real mnemonic");
 	}
 	return std::string(magic_enum::enum_name(mnemon));
 }
 
-bool is_opcode_unary(instruction_mnemonic mnemon)
+bool isa::pep9::is_opcode_unary(instruction_mnemonic mnemon)
 {
-	auto addr_class = isa::pep9::definition.isa[(int) mnemon].iformat;
+	auto addr_class = isa_definition::get_definition().isa[(int) mnemon].iformat;
 	switch (addr_class)
 	{
 	case addressing_class::A_ix:
@@ -171,20 +180,19 @@ bool is_opcode_unary(instruction_mnemonic mnemon)
 	throw std::invalid_argument("Invalid opcode.");
 }
 
-bool is_opcode_unary(uint8_t opcode)
+bool isa::pep9::is_opcode_unary(uint8_t opcode)
 {
-	auto [inst, addr] = isa::pep9::definition.riproll[opcode];
+	auto [inst, addr] = isa_definition::get_definition().riproll[opcode];
 	return is_opcode_unary(inst->mnemonic);
 }
-bool is_store(instruction_mnemonic mnemon)
+bool isa::pep9::is_store(instruction_mnemonic mnemon)
 {
 	if(mnemon == instruction_mnemonic::STBA ||
 		mnemon == instruction_mnemonic::STWA) return true;
 	else return false;
 }
-bool is_store(uint8_t opcode)
+bool isa::pep9::is_store(uint8_t opcode)
 {
-	auto [inst, addr] = isa::pep9::definition.riproll[opcode];
+	auto [inst, addr] = isa_definition::get_definition().riproll[opcode];
 	return is_store(inst->mnemonic);
 }
-};

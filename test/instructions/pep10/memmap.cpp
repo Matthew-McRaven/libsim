@@ -98,9 +98,11 @@ std::array<addressing_mode, 256> addr_array =
 // These tables confirm that addressing modes, instruction specs are correct for all
 // instructions.
 TEST_CASE( "Validate instruction memory map", "[isa-def]" ) {
+	auto def = isa::pep10::isa_definition::get_definition();
+
 	SECTION( "Instructions" ) {
 		for(int it=0; it<255; it++) {
-			auto mnemon = std::get<0>(definition.riproll[it])->mnemonic;
+			auto mnemon = std::get<0>(def.riproll[it])->mnemonic;
 			auto assert_mnemon = instr_array[it];
 			REQUIRE(mnemon == assert_mnemon);
 		}
@@ -108,7 +110,7 @@ TEST_CASE( "Validate instruction memory map", "[isa-def]" ) {
 
 	SECTION( "Addressing Modes", "[isa-def]" ) {
 		for(int it=0; it<255; it++) {
-			auto addr_mode = std::get<1>(definition.riproll[it]);
+			auto addr_mode = std::get<1>(def.riproll[it]);
 			auto assert_addr = addr_array[it];	
 			REQUIRE(addr_mode == assert_addr);
 		}

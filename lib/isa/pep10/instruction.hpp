@@ -23,9 +23,10 @@ struct isa_definition {
 	const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> isa ;
 	const std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>, 256> riproll;
 	isa_definition();
+	// Returns a static copy of a pep/10 isa definition.
+	// Required for static initialization in a static library.
+	static const isa_definition&  get_definition();
 };
-
-static const isa_definition definition;
 
 std::string as_string(instruction_mnemonic);
 bool is_opcode_unary(instruction_mnemonic);
