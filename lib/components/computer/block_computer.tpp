@@ -1,5 +1,4 @@
 #include <iostream>
-#include <concepts>
 
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
 block_computer<isa_proc_t, regbank_t, mem_device_t>::block_computer(regbank_t regbank, mem_device_t memory): 
@@ -39,7 +38,7 @@ block_computer<isa_proc_t, regbank_t, mem_device_t>::block_computer(regbank_t re
 	proc = isa_proc_t(_iface);
 }
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
-block_computer<isa_proc_t, regbank_t, mem_device_t>::sim_interface_t block_computer<isa_proc_t, regbank_t, mem_device_t>::sim_interface() {
+typename block_computer<isa_proc_t, regbank_t, mem_device_t>::sim_interface_t block_computer<isa_proc_t, regbank_t, mem_device_t>::sim_interface() {
 	block_computer<isa_proc_t, regbank_t, mem_device_t>::sim_interface_t ret;
 
 	// Wrap all member functions for memory inside a lambda, so `this` can be passed.
@@ -81,7 +80,7 @@ block_computer<isa_proc_t, regbank_t, mem_device_t>::sim_interface_t block_compu
 }
 
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
-block_computer<isa_proc_t, regbank_t, mem_device_t>::delta_t block_computer<isa_proc_t, regbank_t, mem_device_t>::get_delta() const
+typename block_computer<isa_proc_t, regbank_t, mem_device_t>::delta_t block_computer<isa_proc_t, regbank_t, mem_device_t>::get_delta() const
 {
 	constexpr bool reg_delta = requires(const regbank_t& t) {
         t.get_reg_delta();
@@ -110,7 +109,7 @@ block_computer<isa_proc_t, regbank_t, mem_device_t>::delta_t block_computer<isa_
 	return delta;
 }
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
-block_computer<isa_proc_t, regbank_t, mem_device_t>::delta_t block_computer<isa_proc_t, regbank_t, mem_device_t>::step()
+typename block_computer<isa_proc_t, regbank_t, mem_device_t>::delta_t block_computer<isa_proc_t, regbank_t, mem_device_t>::step()
 {
 	proc.step();
 	auto temp_step = std::move(get_delta());
@@ -120,7 +119,7 @@ block_computer<isa_proc_t, regbank_t, mem_device_t>::delta_t block_computer<isa_
 }
 
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
-block_computer<isa_proc_t, regbank_t, mem_device_t>::delta_t block_computer<isa_proc_t, regbank_t, mem_device_t>::apply(block_computer::delta_t)
+typename block_computer<isa_proc_t, regbank_t, mem_device_t>::delta_t block_computer<isa_proc_t, regbank_t, mem_device_t>::apply(block_computer::delta_t)
 {
 	throw std::invalid_argument("Not implemented");
 }
@@ -144,7 +143,7 @@ void block_computer<isa_proc_t, regbank_t, mem_device_t>::clear_memory()
 }
 
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
-block_computer<isa_proc_t, regbank_t, mem_device_t>::reg_size_t block_computer<isa_proc_t, regbank_t, mem_device_t>::read_reg(uint8_t addr) const
+typename block_computer<isa_proc_t, regbank_t, mem_device_t>::reg_size_t block_computer<isa_proc_t, regbank_t, mem_device_t>::read_reg(uint8_t addr) const
 {
 	return regbank.read_reg(addr);
 }
@@ -152,7 +151,7 @@ block_computer<isa_proc_t, regbank_t, mem_device_t>::reg_size_t block_computer<i
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
 void block_computer<isa_proc_t, regbank_t, mem_device_t>::write_reg(uint8_t addr, reg_size_t value)
 {
-	auto reg = static_cast<isa_proc_t::Registers>(addr);
+	auto reg = static_cast<typename isa_proc_t::Registers>(addr);
 
 	regbank.write_reg(addr, value);
 }
@@ -164,7 +163,7 @@ void block_computer<isa_proc_t, regbank_t, mem_device_t>::clear_regs()
 }
 
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
-block_computer<isa_proc_t, regbank_t, mem_device_t>::csr_size_t block_computer<isa_proc_t, regbank_t, mem_device_t>::read_csr(uint8_t addr) const
+typename block_computer<isa_proc_t, regbank_t, mem_device_t>::csr_size_t block_computer<isa_proc_t, regbank_t, mem_device_t>::read_csr(uint8_t addr) const
 {
 	return regbank.read_csr(addr);
 }
@@ -172,7 +171,7 @@ block_computer<isa_proc_t, regbank_t, mem_device_t>::csr_size_t block_computer<i
 template <typename isa_proc_t, typename regbank_t, typename mem_device_t>
 void block_computer<isa_proc_t, regbank_t, mem_device_t>::write_csr(uint8_t addr, csr_size_t value)
 {
-	auto csr = static_cast<isa_proc_t::CSR>(addr);
+	auto csr = static_cast<typename isa_proc_t::CSR>(addr);
 	regbank.write_csr(addr, value);
 }
 

@@ -13,9 +13,9 @@ class block_computer
 {
 
 	public:
-	using addr_size_t = mem_device_t::addr_size_t;
-	using reg_size_t = isa_proc_t::reg_size_t;
-	using csr_size_t = isa_proc_t::csr_size_t;
+	using addr_size_t = typename mem_device_t::addr_size_t;
+	using reg_size_t = typename isa_proc_t::reg_size_t;
+	using csr_size_t = typename isa_proc_t::csr_size_t;
 	using delta_t = isa::delta_timestep<uint8_t, reg_size_t, 
 		uint8_t, csr_size_t, addr_size_t>;
 	using sim_interface_t = isa::sim_interface<uint8_t, reg_size_t, 
