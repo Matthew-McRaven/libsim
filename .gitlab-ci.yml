@@ -34,6 +34,9 @@ Build C++ bindings:
   image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
   needs: [Build Python and Boost]
   script:
+    - source /emsdk/emsdk_env.sh
+    - export CXX=/emsdk/llvm/git/build_master_64/bin/clang++
+    - export C=/emsdk/llvm/git/build_master_64/bin/clang
     - mkdir build && cd build
     - cmake ../
     - make -j20 && make test
