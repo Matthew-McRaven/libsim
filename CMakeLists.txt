@@ -25,13 +25,12 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 # set the project name
 project(RTL-Model VERSION 1.0)
 
-configure_file(lib/version.hpp.in lib/version.hpp)
+configure_file(src/libisa/version.hpp.in src/libisa/version.hpp)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_subdirectory(lib)
-add_subdirectory(sample)
+add_subdirectory(src)
 add_subdirectory(3rd-party)
 #find_package(catch REQUIRED HINTS 3rd-party/catch/CMakeLists.txt)
 #ind_package(magic_enum REQUIRED)
