@@ -1,9 +1,6 @@
-FROM gcc:10
-
-RUN apt update && apt install -y cmake
+ARG BUILD_VERSION="0.2.0"
+FROM registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION
 
 COPY . /libsim
 
 WORKDIR /libsim
-
-RUN mkdir build && cd build && cmake .. && make -j20 && ./test/Test -v high
