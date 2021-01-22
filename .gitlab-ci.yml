@@ -6,7 +6,7 @@ stages:
 - test
 
 variables:
-  BUILD_VERSION: 0.1.0
+  BUILD_VERSION: v0.2.0
 
 Build Python and Boost:
   stage: build dependencies
@@ -37,10 +37,22 @@ Build Magic Enum:
   script:
     - echo "Done"
 
-Build library:
-  stage: build library
-  needs: [Build Catch, Build Magic Enum]
+Build C++ bindings:
+  stage: test
+  image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
+  needs: [Build Python and Boost]
   script:
-    - docker build -t ci.${CI_COMMIT_SHORT_SHA} .
-  after_script:
-    - docker rmi ci.${CI_COMMIT_SHORT_SHA}
+    - mkdir build && cd build
+    - cmake ../
+    - make -j20 && make test
+
+Build emscripten bindings:
+  stage: test
+  image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
+  needs: [Build Python and Boost]
+  script:
+    - source /emsdk/emsdk_env.sh
+    - mkdir build && cd build
+    - emcmake cmake ../
+    - emmake make -j20
+    - node ./test/libisa/test-lib.js
