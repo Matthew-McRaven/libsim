@@ -51,3 +51,6 @@ Build emscripten bindings:
     - emcmake cmake ../
     - emmake make -j20
     - node ./test/libisa/test-lib.js
+    - npm config set @pep10:registry https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/
+    - npm config set '//gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken' ${CI_JOB_TOKEN}
+    - cd src/nodeisa && npm publish
