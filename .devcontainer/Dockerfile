@@ -14,7 +14,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # Install pip for python 3.9
 RUN curl https://bootstrap.pypa.io/get-pip.py | python3.9
 RUN python3.9 -m pip install pytest
-ENV CXX=/usr/bin/g++-10
+
 
 
 
@@ -35,3 +35,4 @@ RUN cd /emsdk && git pull && ./emsdk install sdk-upstream-master-64bit && ./emsd
 
 SHELL ["/bin/bash", "-c"]
 RUN source /emsdk/emsdk_env.sh
+ENV CXX=/usr/bin/g++-10
