@@ -29,3 +29,6 @@ RUN cd boost && ./bootstrap.sh --with-python-version=3.9 && \
     ./b2 cxxflags="-fPIC -std=c++17" --prefix=/install/boost --user-config=/boost/user-config.jam address-model=64 link=static runtime-link=static -j 20 threading=multi install 
 
 RUN cd /emsdk && git pull && ./emsdk install sdk-upstream-master-64bit && ./emsdk activate sdk-upstream-master-64bit
+
+SHELL ["/bin/bash", "-c"]
+RUN source /emsdk/emsdk_env.sh
