@@ -6,7 +6,7 @@ stages:
 - test
 
 variables:
-  BOOST_VERSION: 1.75.0
+  BUILD_VERSION=0.1.0
 
 Build Python and Boost:
   stage: build dependencies
@@ -15,14 +15,14 @@ Build Python and Boost:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - cd dependencies
     - | 
-      if $(docker pull registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION}); then
+      if $(docker pull registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION); then
         echo success
       else
-        docker build -t registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION} -f BuildDeps.Dockerfile .
+        docker build -t registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION -f BuildDeps.Dockerfile .
       fi
-    - docker push registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION} 
+    - docker push registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION 
   after_script:
-    - docker rmi registry.gitlab.com/pep10/libsim/pyboost:${BOOST_VERSION}
+    - docker rmi registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION
 
 
 Build Catch:
