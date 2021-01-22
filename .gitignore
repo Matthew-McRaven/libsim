@@ -2,3 +2,5 @@ build
 .vscode
 3rd-part/boost/**
 *.code-workspace
+
+__pycache__
