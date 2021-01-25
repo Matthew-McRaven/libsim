@@ -78,9 +78,9 @@ const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MA
 
 static const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> isa_map = pep9_init_isa();
 
-std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>,256> pep9_init_mmap() {
+std::array<addr_map, 256> pep9_init_mmap() {
 	using instr = instruction_definition<uint8_t>;
-	std::array<std::tuple<const instr*, addressing_mode>,256> riproll = {};
+	std::array<addr_map, 256> riproll = {};
 	for(int it=0; it<256; it++) {
 			auto ub = std::upper_bound(isa_map.cbegin(), isa_map.cend(), it, [](int v, const instr &ref){return v < ref.bit_pattern ;});
 
@@ -135,7 +135,8 @@ std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>,2
 				else throw std::invalid_argument("Invalid AAA addressing mode.");
 				break;
 			}
-			riproll[it] = {lb, mode};
+			riproll[it].inst = *lb;
+			riproll[it].addr = mode;
 			
 	}
 	return riproll;
@@ -183,7 +184,7 @@ bool isa::pep9::is_opcode_unary(instruction_mnemonic mnemon)
 bool isa::pep9::is_opcode_unary(uint8_t opcode)
 {
 	auto [inst, addr] = isa_definition::get_definition().riproll[opcode];
-	return is_opcode_unary(inst->mnemonic);
+	return is_opcode_unary(inst.mnemonic);
 }
 bool isa::pep9::is_store(instruction_mnemonic mnemon)
 {
@@ -194,5 +195,5 @@ bool isa::pep9::is_store(instruction_mnemonic mnemon)
 bool isa::pep9::is_store(uint8_t opcode)
 {
 	auto [inst, addr] = isa_definition::get_definition().riproll[opcode];
-	return is_store(inst->mnemonic);
+	return is_store(inst.mnemonic);
 }

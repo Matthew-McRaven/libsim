@@ -1,12 +1,13 @@
-const nodeisa = require('./nodeisa.js');
+const pep10 = require('./pep10.js');
+const pep9 = require('./pep9.js');
+const sim = require('./sim.js');
 
-function sleep(ms) {
-	return new Promise((resolve) => {
-	  setTimeout(resolve, ms);
-	});
-  }   
+pep10().then(function(instance) {
+	var def = new instance.IsaDefinition
+	//console.log(def.map)
+	//get_bit = (index) =>{return instance.WildEyes.get_bit(def.isa, index)}
+	console.log(def.get_instruction(instance.InstructionMnemonic.ADDX))
 
-nodeisa().then(function(instance) {
-	var x = new instance.Application();
-	x.SayHello()
-});;
+});
+
+module.exports = [pep9, pep10, sim]

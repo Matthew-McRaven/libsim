@@ -22,8 +22,8 @@ private:
 	isa::env_interface<uint16_t, uint16_t, bool> _iface;
 	void unary_dispatch(uint8_t is);
 	void nonunary_dispatch(uint8_t is, uint16_t os);
-	uint16_t decode_load_operand(const instruction_definition<uint8_t>* is, addressing_mode mode, uint16_t addr) const;
-	uint16_t decode_store_operand(const instruction_definition<uint8_t>* is, addressing_mode mode, uint16_t addr) const;
+	uint16_t decode_load_operand(const instruction_definition<uint8_t>& is, addressing_mode mode, uint16_t addr) const;
+	uint16_t decode_store_operand(const instruction_definition<uint8_t>& is, addressing_mode mode, uint16_t addr) const;
 
 	uint16_t read_reg(Registers reg) const;
 	void write_reg(Registers reg, uint16_t value);

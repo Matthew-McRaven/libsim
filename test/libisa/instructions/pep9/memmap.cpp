@@ -107,7 +107,7 @@ TEST_CASE( "pep/9 -- Validate instruction memory map", "[isa-def-pep9]" ) {
 
 	SECTION( "Instructions" ) {
 		for(int it=0; it<255; it++) {
-			auto mnemon = std::get<0>(def.riproll[it])->mnemonic;
+			auto mnemon = def.riproll[it].inst.mnemonic;
 			auto assert_mnemon = instr_array[it];
 			REQUIRE(mnemon == assert_mnemon);
 		}
@@ -115,7 +115,7 @@ TEST_CASE( "pep/9 -- Validate instruction memory map", "[isa-def-pep9]" ) {
 
 	SECTION( "Addressing Modes", "[isa-def-pep9]" ) {
 		for(int it=0; it<255; it++) {
-			auto addr_mode = std::get<1>(def.riproll[it]);
+			auto addr_mode = def.riproll[it].addr;
 			auto assert_addr = addr_array[it];	
 			REQUIRE(addr_mode == assert_addr);
 		}

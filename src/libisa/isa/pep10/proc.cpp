@@ -68,7 +68,7 @@ void isa_processor::unary_dispatch(uint8_t is)
 	sp = read_reg(Registers::SP);
 	acc = read_reg(Registers::A);
 	idx = read_reg(Registers::X);
-    switch(instr->mnemonic) {
+    switch(instr.mnemonic) {
 	case instruction_mnemonic::RET:
 		temp = read_word(sp, false);
 		write_reg(Registers::PC, temp);
@@ -260,7 +260,7 @@ void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
 	if( is_store(is)) decoded_operand = decode_store_operand(instr, addr, os);
 	else decoded_operand = decode_load_operand(instr, addr, os);
 
-	switch (instr->mnemonic) {
+	switch (instr.mnemonic) {
 	case instruction_mnemonic::BR:
 		write_reg(Registers::PC, decoded_operand);
 		break;
@@ -538,10 +538,10 @@ uint16_t isa_processor::addr_from_vector(isa::pep10::memory_vectors vec) {
 	throw std::invalid_argument("thing");
 }
 
-uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t>* instr, addressing_mode mode, uint16_t addr) const
+uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t>& instr, addressing_mode mode, uint16_t addr) const
 {
 
-	if(auto mn = instr->mnemonic; mn == instruction_mnemonic::CPBA 
+	if(auto mn = instr.mnemonic; mn == instruction_mnemonic::CPBA 
 		|| mn == instruction_mnemonic::CPBX
 		|| mn == instruction_mnemonic::LDBA
 		|| mn == instruction_mnemonic::LDBX) {
@@ -598,7 +598,7 @@ uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t
 	throw std::invalid_argument("Not a valid addressing mode");
 }
 
-uint16_t isa_processor::decode_store_operand(const instruction_definition<uint8_t>* instr, addressing_mode mode, uint16_t addr) const
+uint16_t isa_processor::decode_store_operand(const instruction_definition<uint8_t>& instr, addressing_mode mode, uint16_t addr) const
 {
 	switch (mode)
 	{

@@ -19,9 +19,15 @@ struct instruction_definition {
 	std::string comment = {};
 };
 
+struct addr_map
+{
+	instruction_definition<uint8_t> inst;
+	addressing_mode addr;
+};
+
 struct isa_definition {
 	const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> isa ;
-	const std::array<std::tuple<const instruction_definition<uint8_t>*, addressing_mode>, 256> riproll;
+	const std::array<addr_map, 256> riproll;
 	isa_definition();
 	// Returns a static copy of a pep/9 isa definition.
 	// Required for static initialization in a static library.
