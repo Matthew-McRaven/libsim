@@ -5,6 +5,7 @@
 #include <vector>
 #include <limits>
 #include <tuple>
+#include <map>
 
 #include "isa/pep10/defs.hpp"
 
@@ -26,7 +27,7 @@ struct addr_map
 };
 
 struct isa_definition {
-	const std::array<instruction_definition<uint8_t>, (int) instruction_mnemonic::MAX> isa ;
+	const std::map<instruction_mnemonic, instruction_definition<uint8_t> > isa ;
 	const std::array<addr_map, 256> riproll;
 	isa_definition();
 	// Returns a static copy of a pep/10 isa definition.

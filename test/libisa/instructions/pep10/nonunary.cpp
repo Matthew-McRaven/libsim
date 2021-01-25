@@ -8,7 +8,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     auto isa_def = isa::pep10::isa_definition::get_definition();
 
     SECTION( "BR" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BR];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BR);
         REQUIRE( def.bit_pattern == 0b0001'1100 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -20,7 +20,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "BRLE" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BRLE];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BRLE);
         REQUIRE( def.bit_pattern == 0b0001'1110);
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -32,7 +32,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "BRLT" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BRLT];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BRLT);
         REQUIRE( def.bit_pattern == 0b0010'0000 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -44,7 +44,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "BREQ" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BREQ];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BREQ);
         REQUIRE( def.bit_pattern == 0b0010'0010 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -56,7 +56,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "BRNE" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BRNE];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BRNE);
         REQUIRE( def.bit_pattern == 0b0010'0100 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -68,7 +68,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "BRGE" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BRGE];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BRGE);
         REQUIRE( def.bit_pattern == 0b0010'0110 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -80,7 +80,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "BRGT" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BRGT];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BRGT);
         REQUIRE( def.bit_pattern == 0b0010'1000 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -92,7 +92,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "BRV" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BRV];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BRV);
         REQUIRE( def.bit_pattern == 0b0010'1010 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -104,7 +104,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "BRC" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::BRC];
+        const auto def = isa_def.isa.at(instruction_mnemonic::BRC);
         REQUIRE( def.bit_pattern == 0b0010'1100 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -116,7 +116,7 @@ TEST_CASE( "Sanity checks on Non-Unary Branch ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "CALL" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::CALL];
+        const auto def = isa_def.isa.at(instruction_mnemonic::CALL);
         REQUIRE( def.bit_pattern == 0b0010'1110 );
         REQUIRE( def.iformat == addressing_class::A_ix );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -133,7 +133,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     auto isa_def = isa::pep10::isa_definition::get_definition();
     
     SECTION( "SCALL" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::SCALL];
+        const auto def = isa_def.isa.at(instruction_mnemonic::SCALL);
         REQUIRE( def.bit_pattern == 0b0011'0000 );
         REQUIRE( def.iformat == addressing_class::AAA_all );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -145,7 +145,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "LDWT" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::LDWT];
+        const auto def = isa_def.isa.at(instruction_mnemonic::LDWT);
         REQUIRE( def.bit_pattern == 0b0011'1000);
         REQUIRE( def.iformat == addressing_class::AAA_i );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -157,7 +157,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "LDWA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::LDWA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::LDWA);
         REQUIRE( def.bit_pattern == 0b0100'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -169,7 +169,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "LDWX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::LDWX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::LDWX);
         REQUIRE( def.bit_pattern == 0b0100'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -181,7 +181,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "LDBA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::LDBA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::LDBA);
         REQUIRE( def.bit_pattern == 0b0101'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -193,7 +193,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "LDBX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::LDBX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::LDBX);
         REQUIRE( def.bit_pattern == 0b0101'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -205,7 +205,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "STWA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::STWA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::STWA);
         REQUIRE( def.bit_pattern == 0b0110'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_noi );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -217,7 +217,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "STWX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::STWX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::STWX);
         REQUIRE( def.bit_pattern == 0b0110'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_noi );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -229,7 +229,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "STBA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::STBA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::STBA);
         REQUIRE( def.bit_pattern == 0b0111'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_noi );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -241,7 +241,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
     SECTION( "STBX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::STBX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::STBX);
         REQUIRE( def.bit_pattern == 0b0111'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_noi );
         bool CSR_modified[int(CSR::MAX)] = {false, false, false, false};
@@ -253,7 +253,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "CPWA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::CPWA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::CPWA);
         REQUIRE( def.bit_pattern == 0b1000'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -265,7 +265,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "CPWX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::CPWX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::CPWX);
         REQUIRE( def.bit_pattern == 0b1000'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -277,7 +277,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "CPBA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::CPBA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::CPBA);
         REQUIRE( def.bit_pattern == 0b1001'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -289,7 +289,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "CPBX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::CPBX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::CPBX);
         REQUIRE( def.bit_pattern == 0b1001'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -301,7 +301,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "ADDA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::ADDA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::ADDA);
         REQUIRE( def.bit_pattern == 0b1010'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -313,7 +313,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "ADDX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::ADDX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::ADDX);
         REQUIRE( def.bit_pattern == 0b1010'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -325,7 +325,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "SUBA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::SUBA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::SUBA);
         REQUIRE( def.bit_pattern == 0b1011'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -337,7 +337,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "SUBX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::SUBX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::SUBX);
         REQUIRE( def.bit_pattern == 0b1011'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -349,7 +349,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "ANDA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::ANDA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::ANDA);
         REQUIRE( def.bit_pattern == 0b1100'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -361,7 +361,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "ANDX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::ANDX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::ANDX);
         REQUIRE( def.bit_pattern == 0b1100'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -373,7 +373,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "ORA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::ORA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::ORA);
         REQUIRE( def.bit_pattern == 0b1101'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -385,7 +385,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "ORX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::ORX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::ORX);
         REQUIRE( def.bit_pattern == 0b1101'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -397,7 +397,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "XORA" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::XORA];
+        const auto def = isa_def.isa.at(instruction_mnemonic::XORA);
         REQUIRE( def.bit_pattern == 0b1110'0000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -409,7 +409,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "XORX" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::XORX];
+        const auto def = isa_def.isa.at(instruction_mnemonic::XORX);
         REQUIRE( def.bit_pattern == 0b1110'1000 );
         REQUIRE( def.iformat == addressing_class::RAAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, false, false};
@@ -421,7 +421,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "ADDSP" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::ADDSP];
+        const auto def = isa_def.isa.at(instruction_mnemonic::ADDSP);
         REQUIRE( def.bit_pattern == 0b1111'0000 );
         REQUIRE( def.iformat == addressing_class::AAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};
@@ -433,7 +433,7 @@ TEST_CASE( "Sanity checks on Non-Unary ISA instructions", "[isa-def]" ) {
     }
 
 	SECTION( "SUBSP" ) {
-        auto& def = isa_def.isa[(int) instruction_mnemonic::SUBSP];
+        const auto def = isa_def.isa.at(instruction_mnemonic::SUBSP);
         REQUIRE( def.bit_pattern == 0b1111'1000 );
         REQUIRE( def.iformat == addressing_class::AAA_all );
         bool CSR_modified[int(CSR::MAX)] = {true, true, true, true};

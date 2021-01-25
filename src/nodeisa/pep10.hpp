@@ -12,11 +12,7 @@
 struct wrapped_isa_definition
 {
   wrapped_isa_definition();
-  const isa::pep10::instruction_definition<uint8_t>& get_mnemonic(isa::pep10::instruction_mnemonic mn)
-  {
-    return isa::pep10::isa_definition::get_definition().isa[static_cast<int>(mn)];
-  }
-  const std::array<isa::pep10::instruction_definition<uint8_t>, (int) isa::pep10::instruction_mnemonic::MAX> &get_isa() const
+  const std::map<isa::pep10::instruction_mnemonic,isa::pep10::instruction_definition<uint8_t> > &get_isa() const
   {
   
     return isa::pep10::isa_definition::get_definition().isa;
@@ -69,19 +65,14 @@ EMSCRIPTEN_BINDINGS(pep10) {
     .field("is_unary", &isa::pep10::instruction_definition<uint8_t>::is_unary)
     .field("comment", &isa::pep10::instruction_definition<uint8_t>::comment);
 
+  emscripten::register_map<isa::pep10::instruction_mnemonic, isa::pep10::instruction_definition<uint8_t>>("ISAMap");
 
-  auto we = emscripten::value_array<std::array<isa::pep10::instruction_definition<uint8_t>, (int) isa::pep10::instruction_mnemonic::MAX>>("WildEyes");
-  loop<decltype(we), int (isa::pep10::instruction_mnemonic::MAX)-1>().fn(we);
-  emscripten::value_object<isa::pep10::addr_map>("MeThinks")
-    .field("inst", &isa::pep10::addr_map::inst)
-    .field("addr", &isa::pep10::addr_map::addr);
-    
+ 
   auto oe = emscripten::value_array<std::array<isa::pep10::addr_map, 255> >("OderEyes");
   loop<decltype(oe), 256-1>().fn(oe);
   emscripten::class_<wrapped_isa_definition>("IsaDefinition")
     .constructor()
     .property("isa", &wrapped_isa_definition::get_isa)
-    .function("get_instruction", &wrapped_isa_definition::get_mnemonic)
     .property("map", &wrapped_isa_definition::get_map);
 }
 
