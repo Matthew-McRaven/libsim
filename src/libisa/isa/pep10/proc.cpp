@@ -68,7 +68,7 @@ void isa_processor::unary_dispatch(uint8_t is)
 	sp = read_reg(Registers::SP);
 	acc = read_reg(Registers::A);
 	idx = read_reg(Registers::X);
-    switch(instr.mnemonic) {
+    switch(instr->mnemonic) {
 	case instruction_mnemonic::RET:
 		temp = read_word(sp, false);
 		write_reg(Registers::PC, temp);
@@ -257,10 +257,10 @@ void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
 	idx = read_reg(Registers::X);
 
 	uint16_t decoded_operand = 0;
-	if( is_store(is)) decoded_operand = decode_store_operand(instr, addr, os);
-	else decoded_operand = decode_load_operand(instr, addr, os);
+	if( is_store(is)) decoded_operand = decode_store_operand(*instr, addr, os);
+	else decoded_operand = decode_load_operand(*instr, addr, os);
 
-	switch (instr.mnemonic) {
+	switch (instr->mnemonic) {
 	case instruction_mnemonic::BR:
 		write_reg(Registers::PC, decoded_operand);
 		break;

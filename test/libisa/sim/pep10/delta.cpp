@@ -30,7 +30,6 @@ TEST_CASE( "pep/10 -- Test delta generation.", "[isa-sim]" ) {
 		REQUIRE(comp.get_delta().delta_reg.size() == 0);
 		auto const magic_num = 0xBEEF;
 		for(auto enu : magic_enum::enum_values<isa::pep10::Registers>()) {
-			if(enu == isa::pep10::Registers::MAX) break;
 			comp.write_reg((int) enu, magic_num);
 		}
 		
@@ -56,7 +55,6 @@ TEST_CASE( "pep/10 -- Test delta generation.", "[isa-sim]" ) {
 		REQUIRE(comp.get_delta().delta_csr.size() == 0);
 		auto const magic_num = true;
 		for(auto enu : magic_enum::enum_values<isa::pep10::CSR>()) {
-			if(enu == isa::pep10::CSR::MAX) break;
 			comp.write_csr((int) enu, magic_num);
 		}
 	

@@ -102,7 +102,7 @@ TEST_CASE( "Validate instruction memory map", "[isa-def]" ) {
 
 	SECTION( "Instructions" ) {
 		for(int it=0; it<255; it++) {
-			auto mnemon = def.riproll[it].inst.mnemonic;
+			auto mnemon = def.riproll[it].inst->mnemonic;
 			auto assert_mnemon = instr_array[it];
 			REQUIRE(mnemon == assert_mnemon);
 		}

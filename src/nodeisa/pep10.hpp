@@ -9,25 +9,21 @@
 #include <iostream>
 
 #include "helper.hpp"
+// TODO: Move bindings & definitions to CPP file.
 struct wrapped_isa_definition
 {
   wrapped_isa_definition();
-  const std::map<isa::pep10::instruction_mnemonic,isa::pep10::instruction_definition<uint8_t> > &get_isa() const
+  auto get_isa() const -> decltype(isa::pep10::isa_definition::get_definition().isa)
   {
   
     return isa::pep10::isa_definition::get_definition().isa;
   }
-  const std::array<isa::pep10::addr_map, 256>& get_map() const
+  auto get_map() const -> decltype(isa::pep10::isa_definition::get_definition().riproll)
   {
     return isa::pep10::isa_definition::get_definition().riproll;
   }
 private:
   isa::pep10::isa_definition def;
-};
-
-struct wrapped_instruction_definition
-{
-  wrapped_instruction_definition(){}
 };
 
 
@@ -48,8 +44,8 @@ EMSCRIPTEN_BINDINGS(pep10) {
     ac.value(str.data(), enu);
   }
 
-  auto arr = emscripten::value_array<std::array<bool, int(isa::pep10::CSR::MAX)>>("CSRModified");
-  loop<decltype(arr), 4 - 1>().fn(arr);
+  auto arr = emscripten::value_array<std::array<bool, magic_enum::enum_count<isa::pep10::CSR>()>>("CSRModified");
+  loop<decltype(arr),magic_enum::enum_count<isa::pep10::CSR>()-1>().fn(arr);
 
 
   auto csr = emscripten::enum_<isa::pep10::CSR>("CSR");
@@ -65,11 +61,21 @@ EMSCRIPTEN_BINDINGS(pep10) {
     .field("is_unary", &isa::pep10::instruction_definition<uint8_t>::is_unary)
     .field("comment", &isa::pep10::instruction_definition<uint8_t>::comment);
 
-  emscripten::register_map<isa::pep10::instruction_mnemonic, isa::pep10::instruction_definition<uint8_t>>("ISAMap");
+  emscripten::register_map<isa::pep10::instruction_mnemonic, std::shared_ptr<isa::pep10::instruction_definition<uint8_t> > >("ISAMap");
+  emscripten::class_<isa::pep10::addr_map>("amap");
 
- 
+  using instr_def_t = isa::pep10::instruction_definition<uint8_t>;
+  emscripten::class_<std::shared_ptr<instr_def_t>>("Smarty")
+    // Must manually tell each property what it's type is, because it can't infer it from
+    // the getter. Failing to specify property type will cause it to explode.
+    .property<decltype(instr_def_t::bit_pattern)>("bit_pattern", &bit_pattern<instr_def_t>)
+    .property<decltype(instr_def_t::iformat)>("iformat", &iformat<instr_def_t>)
+    .property<decltype(instr_def_t::CSR_modified)>("CSR_modified", &CSR_modified<instr_def_t>)
+    .property<decltype(instr_def_t::mnemonic)>("mnemonic", &mnemonic<instr_def_t>)
+    .property<decltype(instr_def_t::is_unary)>("is_unary", &is_unary<instr_def_t>);
+
   auto oe = emscripten::value_array<std::array<isa::pep10::addr_map, 255> >("OderEyes");
-  loop<decltype(oe), 256-1>().fn(oe);
+  loop<decltype(oe), 255>().fn(oe);
   emscripten::class_<wrapped_isa_definition>("IsaDefinition")
     .constructor()
     .property("isa", &wrapped_isa_definition::get_isa)

@@ -6,6 +6,7 @@
 #include <limits>
 #include <tuple>
 #include <map>
+#include <memory>
 
 #include "isa/pep9/defs.hpp"
 
@@ -14,20 +15,20 @@ template <typename instr_width>
 struct instruction_definition {
 	instr_width bit_pattern = 0;
 	addressing_class iformat = addressing_class::Invalid;
-	std::array<bool, int(CSR::MAX)> CSR_modified = {false}; // Flag which CSR bits are changed by this instruction
-	instruction_mnemonic mnemonic = instruction_mnemonic::MAX;
+	std::array<bool, magic_enum::enum_count<CSR>()> CSR_modified = {false}; // Flag which CSR bits are changed by this instruction
+	instruction_mnemonic mnemonic = instruction_mnemonic::STOP;
 	bool is_unary = false;
 	std::string comment = {};
 };
 
 struct addr_map
 {
-	instruction_definition<uint8_t> inst;
+	std::shared_ptr<instruction_definition<uint8_t> > inst;
 	addressing_mode addr;
 };
 
 struct isa_definition {
-	const std::map<instruction_mnemonic, instruction_definition<uint8_t> > isa ;
+	const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t> > > isa ;
 	const std::array<addr_map, 256> riproll;
 	isa_definition();
 	// Returns a static copy of a pep/9 isa definition.

@@ -1,5 +1,4 @@
-#ifndef PEP9_DEFS_H
-#define PEP9_DEFS_H
+#pragma once
 
 #include "magic_enum.hpp"
 namespace isa::pep9 {
@@ -24,8 +23,6 @@ enum class instruction_mnemonic {
 	CPWA, CPWX, CPBA, CPBX,
 	LDWA, LDWX, LDBA, LDBX,
 	STWA, STWX, STBA, STBX,
-
-	MAX
 };
 
 enum class Registers {
@@ -35,7 +32,6 @@ enum class Registers {
 	PC = 3,
 	IS = 4,
 	OS = 5,
-	MAX = 6
 };
 
 enum class addressing_mode {
@@ -73,8 +69,5 @@ enum class CSR {
 	Z,
 	V,
 	C,
-	MAX = 4
 };
 };
-
-#endif

@@ -24,8 +24,6 @@ enum class instruction_mnemonic {
 	ADDA, ADDX, SUBA, SUBX,
 	ANDA, ANDX, ORA, ORX, XORA, XORX,
 	ADDSP, SUBSP,
-	
-	MAX
 };
 
 enum class Registers {
@@ -36,7 +34,6 @@ enum class Registers {
 	IS = 4,
 	OS = 5,
 	TR = 6,
-	MAX = 7
 };
 
 enum class addressing_mode {
@@ -74,6 +71,5 @@ enum class CSR {
 	Z,
 	V,
 	C,
-	MAX = 4
 };
 };

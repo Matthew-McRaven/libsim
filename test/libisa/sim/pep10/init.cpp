@@ -31,11 +31,9 @@ TEST_CASE( "Test init of Pep/10 ISA.", "[isa-sim]" ) {
     SECTION( "Set  & clear all registers." ) {
 		// Test that registers can be set & read back.
 		for(auto enu : magic_enum::enum_values<isa::pep10::Registers>()) {
-			if(enu == isa::pep10::Registers::MAX) break;
 			comp.write_reg((int) enu, (int) enu+1);
 		}
 		for(auto enu : magic_enum::enum_values<isa::pep10::Registers>()) {
-			if(enu == isa::pep10::Registers::MAX) break;
 			REQUIRE( comp.read_reg((int) enu) ==  (int) enu+1 );
 		}
 
@@ -43,7 +41,6 @@ TEST_CASE( "Test init of Pep/10 ISA.", "[isa-sim]" ) {
         comp.clear_regs();
 		bool all_cleared = true;
 		for(auto enu : magic_enum::enum_values<isa::pep10::Registers>()) {
-			if(enu == isa::pep10::Registers::MAX) break;
 			all_cleared &= comp.read_reg((int) enu) == 0;
 		}
 		REQUIRE( all_cleared );
@@ -52,12 +49,10 @@ TEST_CASE( "Test init of Pep/10 ISA.", "[isa-sim]" ) {
 	SECTION( "Set  & clear all control status registers." ) {
 		// Test that control/status registers can be set & read back.
 		for(auto enu : magic_enum::enum_values<isa::pep10::CSR>()) {
-			if(enu == isa::pep10::CSR::MAX) break;
 			REQUIRE( comp.read_csr((int) enu) ==  false);
 			comp.write_csr((int) enu, true);
 		}
 		for(auto enu : magic_enum::enum_values<isa::pep10::CSR>()) {
-			if(enu == isa::pep10::CSR::MAX) break;
 			REQUIRE( comp.read_csr((int) enu) ==  true);
 		}
 
@@ -65,7 +60,6 @@ TEST_CASE( "Test init of Pep/10 ISA.", "[isa-sim]" ) {
         comp.clear_csrs();
 		bool all_cleared = true;
 		for(auto enu : magic_enum::enum_values<isa::pep10::CSR>()) {
-			if(enu == isa::pep10::CSR::MAX) break;
 			all_cleared &= comp.read_csr((int) enu) == false;
 		}
 		REQUIRE( all_cleared );
