@@ -23,7 +23,7 @@ void helper(T& mem)
 
 		SECTION( "Check that we can read all in-bounds addresses" ) {
 			for(auto it=0; it<size; it++) {
-				CHECK_NOTHROW(mem.read_byte(it));
+				CHECK_NOTHROW(mem.read(it));
 			}
 		}
 
@@ -31,25 +31,31 @@ void helper(T& mem)
 		#ifndef EMSCRIPTEN
 		SECTION( "Crash on OOB Read" ) {
 			// We can read the last address.
-			CHECK_NOTHROW(mem.read_byte(size));
+			CHECK_NOTHROW(mem.read(size));
 			// But not one past that.
-			CHECK_THROWS(mem.read_byte(size+1));
+			CHECK_THROWS(mem.read(size+1));
+		}
+		SECTION( "Crash on OOB write" ) {
+			// We can read the last address.
+			CHECK_NOTHROW(mem.write(size, 10));
+			// But not one past that.
+			CHECK_THROWS(mem.write(size+1, 10));
 		}
 		#endif
 
 		SECTION( "Check that all bytes can be written" ) {
 			for(auto it=0; it<size; it++) {
-				CHECK_NOTHROW(mem.write_byte(it, it+8));
+				CHECK_NOTHROW(mem.write(it, it+8));
 			}
 			for(auto it=0; it<size; it++) {
-				CHECK_NOTHROW(mem.read_byte(it) == it+8);
+				CHECK_NOTHROW(mem.read(it) == it+8);
 			}
 		}
 
 		SECTION( "Check that all bytes can be cleared." ) {
 			mem.clear();
 			for(auto it=0; it<size; it++) {
-				CHECK_NOTHROW(mem.read_byte(it) == 0);
+				CHECK_NOTHROW(mem.read(it) == 0);
 			}
 		}
 		
