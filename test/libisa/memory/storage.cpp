@@ -1,7 +1,11 @@
 #include <array>
 #include <iostream>
+
 #include <catch.hpp>
-#include "components/memory/storage.hpp"
+
+#include "components/storage/block.hpp"
+#include "components/storage/map.hpp"
+#include "components/storage/range.hpp"
 
 template<typename T> 
 void helper(T& mem)
@@ -53,16 +57,16 @@ void helper(T& mem)
 }
 
 TEST_CASE( "Validate block memory") {	
-	auto mem = components::memory::storage_block<uint8_t>(0);
+	auto mem = components::storage::storage_block<uint8_t>(0);
 	helper(mem);
 }
 
 TEST_CASE( "Validate map memory") {	
-	auto mem = components::memory::storage_map<uint8_t>(0, 0);
+	auto mem = components::storage::storage_map<uint8_t>(0, 0);
 	helper(mem);
 }
 
 TEST_CASE( "Validate range memory") {	
-	auto mem = components::memory::storage_range<uint8_t>(0, 0);
+	auto mem = components::storage::storage_range<uint8_t>(0, 0);
 	helper(mem);
 }
