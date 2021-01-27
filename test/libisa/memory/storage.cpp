@@ -30,7 +30,6 @@ void helper(T& mem)
 			CHECK_NOTHROW(mem.read_byte(size));
 			// But not one past that.
 			CHECK_THROWS(mem.read_byte(size+1));
-			}
 		}
 		#endif
 
