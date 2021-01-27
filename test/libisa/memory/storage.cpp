@@ -17,11 +17,11 @@ void helper(T& mem)
 		size = sizes[it];
 		// Check that we can increase, decrease size of memory.
 		CHECK_NOTHROW(mem.resize(size));
-		SECTION( "Check memory bounds" ) {
+		DYNAMIC_SECTION( "Check memory bounds" ) {
 			CHECK(mem.max_offset() == size);
 		}
 
-		SECTION( "Check that we can read all in-bounds addresses" ) {
+		DYNAMIC_SECTION( "Check that we can read all in-bounds addresses" ) {
 			for(auto it=0; it<size; it++) {
 				CHECK_NOTHROW(mem.read(it));
 			}
@@ -29,13 +29,13 @@ void helper(T& mem)
 
 		// Can't catch exceptions in JS, so wrap it all.
 		#ifndef EMSCRIPTEN
-		SECTION( "Crash on OOB Read" ) {
+		DYNAMIC_SECTION( "Crash on OOB Read" ) {
 			// We can read the last address.
 			CHECK_NOTHROW(mem.read(size));
 			// But not one past that.
 			CHECK_THROWS(mem.read(size+1));
 		}
-		SECTION( "Crash on OOB write" ) {
+		DYNAMIC_SECTION( "Crash on OOB write" ) {
 			// We can read the last address.
 			CHECK_NOTHROW(mem.write(size, 10));
 			// But not one past that.
@@ -43,7 +43,7 @@ void helper(T& mem)
 		}
 		#endif
 
-		SECTION( "Check that all bytes can be written" ) {
+		DYNAMIC_SECTION( "Check that all bytes can be written" ) {
 			for(auto it=0; it<size; it++) {
 				CHECK_NOTHROW(mem.write(it, it+8));
 			}
@@ -52,7 +52,7 @@ void helper(T& mem)
 			}
 		}
 
-		SECTION( "Check that all bytes can be cleared." ) {
+		DYNAMIC_SECTION( "Check that all bytes can be cleared." ) {
 			mem.clear();
 			for(auto it=0; it<size; it++) {
 				CHECK_NOTHROW(mem.read(it) == 0);
