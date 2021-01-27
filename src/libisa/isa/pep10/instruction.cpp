@@ -75,8 +75,6 @@ const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint
 
 		{0xf0, addressing_class::AAA_all, {{ true, true, true, true}}, instruction_mnemonic::ADDSP, false, ""},
 		{0xf8, addressing_class::AAA_all, {{ true, true, true, true}}, instruction_mnemonic::SUBSP, false, ""}
-		
-		// TODO: Add dummy entry for max. This would fix JS crash.
 	};
 	auto ret = std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t> > >();
 	for(auto v : instr_list) {

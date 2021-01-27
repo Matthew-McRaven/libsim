@@ -7,7 +7,8 @@ using namespace isa::pep9;
 // TODO: Wrap all helper functions inside isa::pep9. This will prevent linker errors for duplicate symbols.
 const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t>> > pep9_init_isa() {
 	using namespace isa::pep9;
-	 std::vector<instruction_definition<uint8_t>> instr_list = {
+
+	std::vector<instruction_definition<uint8_t>> instr_list = {
 		{0x00, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::STOP, true, ""},
 		{0x01, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::RET, true, ""},
 		{0x02, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::RETTR, true, ""},

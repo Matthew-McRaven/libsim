@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <vector>
 #include <tuple>
-
+// TODO: Migrate code to .tpp implementation file.
 namespace components::memory {
 	template<typename addr_size_t>
 	struct delta_memory
