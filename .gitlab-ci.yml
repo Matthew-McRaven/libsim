@@ -30,6 +30,8 @@ Build Magic Enum:
     - echo "Done"
 
 Build C++ bindings:
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   stage: test
   image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
   needs: [Build Python and Boost]
@@ -42,6 +44,8 @@ Build C++ bindings:
     - make -j20 && make test
 
 Build emscripten bindings:
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   stage: test
   image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
   needs: [Build Python and Boost]
