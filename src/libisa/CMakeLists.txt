@@ -15,9 +15,12 @@ add_library(RTL-Lib STATIC
 	isa/pep9/instruction.cpp
 )
 
-target_link_libraries(RTL-Lib PUBLIC fmt)
+
+
 # Allow version header to be included
 target_include_directories(RTL-Lib PUBLIC "${PROJECT_BINARY_DIR}/")
 target_include_directories(RTL-Lib PUBLIC "${PROJECT_SOURCE_DIR}/")
 
 target_link_libraries(RTL-Lib PUBLIC magic_enum)
+target_link_libraries(RTL-Lib PUBLIC fmt)
+target_link_libraries(RTL-Lib PUBLIC range-v3)
