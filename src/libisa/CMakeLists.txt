@@ -13,6 +13,8 @@ add_library(RTL-Lib STATIC
 	isa/pep10/instruction.cpp
 	isa/pep9/proc.cpp
 	isa/pep9/instruction.cpp
+	masm/registry.cpp
+	masm/macroparser.cpp
 )
 
 
@@ -21,6 +23,7 @@ add_library(RTL-Lib STATIC
 target_include_directories(RTL-Lib PUBLIC "${PROJECT_BINARY_DIR}/")
 target_include_directories(RTL-Lib PUBLIC "${PROJECT_SOURCE_DIR}/")
 
+# TODO: Switch to std::ranges when supported (maybe clang 13).
 target_link_libraries(RTL-Lib PUBLIC magic_enum)
 target_link_libraries(RTL-Lib PUBLIC fmt)
 target_link_libraries(RTL-Lib PUBLIC range-v3)
