@@ -85,7 +85,8 @@ bool masm::macro_registry::register_macro(const std::string& macro_name, const s
 
 void masm::macro_registry::clear_macros(const MacroType type)
 {
-	const auto count = std::erase_if(_registry, [&type](const auto& item) {
+	// Don't catch return value, it makes emcmake mad.
+	std::erase_if(_registry, [&type](const auto& item) {
 		auto const& [key, value] = item;
 		return value->type == type;
 	});;
