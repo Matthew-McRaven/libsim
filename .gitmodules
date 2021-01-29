@@ -4,3 +4,6 @@
 [submodule "3rd-party/ranges"]
 	path = 3rd-party/ranges
 	url = https://github.com/ericniebler/range-v3
+[submodule "3rd-party/ngraph"]
+	path = 3rd-party/ngraph
+	url = https://gitlab.com/pep10/ngraph.git
