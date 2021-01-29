@@ -5,7 +5,9 @@
 	},
     "extensions": [
 		"sdras.night-owl",
-		"ms-vscode.cpptools"
+		"ms-vscode.cpptools",
+		"eamodio.gitlens",
+		"ms-vscode.cmake-tools"
 	],
 	"forwardPorts": [
 		3000

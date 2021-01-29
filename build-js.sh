@@ -5,6 +5,6 @@ cd build
 	source /emsdk/emsdk_env.sh
 	mkdir -p js
 	cd js
-	emcmake cmake -DBoost_INCLUDE_DIR=/boost/  ../..
+	emcmake cmake -DBoost_INCLUDE_DIR=/boost/ ../..
 	emmake make -j30
 )

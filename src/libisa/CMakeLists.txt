@@ -17,7 +17,7 @@ add_library(RTL-Lib STATIC
 	masm/macroparser.cpp
 )
 
-target_include_directories(RTL-Lib PUBLIC ${boost_INCLUDE_DIR} )
+target_include_directories(RTL-Lib PUBLIC ${Boost_INCLUDE_DIR} )
 target_link_libraries( RTL-Lib PUBLIC ${Boost_LIBRARIES} )
 
 # Allow version header to be included

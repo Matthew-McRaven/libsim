@@ -13,26 +13,21 @@
 
 #include <iostream>
 
-namespace client
+namespace detail
 {
     namespace qi = boost::spirit::qi;
     namespace ascii = boost::spirit::ascii;
 
 
-    struct employee
+    struct macro
     {
         std::string name;
         int arg_count;
     };
-};
-
-namespace client
-{
-
     template <typename Iterator>
-    struct employee_parser : qi::grammar<Iterator, employee(), ascii::space_type>
+    struct macro_parser : qi::grammar<Iterator, macro(), ascii::space_type>
     {
-        employee_parser() : employee_parser::base_type(start)
+        macro_parser() : macro_parser::base_type(start)
         {
             using qi::int_;
             using qi::lit;
@@ -46,13 +41,14 @@ namespace client
                 >> int_
                 ;
         }
-        qi::rule<Iterator, employee(), ascii::space_type> start;
+        qi::rule<Iterator, macro(), ascii::space_type> start;
     };
-    //]
-}
+};
+
+
 
 BOOST_FUSION_ADAPT_STRUCT(
-    client::employee,
+    ::detail::macro,
     (std::string, name)
     (int, arg_count)
 )
@@ -82,15 +78,15 @@ std::tuple<bool, std::string, uint8_t> masm::analyze_macro_definition(std::strin
      */
     std::string first_line = macro_text.substr(0, macro_text.find("\n"));
 
-    client::employee emp;
+    detail::macro macro;
     using boost::spirit::ascii::space;
     typedef std::string::const_iterator iterator_type;
-    typedef client::employee_parser<iterator_type> employee_parser;
-    employee_parser g;
-    bool r = boost::spirit::qi::phrase_parse(macro_text.cbegin(), macro_text.cend(), g, boost::spirit::ascii::space, emp);
+    typedef detail::macro_parser<iterator_type> macro_parser;
+    macro_parser g;
+    bool r = boost::spirit::qi::phrase_parse(macro_text.cbegin(), macro_text.cend(), g, boost::spirit::ascii::space, macro);
     if(!r) {
         return {false, "", 0};
     }
 
-    return {true, emp.name, emp.arg_count};
+    return {true, macro.name, macro.arg_count};
 }
