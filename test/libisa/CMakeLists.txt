@@ -14,6 +14,9 @@ if(EMSCRIPTEN)
 	set_target_properties(test-lib PROPERTIES LINK_FLAGS " -s DISABLE_EXCEPTION_CATCHING=2")
 	# Disable unit tests that throw exceptions, because exceptions can't be caught inside wasm.
 	target_compile_definitions(test-lib PRIVATE EMSCRIPTEN=1)
+else()
+	# Necessary for CLANG 13 to be happy with concepts in normal mode.
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts")
 endif()
 
 
