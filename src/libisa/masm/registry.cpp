@@ -16,12 +16,9 @@ auto masm::macro_registry::filter_macros(MacroType type) const -> decltype(macro
 	return view | ranges::to<std::vector<std::shared_ptr<const Macro> > >;
 }
 
-masm::macro_registry::macro_registry(const std::string& registry_directory) : _registry()
+masm::macro_registry::macro_registry() : _registry()
 {
-    //QString builtinDir = ":/help-asm/macros/builtin";
-    //registerCoreMacros(QDir(builtinDir));
-    //nonunaryMacroTemplate = Pep::resToString(":/help-asm/macros/systemcall/SCALL.txt", false);
-    //unaryMacroTemplate = Pep::resToString(":/help-asm/macros/systemcall/USCALL.txt", false);
+
 }
 
 bool masm::macro_registry::contains(const std::string& macro_name) const
@@ -64,7 +61,7 @@ bool masm::macro_registry::register_nonunary_system_call(const std::string& macr
 
 bool masm::macro_registry::register_macro(const std::string& macro_name, const std::string& macro_text, const MacroType type)
 {
-	if(_registry.find(macro_name) == _registry.end()) {
+	if(_registry.find(macro_name) != _registry.end()) {
         return false;
     }
     auto [success, name, arg_count] = analyze_macro_definition(macro_text);

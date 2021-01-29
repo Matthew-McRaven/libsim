@@ -21,8 +21,7 @@ class macro_registry
 {
     auto filter_macros(MacroType type) const -> std::vector<std::shared_ptr<const Macro>>;;
 public:
-    using registry_t = std::map<std::string, std::shared_ptr<Macro>>;
-    macro_registry(const std::string& macroPath);
+    macro_registry();
     ~macro_registry() = default;
     bool contains(const std::string& macro_name) const;
     std::shared_ptr<const Macro> macro(const std::string& macro_name) const;
