@@ -14,7 +14,7 @@ Build Python and Boost:
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - cd ./.devcontainer
-    - (docker pull registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION} && echo success) || (docker build -t registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION -f . ) 
+    - (docker pull registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION} && echo success) || (docker build -t registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION . ) 
     - docker push registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION
 
 
