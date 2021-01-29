@@ -38,8 +38,8 @@ Build C++ bindings:
   needs: [Build Python and Boost]
   script:
     - source /emsdk/emsdk_env.sh
-    - export CXX=/emsdk/llvm/git/build_master_64/bin/clang++
-    - export C=/emsdk/llvm/git/build_master_64/bin/clang
+    - export CXX=$(which clang++)
+    - export C=$(which clang)
     - mkdir build && cd build
     - cmake ../
     - make -j20 && make test
