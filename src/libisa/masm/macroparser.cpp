@@ -34,9 +34,10 @@ namespace detail
             using qi::double_;
             using ascii::char_;
             using qi::lexeme;
+            using qi::no_skip;
 
             start %=
-                   '@'
+                   qi::no_skip['@']
                 >> qi::lexeme[ +(qi::char_ - ascii::space) ]
                 >> int_
                 ;
@@ -83,10 +84,12 @@ std::tuple<bool, std::string, uint8_t> masm::analyze_macro_definition(std::strin
     typedef std::string::const_iterator iterator_type;
     typedef detail::macro_parser<iterator_type> macro_parser;
     macro_parser g;
-    bool r = boost::spirit::qi::phrase_parse(macro_text.cbegin(), macro_text.cend(), g, boost::spirit::ascii::space, macro);
-    if(!r) {
+    auto cbegin = macro_text.cbegin();
+    bool r = boost::spirit::qi::phrase_parse(cbegin, macro_text.cend(), g, 
+        boost::spirit::ascii::space, macro);
+    // If we failed, or if we did not consume the entire input, fail.
+    if(!r || cbegin != macro_text.cend()) {
         return {false, "", 0};
     }
-
     return {true, macro.name, macro.arg_count};
 }

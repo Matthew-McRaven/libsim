@@ -1,5 +1,6 @@
 #include "registry.hpp"
 
+#include <iostream>
 #include <algorithm>
 #include <fmt/core.h>
 
