@@ -89,7 +89,8 @@ symbol::SymbolType symbol::SymbolValueNumeric<value_t>::getSymbolType() const
 }
 
 template <typename value_t>
-symbol::SymbolValueLocation<value_t>::SymbolValueLocation(value_t value):AbstractSymbolValue<value_t>(), base(value), offset(0)
+symbol::SymbolValueLocation<value_t>::SymbolValueLocation(value_t base, value_t offset):
+    AbstractSymbolValue<value_t>(), base(base), offset(offset)
 {
 }
 

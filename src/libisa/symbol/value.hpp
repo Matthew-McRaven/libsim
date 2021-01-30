@@ -98,7 +98,7 @@ public AbstractSymbolValue<value_t>
 {
     value_t base, offset;
 public:
-    explicit SymbolValueLocation(value_t value);
+    explicit SymbolValueLocation(value_t base, value_t offset);
     virtual ~SymbolValueLocation() override; 
     void setBase(value_t value);
     void setOffset(value_t value);
