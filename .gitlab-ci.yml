@@ -6,7 +6,7 @@ stages:
 - test
 
 variables:
-  BUILD_VERSION: v0.3.1
+  BUILD_VERSION: v0.3.2
 
 Build Python and Boost:
   stage: build dependencies
