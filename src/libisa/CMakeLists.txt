@@ -15,6 +15,7 @@ add_library(RTL-Lib STATIC
 	isa/pep9/instruction.cpp
 	masm/registry.cpp
 	masm/macroparser.cpp
+	masm/conversion.cpp
 )
 
 target_include_directories(RTL-Lib PUBLIC ${Boost_INCLUDE_DIR} )
