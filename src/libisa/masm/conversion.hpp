@@ -2,6 +2,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <iostream>
 
 namespace masm{
 
@@ -39,24 +40,41 @@ bool unqouted_string_to_integral(const std::string &str, int byte_length, value_
 			continue;
 		}
 		else if (str.substr(index, 1) == "\\") {
-			if(str.length() < index+1) okay = false;
-			else if (str.substr(index+1, 1) == "b") { // backspace
+			index++;
+			if(str.length() < index) okay = false;
+			else if (str.substr(index, 1) == "b") { // backspace
 				temp = 8;
+				++index;
 			}
-			else if (str.substr(index+1, 1) == "f") { // form feed
+			else if (str.substr(index, 1) == "f") { // form feed
 				temp = 12;
+				++index;
 			}
-			else if (str.substr(index+1, 1) == "n") { // line feed (new line)
+			else if (str.substr(index, 1) == "n") { // line feed (new line)
 				temp = 10;
+				++index;
 			}
-			else if (str.substr(index+1, 1) == "r") { // carriage return
+			else if (str.substr(index, 1) == "r") { // carriage return
 				temp = 13;
+				++index;
 			}
-			else if (str.substr(index+1, 1) == "t") { // horizontal tab
+			else if (str.substr(index, 1) == "t") { // horizontal tab
 				temp = 9;
+				++index;
 			}
-			else if (str.substr(index+1, 1) == "v") { // vertical tab
+			else if (str.substr(index, 1) == "v") { // vertical tab
 				temp = 11;
+				++index;
+			}
+			else if (str.substr(index, 1) == "x" || str.substr(index, 1) == "X") { // hex strings!
+				if(str.length() < index+2) okay = false;
+				else {
+					char *end;
+					auto substr = str.substr(index+1, 2);
+					temp = strtol(substr.data(), &end, 16);
+					okay = (*end == '\0');
+					index+=3;
+				}
 			}
 			// TODO: How do I handle hex string \x12?
 			else {
@@ -65,7 +83,8 @@ bool unqouted_string_to_integral(const std::string &str, int byte_length, value_
 			}
 		}
 		else {
-			temp = static_cast<uint8_t>(str[index++]);
+			temp = str[index++];
+			temp &= 0xff;
     	}
 		value = value << 8 | temp;
 		++current_char;
@@ -84,9 +103,34 @@ bool quoted_string_to_integral(const std::string& str,value_size_t& value )
 }
 
 
-
-// Pre: str is a double quoted string.
+// Pre: String is either single quoted, double quoted, or no quoted.
 // Post: Returns the byte length of str accounting for possibly \ quoted characters.
-size_t byte_string_length(std::string str);
+size_t byte_string_length(const std::string& str)
+{
+	using substr_t = decltype(str.substr({},{}));
+	substr_t aliased;
+	if(str.substr(0, 1) == "\"" || str.substr(0, 1) == "'") {
+		aliased = str.substr(1, str.length()-2);
+	}
+	else {
+		aliased = str;
+	}
+    int length = 0;
+
+    while (aliased.length() > 0) {
+		if (aliased.find("\\x", 0) == 0 || aliased.find("\\X") == 0) {
+			aliased = aliased.substr(4, aliased.length() - 4);
+		}
+        else if (aliased.find("\\") == 0) {
+            aliased = aliased.substr(2, aliased.length() - 2);
+        }
+        else {
+            aliased = aliased.substr(1, aliased.length() - 1);
+        }
+        length++;
+    }
+    return length;
+;
+}
 
 }
