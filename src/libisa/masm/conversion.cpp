@@ -7,28 +7,14 @@ bool masm::startsWithHexPrefix(const std::string& str)
 
 size_t masm::byte_string_length(const std::string& str)
 {
-	using substr_t = decltype(str.substr({},{}));
-	substr_t aliased;
-	if(str.substr(0, 1) == "\"" || str.substr(0, 1) == "'") {
-		aliased = str.substr(1, str.length()-2);
+	auto start = str.begin();
+	bool okay = true;
+	size_t accumulated_size = 0;
+	uint8_t _;
+	while(start != str.end()) {
+		okay &= parse_byte_character(start, str.end(), _);
+		accumulated_size++;
 	}
-	else {
-		aliased = str;
-	}
-    int length = 0;
-
-    while (aliased.length() > 0) {
-		if (aliased.find("\\x", 0) == 0 || aliased.find("\\X") == 0) {
-			aliased = aliased.substr(4, aliased.length() - 4);
-		}
-        else if (aliased.find("\\") == 0) {
-            aliased = aliased.substr(2, aliased.length() - 2);
-        }
-        else {
-            aliased = aliased.substr(1, aliased.length() - 1);
-        }
-        length++;
-    }
-    return length;
-;
+	if(!okay) throw std::logic_error("Not a valid string!");
+	return accumulated_size;
 }
