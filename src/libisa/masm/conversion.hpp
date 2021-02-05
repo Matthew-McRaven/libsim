@@ -3,7 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
-
+#include <vector>
 namespace masm{
 
 // Post: Returns true if str starts with the characters 0x or 0X. Otherwise returns false.
@@ -50,7 +50,6 @@ bool parse_byte_character(Iterator& start,
 				if (*end != '\0') return false;
 			}
 		}
-		// TODO: How do I handle hex string \x12?
 		else {
 
 			throw std::logic_error("I don't know where this was ever used!");
@@ -77,17 +76,23 @@ bool unqouted_string_to_integral(const std::string &str, int byte_length, value_
 	size_t index = 0;
 	uint8_t temp = 0;
 
-    if (startsWithHexPrefix(str)) {
-		index+=2;
-    }
 
 	bool okay = true;
 	auto start = str.begin();
+
+	if (startsWithHexPrefix(str)) {
+		start += 2;
+    }
+
 	while(okay && start != str.end()) {
 		okay &= parse_byte_character(start, str.end(), temp);
 		value = value << 8 | temp;
 		++current_char;
     }
+
+	// The string contained more than `byte_length` characters! This is an error!
+	if(current_char > byte_length) okay = false;
+
 	return okay;
 }
 
@@ -102,9 +107,11 @@ bool quoted_string_to_integral(const std::string& str,value_size_t& value )
 }
 
 
-// Pre: String is either single quoted, double quoted, or no quoted.
+// Pre: String is unquoted.
 // Post: Returns the byte length of str accounting for possibly \ quoted characters.
 size_t byte_string_length(const std::string& str);
 
-// TODO: Add unit tests for symbolic arguments.
-}
+// Pre: String is unquoted.
+// Post: Returns the vector of all bytes in the string as parsed by parse_byte_character.
+std::vector<uint8_t> byte_vector(const std::string& str);
+};

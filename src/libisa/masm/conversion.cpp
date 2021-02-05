@@ -18,3 +18,17 @@ size_t masm::byte_string_length(const std::string& str)
 	if(!okay) throw std::logic_error("Not a valid string!");
 	return accumulated_size;
 }
+
+std::vector<uint8_t> masm::byte_vector(const std::string& str)
+{
+	std::vector<uint8_t> ret;
+	auto start = str.begin();
+	bool okay = true;
+	uint8_t temp;
+	while(start != str.end()) {
+		okay &= parse_byte_character(start, str.end(), temp);
+		ret.emplace_back(temp);
+	}
+	if(!okay) throw std::logic_error("Not a valid string!");
+	return ret;
+}
