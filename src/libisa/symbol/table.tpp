@@ -67,8 +67,9 @@ typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr
     // We don't want multiple symbols to exists in the same table with the same name.
     if(exists(symbolName)) return getValue(symbolName);
     SymbolID id = SymbolTable::getNextUserSymbolID();
-    symbolLookup[symbolName] = id.load();
-    symbolDictionary[id] = std::make_shared<SymbolEntry>(this, id.load(), symbolName);
+    symbolLookup[symbolName] = id;
+    std::string name = symbolName;
+    symbolDictionary[id] = std::make_shared<SymbolEntry<offset_size_t>>(this, id, name);
     return symbolDictionary[id];
 }
 

@@ -28,7 +28,7 @@ class SymbolTable
 public:
     // This type uniquely identifies a SymbolEntry within a symbol table.
     // It is not gaurenteed to be unique across runs or between multiple SymbolTable instances at runtime.
-    using SymbolID = std::atomic_int;
+    using SymbolID = uint16_t;
     // Convenience typdefs of commonly used templated types to reduce code verbosity.
     using SymbolEntryPtr = std::shared_ptr<symbol::SymbolEntry<offset_size_t> >;
     using AbstractSymbolValuePtr = std::shared_ptr<symbol::AbstractSymbolValue<offset_size_t> >;

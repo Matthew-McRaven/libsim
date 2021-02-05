@@ -27,7 +27,7 @@ template<typename symbol_value_t>
 symbol::SymbolEntry<symbol_value_t>::SymbolEntry(symbol::SymbolTable<symbol_value_t>* parent, 
     typename symbol::SymbolTable<symbol_value_t>::SymbolID symbolID, std::string name): 
     symbolID(symbolID), name(name),
-    symbolValue(std::shared_ptr<SymbolValueEmpty<symbol_value_t> >::create()), definedState(DefStates::UNDEFINED), parent(parent)
+    symbolValue(std::make_shared<SymbolValueEmpty<symbol_value_t>>()), definedState(DefStates::UNDEFINED), parent(parent)
 {
 }
 
@@ -61,7 +61,7 @@ void symbol::SymbolEntry<symbol_value_t>::setValue(typename symbol::SymbolTable<
     // to make that decision is delegated to owning objects.
 	symbolValue = value;
     // If given an empty value, then the symbol is undefined
-    if (dynamic_cast<SymbolValueEmpty<symbol_value_t>*>(value.data())) {
+    if (dynamic_cast<SymbolValueEmpty<symbol_value_t>*>(value.get())) {
         definedState = DefStates::UNDEFINED;
 	}
     //If the symbol is multiply defined, it remains multiply defined

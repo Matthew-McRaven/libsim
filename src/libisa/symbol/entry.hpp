@@ -8,6 +8,7 @@
 
 
 namespace symbol {
+    
 template<typename T>
 class SymbolTable;
 /*
@@ -77,8 +78,6 @@ public:
     typename symbol::SymbolTable<symbol_value_t>::AbstractSymbolValuePtr getRawValue();
 };
 
-template <typename symbol_value_t>
-bool SymbolAlphabeticComparator(std::shared_ptr<const SymbolEntry<symbol_value_t>> &lhs, std::shared_ptr<const SymbolEntry<symbol_value_t>> &rhs);
 } // end namespace symbol
 
 #include "entry.tpp"
