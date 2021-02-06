@@ -16,7 +16,8 @@ add_library(RTL-Lib STATIC
 	masm/registry.cpp
 	masm/macroparser.cpp
 	masm/conversion.cpp
-	#masm/elf/section.cpp
+	masm/elf/serialize.cpp
+	masm/frontend/sectionize.cpp
 )
 
 target_include_directories(RTL-Lib PUBLIC ${Boost_INCLUDE_DIR} )
