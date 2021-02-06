@@ -78,17 +78,16 @@ std::tuple<bool, std::string, uint8_t> masm::analyze_macro_definition(std::strin
      *
      */
     std::string first_line = macro_text.substr(0, macro_text.find("\n"));
-
     detail::macro macro;
     using boost::spirit::ascii::space;
     typedef std::string::const_iterator iterator_type;
     typedef detail::macro_parser<iterator_type> macro_parser;
     macro_parser g;
-    auto cbegin = macro_text.cbegin();
-    bool r = boost::spirit::qi::phrase_parse(cbegin, macro_text.cend(), g, 
+    auto cbegin = first_line.cbegin();
+    bool r = boost::spirit::qi::phrase_parse(cbegin, first_line.cend(), g, 
         boost::spirit::ascii::space, macro);
     // If we failed, or if we did not consume the entire input, fail.
-    if(!r || cbegin != macro_text.cend()) {
+    if(!r || cbegin != first_line.cend()) {
         return {false, "", 0};
     }
     return {true, macro.name, macro.arg_count};
