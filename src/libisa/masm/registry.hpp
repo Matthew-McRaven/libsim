@@ -4,8 +4,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
-
-#include <range/v3/all.hpp>
+#include <vector>
 
 #include "macro.hpp"
 

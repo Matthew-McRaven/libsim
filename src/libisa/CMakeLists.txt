@@ -28,4 +28,3 @@ target_include_directories(RTL-Lib PUBLIC "${PROJECT_SOURCE_DIR}/")
 
 # TODO: Switch to std::ranges when supported (maybe clang 13).
 target_link_libraries(RTL-Lib PUBLIC magic_enum fmt ngraph elfio)
-target_link_libraries(RTL-Lib PUBLIC range-v3)

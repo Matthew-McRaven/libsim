@@ -3,18 +3,19 @@
 #include <iostream>
 #include <algorithm>
 #include <fmt/core.h>
+#include <boost/range/adaptor/map.hpp>
 
 #include "macroparser.hpp"
 
 auto masm::macro_registry::filter_macros(MacroType type) const -> decltype(macro_registry::filter_macros({}))
 {
-	auto filter = [&type](auto ref){return ref.second->type == type;};
-	static auto transform = [](auto ref){return ref.second;};
-	auto view =  _registry 
-		| ranges::views::filter(filter) 
-		| ranges::views::transform(transform);
 	// TODO: Return a view instead of a container. This will improve memory efficiency
-	return view | ranges::to<std::vector<std::shared_ptr<const Macro> > >;
+	std::vector<std::shared_ptr<const Macro> > ret;
+	for(auto const &i : _registry | boost::adaptors::map_values)
+	{
+		ret.emplace_back(i);
+	}
+	return ret;
 }
 
 masm::macro_registry::macro_registry() : _registry()
