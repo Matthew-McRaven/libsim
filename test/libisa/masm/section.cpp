@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "masm/elf/section.hpp"
+#include "masm/project/section.hpp"
 #include "masm/registry.hpp"
 
 TEST_CASE( "Section linking" ) {

@@ -1,6 +1,6 @@
-const pep10 = require('./pep10.js');
-const pep9 = require('./pep9.js');
-const sim = require('./sim.js');
+const pep10 = require('./pep10.js.js.js');
+const pep9 = require('./pep9.js.js.js');
+const sim = require('./sim.js.js.js');
 
 pep10().then(function(instance) {
 	var def = new instance.IsaDefinition
@@ -24,5 +24,5 @@ pep9().then(function(instance) {
 		console.log(key, def.isa.get(value).bit_pattern)
 	}
 
-});
+}).catch((err)=>{});
 module.exports = [pep9, pep10, sim]
