@@ -7,6 +7,6 @@ cd build
 	CXX=$(which clang++)
 	mkdir -p native
 	cd native
-	cmake ../..
+	cmake ../.. -DCMAKE_BUILD_TYPE=Debug
 	make -j30 && make test
 )
