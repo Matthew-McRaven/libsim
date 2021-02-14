@@ -162,9 +162,6 @@ const isa_definition&  isa_definition::get_definition()
 }
 
 std::string isa::pep10::as_string(instruction_mnemonic mnemon) {
-	if (mnemon == instruction_mnemonic::UNIMPL) {
-		throw std::invalid_argument("Not a real mnemonic");
-	}
 	return std::string(magic_enum::enum_name(mnemon));
 }
 

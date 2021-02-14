@@ -30,6 +30,7 @@ struct addr_map
 struct isa_definition {
 	const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t>> > isa ;
 	const std::array<addr_map, 256> riproll;
+	// TODO: Make this constructor private since we have a singleton.
 	isa_definition();
 	// Returns a static copy of a pep/10 isa definition.
 	// Required for static initialization in a static library.

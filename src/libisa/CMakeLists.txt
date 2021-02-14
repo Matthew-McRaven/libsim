@@ -19,6 +19,7 @@ add_library(RTL-Lib STATIC
 	masm/elf/serialize.cpp
 	masm/frontend/sectionize.cpp
 	masm/frontend/preprocesser.cpp
+	asmb/pep10/highlight.cpp
 )
 
 target_include_directories(RTL-Lib PUBLIC ${Boost_INCLUDE_DIR} )
