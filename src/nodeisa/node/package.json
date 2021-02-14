@@ -1,6 +1,6 @@
 {
   "name": "@pep10/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Embind wrapper for our C++ library.",
   "main": "demo.js",
   "scripts": {
