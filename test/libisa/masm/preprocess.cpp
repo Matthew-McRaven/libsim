@@ -8,7 +8,7 @@
 #include "masm/frontend/sectionize.hpp"
 
 TEST_CASE( "Preprocess" ) {
-	
+	/*
 	SECTION("Implicit section") {
 		auto project = masm::frontend::init_user_project<uint16_t>();
 		masm::project::source_file file;
@@ -40,6 +40,7 @@ TEST_CASE( "Preprocess" ) {
 		auto preproc = masm::frontend::preprocessor<uint16_t>();
 		preproc.preprocess(project, decltype(preproc)::flags());
 	}
+	*/
 	// TODO: Bad section definitions.
 	// TODO: Check "empty" default section.
 }
