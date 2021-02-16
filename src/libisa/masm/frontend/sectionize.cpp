@@ -64,8 +64,15 @@ std::vector<masm::frontend::section_text> masm::frontend::sectionize(const std::
 	std::vector<std::string> as_lines;
 	// Courtesy of:
 	// 	https://stackoverflow.com/questions/5607589/right-way-to-split-an-stdstring-into-a-vectorstring
-	boost::split(as_lines, program, boost::is_any_of("\n"), boost::token_compress_on);
+	boost::split(as_lines, program, boost::is_any_of("\n"));
 
+	// Prevent an erronious extra (blank) line from being added to our document.
+	if(as_lines.back() == "") {
+		as_lines.pop_back();
+	}
+	// Re-added \n to make tokenizer happier.s
+	for(auto line : as_lines) line.append("\n");
+	
 	// Set up our line parser.
 	using boost::spirit::ascii::space;
     typedef std::string::const_iterator iterator_type;

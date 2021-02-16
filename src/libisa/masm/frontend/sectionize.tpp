@@ -20,7 +20,7 @@ bool masm::frontend::section_program(std::shared_ptr<masm::project::project<addr
 			x->header.name = text.section_name;
 			x->header.index = source_section++;
 			x->body_raw = masm::elf::code::raw();
-			x->body_raw.value().text = boost::algorithm::join(text.lines, "\n");
+			x->body_raw.value().text = boost::algorithm::join(text.lines, "");
 			x->body_raw.value().lines = text.lines;
 			return x; 
 			}
