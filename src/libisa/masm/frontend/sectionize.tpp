@@ -1,4 +1,5 @@
 #include "masm/frontend/sectionize.hpp"
+#include "masm/project/project.hpp"
 
 template <typename address_size_t>
 bool masm::frontend::section_program(std::shared_ptr<masm::project::project<address_size_t>>& project, 
@@ -25,7 +26,12 @@ bool masm::frontend::section_program(std::shared_ptr<masm::project::project<addr
 			return x; 
 			}
 		);
+		// Mantain project invariant that every section is registered in priority queue.
+		for(auto section : prog_image->sections) {
+			project->section_queue.push(std::make_pair(masm::project::toolchain_stage::RAW, section));
+		}
 		project->images[image_index++] = prog_image;
+		
 	}
 
 	return okay;

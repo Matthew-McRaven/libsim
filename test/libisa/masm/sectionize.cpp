@@ -10,7 +10,7 @@ TEST_CASE( "Section parser" ) {
 	SECTION("Implicit section") {
 		const auto program = "LWDA 20,d\n.END\n";
 		auto image_base = masm::frontend::sectionize(program, "defaults");
-		CHECK(image_base[0].lines.size() == 3);
+		CHECK(image_base[0].lines.size() == 2);
 		CHECK(image_base[0].section_name == "defaults");	
 	}
 
@@ -20,7 +20,7 @@ TEST_CASE( "Section parser" ) {
 		CHECK(image_base.size() == 2);
 		CHECK(image_base[0].lines.size() == 1);
 		CHECK(image_base[0].section_name == "defaults");
-		CHECK(image_base[1].lines.size() == 4);
+		CHECK(image_base[1].lines.size() == 3);
 		CHECK(image_base[1].section_name == "data");
 	}
 	// TODO: Bad section definitions.
@@ -37,7 +37,7 @@ TEST_CASE( "Project Initialization" ) {
 		CHECK(masm::frontend::section_program<uint16_t>(project, {file}));
 		CHECK(project->images.size() == 1);
 		CHECK(project->images[0]->sections.size() == 1);
-		CHECK(project->images[0]->sections[0]->body_raw.value().lines.size() == 3);
+		CHECK(project->images[0]->sections[0]->body_raw.value().lines.size() == 2);
 	}
 
 	SECTION("Bisectioned") {
@@ -46,7 +46,7 @@ TEST_CASE( "Project Initialization" ) {
 		CHECK(image_base.size() == 2);
 		CHECK(image_base[0].lines.size() == 1);
 		CHECK(image_base[0].section_name == "defaults");
-		CHECK(image_base[1].lines.size() == 4);
+		CHECK(image_base[1].lines.size() == 3);
 		CHECK(image_base[1].section_name == "data");
 	}
 	// TODO: Bad section definitions.

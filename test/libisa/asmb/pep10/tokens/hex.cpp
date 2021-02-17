@@ -1,9 +1,12 @@
 #include "catch.hpp"
 
 #include "masm/frontend/tokens.hpp"
+#include "masm/frontend/tokenizer.hpp"
+#include "asmb/pep10/tokenizer.hpp"
 
 TEST_CASE( "Hexadecimal Constants", "[masm::tokens]"  ) {
-	using tokenizer_t = masm::frontend::pep_tokenizer<masm::frontend::lexer_t>;
+	
+	using tokenizer_t = asmb::pep10::tokenizer<masm::frontend::lexer_t>;
 	tokenizer_t lexer;
 	SECTION("Positive, no leading +") {
 		auto result = masm::frontend::tokenize<tokenizer_t>("0x1 0xef 0x333 0xabcd", lexer);

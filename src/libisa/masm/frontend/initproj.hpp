@@ -14,7 +14,7 @@ namespace masm::frontend
 		x->macro_registry = std::make_shared<masm::macro_registry>();
 		x->symbol_table = std::make_shared<symbol::SymbolTable<address_size_t>>();
 		// TODO: Construct message handler after type is determined.
-		x->message_handler = nullptr;
+		x->message_resolver = nullptr;
 		return x;
 	}
 

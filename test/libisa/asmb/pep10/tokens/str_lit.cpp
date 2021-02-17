@@ -1,10 +1,12 @@
 #include "catch.hpp"
 
 #include "masm/frontend/tokens.hpp"
+#include "masm/frontend/tokenizer.hpp"
+#include "asmb/pep10/tokenizer.hpp"
 
 TEST_CASE( "Single Character String Literals", "[masm::tokens]"  ) {
     
-	using tokenizer_t = masm::frontend::pep_tokenizer<masm::frontend::lexer_t>;
+	using tokenizer_t = asmb::pep10::tokenizer<masm::frontend::lexer_t>;
 	tokenizer_t lexer;
 	SECTION("Escape Codes") {
 		std::vector<std::string> codes = {"\"", "b", "f", "n", "r", "t", "b", "\\"};
@@ -53,7 +55,7 @@ TEST_CASE( "Single Character String Literals", "[masm::tokens]"  ) {
 
 TEST_CASE( "Multiple Character String Literals", "[masm::tokens]"  ) {
     
-	using tokenizer_t = masm::frontend::pep_tokenizer<masm::frontend::lexer_t>;
+	using tokenizer_t = asmb::pep10::tokenizer<masm::frontend::lexer_t>;
 	tokenizer_t lexer;
 	SECTION("Escape Codes") {
 		std::vector<std::string> codes = {"\"", "b", "f", "n", "r", "t", "b", "\\"};
