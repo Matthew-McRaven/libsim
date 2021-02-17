@@ -7,7 +7,7 @@ stages:
 
 variables:
   BUILD_VERSION: v0.3.2
-  CI_VERSION: 0-${CI_COMMIT_SHORT_SHA}
+  CI_VERSION: -commit-${CI_COMMIT_SHORT_SHA}
 
 Build Python and Boost:
   stage: build dependencies
