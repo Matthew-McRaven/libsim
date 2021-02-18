@@ -11,9 +11,9 @@
 template<typename address_size_t, typename tokenizer_t>
 auto masm::frontend::tokenizer<address_size_t, tokenizer_t>::tokenize(
 	std::shared_ptr<masm::project::project<address_size_t> >& project, 
-	std::shared_ptr<masm::elf::code_section<address_size_t> >& section,
-	const masm::frontend::tokenizer<address_size_t, tokenizer_t>::flags& flag) 
-	-> void
+	std::shared_ptr<masm::elf::code_section<address_size_t> >& section
+) 
+	-> bool
 {
 	assert(section->body_raw);
 
@@ -21,6 +21,7 @@ auto masm::frontend::tokenizer<address_size_t, tokenizer_t>::tokenize(
 	auto section_as_macro = dynamic_cast<masm::elf::macro_subsection<address_size_t>*>(section.get());
 	bool perform_macro_substitution = (section_as_macro != nullptr);
 	
+	bool success = true;
 	section->body_token = masm::elf::code::token();
 	for(auto [it, line] : section->body_raw.value().lines | boost::adaptors::indexed(0)) {
 
@@ -33,9 +34,9 @@ auto masm::frontend::tokenizer<address_size_t, tokenizer_t>::tokenize(
 			}
 		}
 
-		auto result = masm::frontend::tokenize(line, tokenizer);
+		auto result = masm::frontend::tokenize(line, tokenizer_);
 		// TODO: Handle tokenization errors.
-		if(!result.success) {
+		if(success &= result.success; !result.success) {
 			masm::message err_msg {masm::message_type::kError, result.error_message.value()};
 			project->message_resolver->log_message(section, it, err_msg);
 			// Insert no tokens, because line has no meaning.
@@ -46,7 +47,7 @@ auto masm::frontend::tokenizer<address_size_t, tokenizer_t>::tokenize(
 			section->body_token.value().tokens.push_back(result.tokens);
 		}
 	}
-
+	return success;
 }
 
 template<typename tokenizer_t>

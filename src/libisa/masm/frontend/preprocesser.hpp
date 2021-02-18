@@ -12,13 +12,14 @@ template<typename address_size_t, typename tokenizer_t>
 class preprocessor
 {
 public:
-    struct result {};
     struct flags{};
+    preprocessor(){}
+    preprocessor(const flags& flag){}
     virtual ~preprocessor();
     virtual auto preprocess(
         std::shared_ptr<masm::project::project<address_size_t> >& project, 
-        std::shared_ptr<masm::elf::code_section<address_size_t> >& section,
-        const flags& flag) -> void;
+        std::shared_ptr<masm::elf::code_section<address_size_t> >& section
+    ) -> bool;
 
 protected:
     

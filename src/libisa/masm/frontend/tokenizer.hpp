@@ -21,14 +21,16 @@ template<typename address_size_t, typename tokenizer_t>
 class tokenizer
 {
 public:
-    struct result {};
     struct flags{};
+    tokenizer() {}
+    tokenizer(const flags& flag) {}
     virtual ~tokenizer() = default;
     virtual auto tokenize(
         std::shared_ptr<masm::project::project<address_size_t> >& project, 
-        std::shared_ptr<masm::elf::code_section<address_size_t> >& section,
-        const flags& flag) -> void;
-	tokenizer_t tokenizer = {};
+        std::shared_ptr<masm::elf::code_section<address_size_t> >& section
+    ) -> bool;
+private:
+	tokenizer_t tokenizer_ = {};
 };
 
 

@@ -12,9 +12,8 @@ masm::frontend::preprocessor<address_size_t, tokenizer_t>::~preprocessor() = def
 template<typename address_size_t, typename tokenizer_t>
 auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 	std::shared_ptr<masm::project::project<address_size_t> >& project, 
-	std::shared_ptr<masm::elf::code_section<address_size_t> >& section,
-	const flags& flags) 
-	-> void
+	std::shared_ptr<masm::elf::code_section<address_size_t> >& section
+) -> bool 
 {
 	using token_class_t = const std::set<masm::frontend::token_type>;
 	static const token_class_t symbol = {masm::frontend::token_type::kSymbolDecl};
@@ -25,15 +24,13 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 	assert(section->body_raw);
 	assert(section->body_token);
 
+	bool error_resolving_tokens=false, error_counting_args=false, error_cyclical=false;
 	std::set<std::tuple<uint32_t, std::string, std::vector<std::string> > > potential_invocations;
-	bool error_resolving_tokens = false;
-	int line_it = -1;
 
 	/**
 	 * Extract macro definitions by evaluating tokens.
 	 */
-	for(auto line : section->body_token.value().tokens) {
-		line_it++;
+	for(auto [line_it, line] : section->body_token.value().tokens | boost::adaptors::indexed(0)) {
 		auto first = line.begin(), last = line.end();
 
 		// Parse (and ignore) a symbol declaration
@@ -84,9 +81,11 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 	auto registry = project->macro_registry;
 	for(auto [line, macro_name, macro_args] : potential_invocations) {
 		if(!registry->contains(macro_name)) {
+			error_counting_args = true;
 			project->message_resolver->log_message(section, line, {masm::message_type::kError, ";ERROR: Referenced macro does not exist.."});
 		}
 		else if(auto macro_def = registry->macro(macro_name); macro_def->arg_count != macro_args.size()) {
+			error_counting_args = true;
 			project->message_resolver->log_message(section, line, {masm::message_type::kError, ";ERROR: Macro supplied wrong number of arguments."});
 		}
 		else {
@@ -141,10 +140,11 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 				
 				// Register an error using the section that had the evil include.
 				auto as_code = std::static_pointer_cast<masm::elf::code_section<address_size_t>>(including_section);
+				error_cyclical = true;
 				project->message_resolver->log_message(including_section, line_number, {masm::message_type::kError, ";ERROR: Circular macro inclusion detected."});
                 break;
             }
         }
     }
-
+	return !(error_resolving_tokens || error_counting_args || error_cyclical);
 }
