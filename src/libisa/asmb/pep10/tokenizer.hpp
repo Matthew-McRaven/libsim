@@ -32,7 +32,8 @@ struct tokenizer : lex::lexer<Lexer>
 		str_lit(fmt::format(R"(\"{}+\")", fmt::format(inner_lit, "\""))),
 		comment(";.*"),
 		hex_literal("0[xX][0-9a-fA-F]+"),
-		dec_literal("[+-]{0,1}[0-9]+"),
+		// Must escape +- or chaos ensues.
+		dec_literal("[\\+\\-]?[0-9]+"),
 		empty("\\n"),
 		whitespaces("[( \\t)]+")
 	{
