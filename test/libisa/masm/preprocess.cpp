@@ -3,7 +3,6 @@
 #include "isa/pep10/instruction.hpp"
 #include "masm/registry.hpp"
 #include "masm/frontend/preprocesser.hpp"
-#include "masm/frontend/initproj.hpp"
 #include "masm/project/section.hpp"
 #include "masm/frontend/sectionize.hpp"
 

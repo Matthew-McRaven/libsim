@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "masm/frontend/initproj.hpp"
+#include "masm/project/init_project.hpp"
 #include "masm/project/section.hpp"
 #include "masm/registry.hpp"
 #include "masm/frontend/sectionize.hpp"
@@ -30,7 +30,7 @@ TEST_CASE( "Section parser" ) {
 TEST_CASE( "Project Initialization" ) {
 	
 	SECTION("Implicit section") {
-		auto project = masm::frontend::init_user_project<uint16_t>();
+		auto project = masm::project::init_project<uint16_t>();
 		masm::project::source_file file;
 		file.name = "main";
 		file.body = "LWDA 20,d\n.END\n";
