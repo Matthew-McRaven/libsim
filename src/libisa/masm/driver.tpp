@@ -8,7 +8,7 @@ std::pair<bool, std::string> masm::driver<address_size_t, stage_t>::assemble_pro
 	bool okay = masm::frontend::section_program<address_size_t>(project, sources, ".TEXT");
 	if(!okay) return {false, ";ERROR: Failed to section program"};
 
-	bool missing_stage_transform=false, failed_stage=false;
+	bool failed_stage=false;
 	// Process all sections!
 	while(!project->section_queue.empty()) {
 
@@ -22,7 +22,7 @@ std::pair<bool, std::string> masm::driver<address_size_t, stage_t>::assemble_pro
 		// Find a transformation if it exists. If it doesn't exist, then we can go no further than this stage.
 		if(auto transform = transforms_.find(stage); transform == transforms_.end())  {
 			// If one stage failed to find the transform, every stage will fail. Just give up now.
-			return {false, fmt::format(";ERROR: No transform for stage {}.", target_stage)};;
+			return {false, fmt::format(";ERROR: No transform for stage {}.", target_stage)};
 		}
 		else {
 			auto [new_stage, stage_success] = transform->second(project, section);
@@ -38,8 +38,7 @@ std::pair<bool, std::string> masm::driver<address_size_t, stage_t>::assemble_pro
 		}
 		
 	}
-	if(missing_stage_transform) 
-	else if(failed_stage) return {false, fmt::format(";ERROR: Transform failed for stage {}.", target_stage)};
+	if(failed_stage) return {false, fmt::format(";ERROR: Transform failed for stage {}.", target_stage)};
 	return {true, ""};
 }
 
