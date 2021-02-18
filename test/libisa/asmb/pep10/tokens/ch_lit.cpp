@@ -4,7 +4,7 @@
 #include "masm/frontend/tokenizer.hpp"
 #include "asmb/pep10/tokenizer.hpp"
 
-TEST_CASE( "Character Literals", "[masm::tokens]" ) {
+TEST_CASE( "Character Literals", "[asmb::pep10::tokens]" ) {
     
 	using tokenizer_t = asmb::pep10::tokenizer<masm::frontend::lexer_t>;
 	tokenizer_t lexer;

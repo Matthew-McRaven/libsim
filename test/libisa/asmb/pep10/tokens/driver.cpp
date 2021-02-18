@@ -18,7 +18,7 @@ TEST_CASE( "Driver w/ tokenizer", "[asmb::pep10::tokenizer]"  ) {
 	using result_t = driver_t::result_t;
 	using transform_t = driver_t::transform_t;
 	
-	SECTION("Tokenize input using driver.") {
+	SECTION("Tokenize input using driver.", "[masm::driver]") {
 		auto project = masm::project::init_project<uint16_t>();
 		
 		driver_t driver;
