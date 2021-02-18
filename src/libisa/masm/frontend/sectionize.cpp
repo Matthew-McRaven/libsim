@@ -71,7 +71,7 @@ std::vector<masm::frontend::section_text> masm::frontend::sectionize(const std::
 		as_lines.pop_back();
 	}
 	// Re-added \n to make tokenizer happier.s
-	for(auto line : as_lines) line.append("\n");
+	for(auto& line : as_lines) line.append("\n");
 	
 	// Set up our line parser.
 	using boost::spirit::ascii::space;
