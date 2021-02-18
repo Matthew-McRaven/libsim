@@ -22,7 +22,7 @@ struct tokenizer : lex::lexer<Lexer>
 {
 	using token_type = masm::frontend::token_type;
 	tokenizer():
-		macro_ident("@[A-Za-z_]+"),
+		macro_ident("@[A-Za-z_][A-Za-z0-9_]+"),
 		macro_arg("\\$[0-9]+"),
 		comma(","),
 		identifier("[A-Za-z|_]+"),
