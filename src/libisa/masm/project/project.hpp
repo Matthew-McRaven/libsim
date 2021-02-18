@@ -6,6 +6,7 @@
 #include <variant>
 #include <vector>
 #include <queue>
+#include <functional> 
 
 #include "masm/project/image.hpp"
 #include "masm/project/message_handler.hpp"
@@ -44,7 +45,8 @@ struct project
 	std::map<uint32_t, std::shared_ptr<masm::elf::image<address_size_t> > > images;
 	// All sections in all images must be registered in the section queue.
 	// TODO: Wrap in accessors, because now we have invariants to mantain.
-	std::priority_queue < pair<toolchain_stage, std::shared_ptr<masm::elf::code_section<address_size_t> > > > section_queue;
+	using queue_state_t =  std::pair<toolchain_stage, std::shared_ptr<masm::elf::code_section<address_size_t> > >;
+	std::priority_queue <queue_state_t, std::vector<queue_state_t>, std::greater<queue_state_t> > section_queue;
 };
 
 }

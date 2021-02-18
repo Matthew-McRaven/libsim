@@ -34,7 +34,7 @@ namespace masm::elf::code {
 	template <typename address_size_t>
 	struct pre
 	{
-		std::map<uint16_t, std::shared_ptr<masm::elf::macro_subsection<address_size_t> > > macros;
+		std::map<uint16_t, std::shared_ptr<masm::elf::macro_subsection<address_size_t> > > macro_line_mapping;
 	};
 
 	template <typename address_size_t>
@@ -61,7 +61,7 @@ struct code_section
 {
 	virtual ~code_section() = default;
 	section_info header;
-	std::map<uint32_t, std::shared_ptr<macro_subsection<address_size_t> > > line_to_macro;
+
 	std::optional<code::raw> body_raw;
 	std::optional<code::token> body_token;
 	std::optional<code::pre<address_size_t> > body_preprocess;
@@ -75,9 +75,15 @@ template <typename address_size_t>
 struct top_level_section : public code_section<address_size_t> {
 	virtual ~top_level_section() = default;
 	
-	using macro_index_t = uint32_t;
-	NGraph::tGraph<macro_index_t> macro_dependency_graph;
-	std::map<macro_index_t, std::shared_ptr<macro_subsection<address_size_t> > > macro_lookup;
+	using macro_index_t = decltype(section_info().index);
+	using invoke_class_t = uint32_t;
+
+	NGraph::tGraph<invoke_class_t> invoke_dependency_graph;
+	std::map<std::pair<std::string, std::vector<std::string>>, invoke_class_t> macro_def_to_invoke_class;
+	// Lookup macro found a section info index.
+	std::map<macro_index_t, std::shared_ptr<macro_subsection<address_size_t> > > index_to_macro;
+
+	invoke_class_t add_or_get_invoke_class(const std::shared_ptr<code_section<address_size_t> >& section);
 
 	std::shared_ptr<macro_subsection<address_size_t> > insert_macro(
 		std::shared_ptr<code_section<address_size_t> > direct_parent, uint32_t line_number,
@@ -123,17 +129,6 @@ struct link_result
 static const std::string kNoSuchMacro = "The macro {} does not exist.";
 static const std::string kArgcMismatch = "The macro {} expected {} arguments, but was invoked with {} arguments.";
 static const std::string kNoRelation = "The containing_section was unrelated to direct_parent.";
-
-// If possible, register a macro-subsection to a parent.
-template <typename address_size_t>
-link_result<address_size_t> add_macro_subsection(
-	const masm::macro_registry& registry,
-	std::shared_ptr<top_level_section<address_size_t>>& containing_section,
-	std::shared_ptr<code_section<address_size_t>>& direct_parent,
-	uint32_t direct_parent_line_number,
-	const std::string& macro_name,
-	const std::vector<std::string>& macro_args
-);
 
 }
 

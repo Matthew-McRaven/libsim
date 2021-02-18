@@ -31,6 +31,7 @@ namespace masm::frontend::detail {
     static const std::string error_does_not_exist = ";ERROR: Invoked macro '{}' does not exist.";
     static const std::string error_bad_arg_count = ";ERROR: Macro invoked with {} arguments, expected {}.";
     static const std::string error_circular_include = ";ERROR: Circular macro inclusion detected.";
+    static const std::string error_invalid_macro = ";ERROR: Unparsable macro invocation.";
 } // End namespace masm::frontend::detail
 
 #include "masm/frontend/preprocesser.tpp"
