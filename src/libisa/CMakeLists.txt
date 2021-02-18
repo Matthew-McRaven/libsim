@@ -18,7 +18,6 @@ add_library(RTL-Lib STATIC
 	masm/conversion.cpp
 	masm/elf/serialize.cpp
 	masm/frontend/sectionize.cpp
-	masm/frontend/preprocesser.cpp
 	asmb/pep10/highlight.cpp
 )
 
