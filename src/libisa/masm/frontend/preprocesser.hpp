@@ -28,14 +28,9 @@ protected:
 
 } // End namespace masm::frontend
 namespace masm::frontend::detail {
-    static const std::string tooManyMacros = ";ERROR: Only one macro may be referenced per line.";
-    static const std::string noIdentifier = ";ERROR: A @ must be followed by a string identifier.";
-    static const std::string noSuchMaro = ";ERROR: Referenced macro does not exist.";
-    static const std::string badArgCount = ";ERROR: Macro supplied wrong number of arguments.";
-    static const std::string noDollarInMacro = ";ERROR: Cannot use $ as part of a macro identifier.";
-    static const std::string invalidArg = ";ERROR: Bad argument: {}. Cannot use $ in macro argument.";
-    static const std::string circularInclude = ";ERROR: Circular macro inclusion detected.";
-    static const std::string selfRefence = ";ERROR: Macro definition invokes itself.";
+    static const std::string error_does_not_exist = ";ERROR: Invoked macro '{}' does not exist.";
+    static const std::string error_bad_arg_count = ";ERROR: Macro invoked with {} arguments, expected {}.";
+    static const std::string error_circular_include = ";ERROR: Circular macro inclusion detected.";
 } // End namespace masm::frontend::detail
 
 #include "masm/frontend/preprocesser.tpp"
