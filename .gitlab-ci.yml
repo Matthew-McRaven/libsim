@@ -38,6 +38,7 @@ Generate documentation:
   script:
     - source /emsdk/emsdk_env.sh
     - npm install moxygen -g
+    - mkdir -p build/docs 
     - (cd docs && doxygen)
     - mkdir -p build/docs/md && cd build/docs/md
     - moxygen ../xml
