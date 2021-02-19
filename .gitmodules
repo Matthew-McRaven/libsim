@@ -10,3 +10,6 @@
 [submodule "3rd-party/elfio"]
 	path = 3rd-party/elfio
 	url = https://github.com/serge1/ELFIO
+[submodule "3rd-party/moxygen"]
+	path = 3rd-party/moxygen
+	url = https://github.com/sourcey/moxygen
