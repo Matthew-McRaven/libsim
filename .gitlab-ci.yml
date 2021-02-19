@@ -6,16 +6,16 @@ stages:
 - test
 
 variables:
-  BUILD_VERSION: v0.3.2
+  BUILD_VERSION: v0.3.3
 
-Build Python and Boost:
+Build Boost and Emscripten:
   stage: build dependencies
   needs: []
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - cd ./dependencies
-    - (docker pull registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION} && echo success) || (docker build -t registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION . ) 
-    - docker push registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION
+    - (docker pull registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION} && echo success) || (docker build -t registry.gitlab.com/pep10/libsim/emboost:$BUILD_VERSION . ) 
+    - docker push registry.gitlab.com/pep10/libsim/emboost:$BUILD_VERSION
 
 
 Build Catch:
@@ -34,7 +34,7 @@ Build C++ bindings:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
-  image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
   needs: [Build Python and Boost]
   script:
     - source /emsdk/emsdk_env.sh
@@ -48,7 +48,7 @@ Build emscripten bindings:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
-  image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
   needs: [Build Python and Boost]
   script:
     - source /emsdk/emsdk_env.sh
