@@ -41,11 +41,12 @@ Generate documentation:
     - (cd docs && doxygen)
     - mkdir -p build/docs/md && cd build/docs/md
     - moxygen ../xml
-  paths:
-    - build/docs/html/
-    - build/docs/latex/
-    - build/docs/xml/
-    - build/docs/md/
+  artifacts:
+    paths:
+      - build/docs/html/
+      - build/docs/latex/
+      - build/docs/xml/
+      - build/docs/md/
 
 Test C++ bindings:
   variables:
