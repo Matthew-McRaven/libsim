@@ -49,7 +49,7 @@ Build emscripten bindings:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
   image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
-  needs: [Build Boost and Emscriptent]
+  needs: [Build Boost and Emscripten]
   script:
     - source /emsdk/emsdk_env.sh
     - mkdir build && cd build
