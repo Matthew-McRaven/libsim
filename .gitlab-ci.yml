@@ -17,7 +17,6 @@ Build Boost and Emscripten:
     - (docker pull registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION} && echo success) || (docker build -t registry.gitlab.com/pep10/libsim/emboost:$BUILD_VERSION . ) 
     - docker push registry.gitlab.com/pep10/libsim/emboost:$BUILD_VERSION
 
-
 Build Catch:
   stage: build dependencies
   needs: []
@@ -30,7 +29,25 @@ Build Magic Enum:
   script:
     - echo "Done"
 
-Build C++ bindings:
+Generate documentation:
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  stage: build library
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
+  needs: [Build Boost and Emscripten]
+  script:
+    - source /emsdk/emsdk_env.sh
+    - npm install moxygen -g
+    - (cd docs && doxygen)
+    - mkdir -p build/docs/md && cd build/docs/md
+    - moxygen ../xml
+  paths:
+    - build/docs/html/
+    - build/docs/latex/
+    - build/docs/xml/
+    - build/docs/md/
+
+Test C++ bindings:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
@@ -44,7 +61,7 @@ Build C++ bindings:
     - cmake ../
     - make -j20 && make test
 
-Build emscripten bindings:
+Test emscripten bindings:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
