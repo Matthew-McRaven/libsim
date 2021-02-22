@@ -19,7 +19,7 @@ public:
     virtual auto preprocess(
         std::shared_ptr<masm::project::project<address_size_t> >& project, 
         std::shared_ptr<masm::elf::code_section<address_size_t> >& section
-    ) -> bool;
+    ) -> std::tuple<bool, std::list<std::shared_ptr<masm::elf::macro_subsection<address_size_t>>>>;
 
 protected:
     

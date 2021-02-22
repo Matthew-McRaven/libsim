@@ -13,7 +13,7 @@ template<typename address_size_t, typename tokenizer_t>
 auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 	std::shared_ptr<masm::project::project<address_size_t> >& project, 
 	std::shared_ptr<masm::elf::code_section<address_size_t> >& section
-) -> bool 
+) -> std::tuple<bool, std::list<std::shared_ptr<masm::elf::macro_subsection<address_size_t>>>> 
 {
 	using token_class_t = const std::set<masm::frontend::token_type>;
 	static const token_class_t symbol = {masm::frontend::token_type::kSymbolDecl};
@@ -57,7 +57,7 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 		}
 
 		project->message_resolver->log_message(parent, parent_line, {masm::message_type::kError, detail::error_circular_include});
-		return false;
+		return {false, {}};
     }
 
 	std::set<std::tuple<uint32_t, std::string, std::vector<std::string> > > potential_invocations;
@@ -106,6 +106,7 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 	 * Create macro subsections and add links between sections.
 	 */
 	auto registry = project->macro_registry;
+	std::list<std::shared_ptr<masm::elf::macro_subsection<address_size_t>>> children;
 	for(auto [line, macro_name, macro_args] : potential_invocations) {
 		if(!registry->contains(macro_name)) {
 			error_counting_args = true;
@@ -123,10 +124,10 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 			// Delegate construction of macro to top-level section, which will mantain its own invariants.
 			auto child_macro = tls->insert_macro(section, line, macro_name, macro_args, macro_def->macro_text);
 			// Add child to top of priority queue.
-			project->section_queue.push({masm::project::toolchain_stage::RAW, child_macro});
+			children.emplace_back(child_macro);
 		}
 	}
 
 
-	return !(error_resolving_tokens || error_counting_args);
+	return {!(error_resolving_tokens || error_counting_args), children};
 }

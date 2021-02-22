@@ -15,7 +15,6 @@ TEST_CASE( "Driver w/ tokenizer", "[asmb::pep10::tokenizer]"  ) {
 	using driver_t = masm::driver<uint16_t, stage_t>;
 	using project_t = driver_t::project_t;
 	using section_t = driver_t::section_t;
-	using result_t = driver_t::result_t;
 	using transform_t = driver_t::transform_t;
 	
 	SECTION("Tokenize input using driver.", "[masm::driver]") {
@@ -23,17 +22,24 @@ TEST_CASE( "Driver w/ tokenizer", "[asmb::pep10::tokenizer]"  ) {
 		
 		driver_t driver;
 
-		masm::project::source_file file;
-		file.name = "main";
-		file.body = "LWDA 20,d\n.END\n";
+		auto file = std::make_shared<masm::project::source_file>();
+		file->name = "main";
+		file->body = "LWDA 20,d\n.END\n";
 
 		masm::frontend::tokenizer<uint16_t, tokenizer_t> tokenizer{};
-		transform_t tx_tokenizer = [&tokenizer](project_t& proj, section_t& section) {
-			return result_t{stage_t::TOKEN, tokenizer.tokenize(proj, section)};
+		transform_t tx_tokenizer = [&tokenizer](project_t& proj, std::list<driver_t::work_t>& work) {
+			bool success = true;
+			driver_t::work_iterable_t result_work;
+			std::transform(work.begin(), work.end(), std::back_inserter(result_work),[&](auto& value){
+				success &= tokenizer.tokenize(proj, std::get<driver_t::section_t>(value));
+				return driver_t::work_iterable_t::value_type{stage_t::TOKEN, value};
+			});
+			return driver_t::result_t{success, result_work};
 		};
 		driver.register_transform(tx_tokenizer, stage_t::RAW);
 
-		auto res = driver.assemble_project(project, {file}, masm::project::toolchain_stage::TOKEN);
+		std::vector<driver_t::source_t> vec = {file};
+		auto res = driver.assemble_project(project, vec, masm::project::toolchain_stage::TOKEN);
 		CHECK(res.first);
 		auto tokens = project->images[0]->sections[0]->body_token;
 		CHECK(tokens);

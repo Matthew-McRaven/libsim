@@ -31,10 +31,11 @@ TEST_CASE( "Project Initialization" ) {
 	
 	SECTION("Implicit section") {
 		auto project = masm::project::init_project<uint16_t>();
-		masm::project::source_file file;
-		file.name = "main";
-		file.body = "LWDA 20,d\n.END\n";
-		CHECK(masm::frontend::section_program<uint16_t>(project, {file}));
+		auto file = std::make_shared<masm::project::source_file>();
+		file->name = "main";
+		file->body = "LWDA 20,d\n.END\n";
+		std::vector<std::shared_ptr<masm::project::source_file> > vec = {file};
+		CHECK(!masm::frontend::section_program<uint16_t>(project, vec).empty());
 		CHECK(project->images.size() == 1);
 		CHECK(project->images[0]->sections.size() == 1);
 		CHECK(project->images[0]->sections[0]->body_raw.value().lines.size() == 2);

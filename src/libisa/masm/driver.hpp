@@ -1,5 +1,7 @@
 #pragma once
 
+#include <queue>
+
 #include "masm/project/section.hpp"
 #include "masm/project/project.hpp"
 #include "masm/frontend/sectionize.hpp"
@@ -17,11 +19,14 @@ namespace masm
 	class driver
 	{
 	public:
-		using result_t = std::pair<stage_t, bool>;
+		using source_t = std::shared_ptr<masm::project::source_file>;
 		using project_t = std::shared_ptr<masm::project::project<address_size_t> >;
 		using image_t = std::shared_ptr<masm::elf::image<address_size_t> >;
 		using section_t = std::shared_ptr<masm::elf::code_section<address_size_t> >;
-		using transform_t = std::function<result_t(project_t&, section_t&)>;
+		using work_t = std::variant<source_t, section_t, image_t>;
+		using work_iterable_t = std::list<std::pair<stage_t, work_t> >;
+		using result_t = std::tuple<bool,  work_iterable_t>;
+		using transform_t = std::function<result_t(project_t&, std::list<work_t>&)>;
 
 		/**
 		 * Upon assembling a project, all sections are collated into the project's work queue.
@@ -29,11 +34,11 @@ namespace masm
 		 * If a transformation, the section will be run through the transformer and re-queued on the work queue with the section's new stage.
 		 * Execution continues until all sections in the project reach the `target_stage.` 
 		 */
-		std::pair<bool, std::string> assemble_project(std::shared_ptr<masm::project::project<address_size_t> >& project, 
-			std::vector<masm::project::source_file> sources, stage_t target_stage);
+		std::pair<bool, std::string> assemble_project(project_t& project, std::vector<source_t>& sources, stage_t target_stage);
 		bool register_transform(transform_t, stage_t);
 	private:
 		std::map<stage_t, transform_t> transforms_;
+		std::map<stage_t, std::list<work_t> > work_queue_;
 	};
 } // End namespace masm
 #include "driver.tpp"
