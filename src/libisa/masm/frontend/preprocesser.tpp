@@ -72,27 +72,27 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 		masm::frontend::match(first, last, symbol, true);
 
 		// Check if this is a macro line.
-		auto [matched, match] = masm::frontend::match(first, last, macro_invoke, true);
+		auto [matched, _1, macro_name] = masm::frontend::match(first, last, macro_invoke, true);
 		if(!matched) continue;
 
 		// Extract macro name
-		auto [_1, macro_name] = match;
+	
 		std::vector<std::string> macro_args;
 
 		// Check if there are macro args
 		decltype(masm::frontend::match(first,last,{},{})) match_args;
 		do {
 			match_args = masm::frontend::match(first, last, token_macro_args, true);
-			if(match_args.first) macro_args.emplace_back(match_args.second.second);
-			auto [had_comma, _2] = masm::frontend::match(first, last, {masm::frontend::token_type::kComma}, true);
+			if(std::get<0>(match_args)) macro_args.emplace_back(std::get<2>(match_args));
+			auto [had_comma, _2, _3] = masm::frontend::match(first, last, {masm::frontend::token_type::kComma}, true);
 			// If no comma was present, then we can assume we are at the end of a macro list.
 			if(!had_comma) break;
-		} while(match_args.first);
+		} while(std::get<0>(match_args));
 
 		// Consume comment if present
 		masm::frontend::match(first, last, {masm::frontend::token_type::kComment}, true);
 		// Check that we reached the end of the line
-		auto [valid_invoke, _3] = masm::frontend::match(first, last, {masm::frontend::token_type::kEmpty}, true);
+		auto [valid_invoke, _4, _5] = masm::frontend::match(first, last, {masm::frontend::token_type::kEmpty}, true);
 		if(!valid_invoke) {
 			project->message_resolver->log_message(section, line_it, {masm::message_type::kError, detail::error_invalid_macro});
 			error_resolving_tokens = true;

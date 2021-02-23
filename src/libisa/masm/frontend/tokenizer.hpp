@@ -39,8 +39,8 @@ namespace lex = boost::spirit::lex;
 typedef lex::lexertl::token<std::string::iterator, boost::mpl::vector<std::string, long long>> token_t;
 typedef lex::lexertl::actor_lexer<token_t> lexer_t;
 
-template <typename token_enum_t>
-using token_pair_t =  std::pair<token_enum_t, std::string>;
+template<typename token_enum_t>
+using token_pair_t = std::pair<token_enum_t, std::string>;
 
 template <typename token_enum_t>
 using tokenized_line_t = std::vector<token_pair_t<token_enum_t> >;
@@ -59,13 +59,13 @@ template<typename tokenizer_t>
 tokenize_result<typename tokenizer_t::token_type> tokenize(std::string input, tokenizer_t& tokenizer);
 
 template<typename token_enum_t = masm::frontend::token_type>
-std::pair<bool, token_pair_t<token_enum_t> > match(
+std::tuple<bool, token_enum_t, std::string> match(
     typename tokenized_line_t<token_enum_t>::iterator& first,  const typename tokenized_line_t<token_enum_t>::iterator& end, 
     const std::set<masm::frontend::token_type>, bool advance_iterator
 );
 
 template<typename token_enum_t = masm::frontend::token_type>
-std::pair<bool, token_pair_t<token_enum_t> > match_not(
+std::tuple<bool, token_enum_t, std::string> match_not(
     typename tokenized_line_t<token_enum_t>::iterator& first, const typename tokenized_line_t<token_enum_t>::iterator& end, 
     const std::set<masm::frontend::token_type>, bool advance_iterator
 );

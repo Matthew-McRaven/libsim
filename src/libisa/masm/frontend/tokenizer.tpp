@@ -76,15 +76,15 @@ masm::frontend::tokenize_result<typename tokenizer_t::token_type> masm::frontend
 }
 
 template<typename token_enum_t>
-std::pair<bool, masm::frontend::token_pair_t<token_enum_t> > masm::frontend::match(
+std::tuple<bool, token_enum_t, std::string> masm::frontend::match(
     typename tokenized_line_t<token_enum_t>::iterator& first, const typename tokenized_line_t<token_enum_t>::iterator& end, 
     const std::set<masm::frontend::token_type> set, bool advance_iterator)
 {
-	std::pair<bool, masm::frontend::token_pair_t<token_enum_t> > ret = {false, {}};
+	std::tuple<bool, token_enum_t, std::string> ret = {false, {}, {}};
 	if(first == end) return ret;
 	else if(auto val = set.find(first->first); 
 		val != set.end()) {
-		ret = {true, *first};
+		ret = {true, first->first, first->second};
 		if(advance_iterator) ++first;
 		return ret;
 	}
@@ -92,15 +92,15 @@ std::pair<bool, masm::frontend::token_pair_t<token_enum_t> > masm::frontend::mat
 }
 
 template<typename token_enum_t>
-std::pair<bool, masm::frontend::token_pair_t<token_enum_t> > masm::frontend:: match_not(
+std::tuple<bool, token_enum_t, std::string> masm::frontend:: match_not(
     typename tokenized_line_t<token_enum_t>::iterator& first, const typename tokenized_line_t<token_enum_t>::iterator& end, 
     const std::set<masm::frontend::token_type> set, bool advance_iterator ) 
 {
-		std::pair<bool, masm::frontend::token_pair_t<token_enum_t> > ret = {false, {}};
+	std::tuple<bool, token_enum_t, std::string> ret = {false, {}, {}};
 	if(first == end) return ret;
 	else if(auto val = set.find(first->first); 
 		val == set.end()) {
-		ret = {true, *first};
+		ret = {true, first->first, first->second};
 		if(advance_iterator) ++first;
 		return ret;
 	}
