@@ -28,7 +28,8 @@ namespace masm::elf::code {
 	};
 	struct token
 	{
-		std::vector<std::vector<std::pair<masm::frontend::token_type, std::string> > > tokens;
+		using line_t = std::vector<std::pair<masm::frontend::token_type, std::string> >;
+		std::vector<line_t> tokens;
 	};
 
 	template <typename address_size_t>
@@ -40,7 +41,7 @@ namespace masm::elf::code {
 	template <typename address_size_t>
 	struct ir
 	{
-		std::vector<masm::ir::linear_line<address_size_t> > ir_lines;
+		std::vector<std::shared_ptr<masm::ir::linear_line<address_size_t> > > ir_lines;
 		void* stack_trace_info;
 	};
 }
