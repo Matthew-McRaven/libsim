@@ -8,7 +8,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # add the executable
-add_library(RTL-Lib STATIC 
+add_library(RTL-Lib STATIC
+	asmb/pep10/highlight.cpp 
+	asmb/pep10/ir.cpp
 	isa/pep10/proc.cpp 
 	isa/pep10/instruction.cpp
 	isa/pep9/proc.cpp
@@ -18,7 +20,6 @@ add_library(RTL-Lib STATIC
 	masm/conversion.cpp
 	masm/elf/serialize.cpp
 	masm/frontend/sectionize.cpp
-	asmb/pep10/highlight.cpp
 )
 
 target_include_directories(RTL-Lib PUBLIC ${Boost_INCLUDE_DIR} )
