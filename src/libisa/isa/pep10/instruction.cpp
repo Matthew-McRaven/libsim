@@ -164,6 +164,9 @@ const isa_definition&  isa_definition::get_definition()
 std::string isa::pep10::as_string(instruction_mnemonic mnemon) {
 	return std::string(magic_enum::enum_name(mnemon));
 }
+std::string isa::pep10::as_string(addressing_mode addr) {
+	return std::string(magic_enum::enum_name(addr));
+}
 
 bool isa::pep10::is_opcode_unary(instruction_mnemonic mnemon)
 {
