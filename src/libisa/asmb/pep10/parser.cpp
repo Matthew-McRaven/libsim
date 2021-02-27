@@ -281,7 +281,17 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_ASCII(token_iterator_t& start, const token_iterator_t& last)
 {
-	return {false, {}, nullptr};
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {masm::frontend::token_type::kStrConstant};
+
+	auto ret_val = std::make_shared<masm::ir::dot_ascii<uint16_t>>();
+	if(auto [match_arg, _, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .ASCII requires a string argument.", nullptr};
+	}
+	else {
+		ret_val->argument = std::make_shared<masm::ir::ascii_argument<uint16_t>>(text_arg, 0xFFFF);
+		return {true, "", ret_val};
+	};
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_ALIGN(token_iterator_t& start, const token_iterator_t& last)
