@@ -1,4 +1,4 @@
-#include "ir.hpp"
+#include "asmb/pep10/ir.hpp"
 
 #include "symbol/entry.hpp"
 #include "symbol/table.hpp"

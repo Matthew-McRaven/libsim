@@ -47,5 +47,3 @@ namespace asmb::pep10
 		std::tuple<bool, std::string, ir_pointer_t> parse_WORD(token_iterator_t& start, const token_iterator_t& last);
 	};
 } // End namespace asmb::pep10
-
-#include "parser.tpp"

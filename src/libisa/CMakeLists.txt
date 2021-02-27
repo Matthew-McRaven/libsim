@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_library(RTL-Lib STATIC
 	asmb/pep10/highlight.cpp 
 	asmb/pep10/ir.cpp
+	asmb/pep10/parser.cpp
 	isa/pep10/proc.cpp 
 	isa/pep10/instruction.cpp
 	isa/pep9/proc.cpp
