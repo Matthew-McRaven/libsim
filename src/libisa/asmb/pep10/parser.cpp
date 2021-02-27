@@ -32,7 +32,12 @@ bool asmb::pep10::allowed_addressing_mode(isa::pep10::instruction_mnemonic, isa:
 {
 
 }
-
+bool asmb::pep10::valid_symbol_name(const std::string& symbol)
+{
+	// TODO: Determine what makes a valid symbol;
+	if(symbol.size() > 8) return false;
+	return true;
+}
 auto asmb::pep10::parser::parse(
 	std::shared_ptr<masm::project::project<uint16_t> >& project, 
 	std::shared_ptr<masm::elf::code_section<uint16_t> >& section) -> bool
@@ -90,7 +95,10 @@ auto asmb::pep10::parser::parse(
 			else if(auto mnemonic = it->first; isa::pep10::is_opcode_unary(mnemonic)) {
 				std::tie(local_success, local_message, local_line) = parse_unary(start, last, mnemonic);
 			}
-			else std::tie(local_success, local_message, local_line) = parse_nonunary(start, last, mnemonic);
+			else {
+				std::tie(local_success, local_message, local_line) = parse_nonunary(start, last, 
+					project->symbol_table, mnemonic);
+			}
 
 			success &= local_success;
 			if(!local_success) {
@@ -101,7 +109,7 @@ auto asmb::pep10::parser::parse(
 			
 		}
 		else if(auto [match_dot, _2, text_dot] = masm::frontend::match(start, last, dot, true); match_dot) {
-			if(text_dot == "ADDRSS") std::tie(local_success, local_message, local_line) = parse_ADDRSS(start, last);
+			if(text_dot == "ADDRSS") std::tie(local_success, local_message, local_line) = parse_ADDRSS(start, last, project->symbol_table);
 			else if(text_dot == "ASCII") std::tie(local_success, local_message, local_line) = parse_ASCII(start, last);
 			else if(text_dot == "ALIGN") std::tie(local_success, local_message, local_line) = parse_ALIGN(start, last);
 			else if(text_dot == "BLOCK") std::tie(local_success, local_message, local_line) = parse_BLOCK(start, last);
@@ -172,9 +180,22 @@ auto asmb::pep10::parser::parse(
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::arg_pointer_t > asmb::pep10::parser::parse_operand(
-	masm::frontend::token_type token, std::string value)
+	masm::frontend::token_type token, std::string value, symbol_table_pointer_t symbol_table)
 {
-	return {false, {}, nullptr};
+	switch(token)
+	{
+	case masm::frontend::token_type::kIdentifier:
+		assert(symbol_table);
+		if(!valid_symbol_name(value)) return {false, fmt::format(";ERROR: Invalid symbol \"{}\"", value) , nullptr};
+		// TODO: Ban using mnemonics as symbols.
+		else {
+			auto symbol = symbol_table->reference(value);
+			auto arg = std::make_shared<masm::ir::symbol_ref_argument<uint16_t>>(symbol);
+			return {true, "", arg};
+		}
+	default:
+		return {false, {}, nullptr};
+	}
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_unary(
@@ -186,7 +207,8 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_nonunary(
-	token_iterator_t& start, const token_iterator_t& last, isa::pep10::instruction_mnemonic mn)
+	token_iterator_t& start, const token_iterator_t& last, symbol_table_pointer_t symbol_table,
+	isa::pep10::instruction_mnemonic mn)
 {
 	using token_class_t = const std::set<masm::frontend::token_type>;
 	static const token_class_t comma = {masm::frontend::token_type::kComma};
@@ -203,7 +225,7 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 	ret_val->mnemonic = mn;
 	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
 	}
-	else if(auto [success_operand, err_operand, operand_value] = parse_operand(token_arg, text_arg); !success_operand){
+	else if(auto [success_operand, err_operand, operand_value] = parse_operand(token_arg, text_arg, symbol_table); !success_operand){
 		return {false, err_operand, nullptr};
 	}
 	else if(auto [match_comma, _1, _2] = masm::frontend::match(start, last, comma, true); requires_addr_mode(mn) && !match_comma) {
@@ -236,9 +258,25 @@ asmb::pep10::parser::ir_pointer_t asmb::pep10::parser::parse_macro_invocation(to
 	return nullptr;
 }
 
-std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_ADDRSS(token_iterator_t& start, const token_iterator_t& last)
+std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_ADDRSS(token_iterator_t& start, 
+	const token_iterator_t& last, symbol_table_pointer_t symbol_table)
 {
-	return {false, {}, nullptr};
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {masm::frontend::token_type::kIdentifier};
+
+	auto ret_val = std::make_shared<masm::ir::dot_address<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .ADDRSS requires a symbolic argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, symbol_table); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else {
+		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
+		assert(as_ref);
+		ret_val->argument = as_ref;
+		return {true, "", ret_val};
+	}
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_ASCII(token_iterator_t& start, const token_iterator_t& last)
