@@ -4,6 +4,7 @@
 #include "masm/frontend/tokenizer.hpp"
 #include "asmb/pep10/tokenizer.hpp"
 #include "asmb/pep10/parser.hpp"
+#include "asmb/pep10/ir.hpp"
 #include "masm/registry.hpp"
 #include "masm/project/project.hpp"
 #include "masm/project/init_project.hpp"
@@ -116,7 +117,7 @@ TEST_CASE( "Parse unary instructions", "[asmb::pep10::parser]"  ) {
 		CHECK(as_unary->symbol_entry->getName() == "maybe");
 	}
 
-		SECTION("Unary instruction with comment.") {	
+	SECTION("Unary instruction with comment.") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
