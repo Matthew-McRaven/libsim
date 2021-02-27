@@ -86,7 +86,7 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
-	SECTION("No identifer in .ADDRSS") {	
+	SECTION("No identifer in .ASCII") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
@@ -95,7 +95,7 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
-	SECTION("No char in .ADDRSS") {	
+	SECTION("No char in .ASCII") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
