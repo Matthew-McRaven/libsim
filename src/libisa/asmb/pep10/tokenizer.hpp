@@ -16,7 +16,10 @@ namespace asmb::pep10
 using namespace boost::spirit::qi;
 using namespace boost::spirit::ascii;
 namespace lex = boost::spirit::lex;
-static const std::string inner_lit = {R"(([\w ]|\\([{}bfnrtv\\]|[xX][0-9a-fA-F]{{2}})))"};
+static const std::string char_lit = {R"([^\n\\\"'])"};
+static const std::string escape_lit = {R"(\\[{}bfnrtv\\])"};
+static const std::string hex_lit = {R"(\\[xX][0-9a-fA-F]{{2}})"};
+static const std::string inner_lit = "("+char_lit+")|("+escape_lit+")|("+hex_lit+")";
 template <typename Lexer>
 struct tokenizer : lex::lexer<Lexer>
 {
@@ -28,8 +31,8 @@ struct tokenizer : lex::lexer<Lexer>
 		identifier("[A-Za-z|_]+"),
 		sym_decl("[A-Za-z|_]+:"),
 		dot_command("\\.[a-zA-Z]+"),
-		ch_lit(fmt::format("'{}'", fmt::format(inner_lit, "'"))),
-		str_lit(fmt::format(R"(\"{}+\")", fmt::format(inner_lit, "\""))),
+		ch_lit(fmt::format("'({})'", fmt::format(inner_lit, "'"))),
+		str_lit(fmt::format(R"(\"({})+\")", fmt::format(inner_lit, "\""))),
 		comment(";[^\n]*"),
 		hex_literal("0[xX][0-9a-fA-F]+"),
 		// Must escape +- or chaos ensues.
