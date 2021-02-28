@@ -2,8 +2,8 @@
 #include <memory>
 #include <optional>
 
-#include "base.hpp"
-#include "args.hpp
+#include "masm/ir/base.hpp"
+#include "masm/ir/args.hpp"
 
 namespace asmb::pep10
 {
@@ -15,7 +15,7 @@ public:
     ~dot_export() override = default;
     dot_export(const dot_export& other);
     dot_export& operator=(dot_export other);
-    std::shared_ptr<linear_line<address_size_t> > clone() const override;
+    std::shared_ptr<masm::ir::linear_line<address_size_t> > clone() const override;
 
     // linear_line interface
     std::string generate_listing_string() const override;
@@ -24,7 +24,8 @@ public:
     friend void swap(dot_export& first, dot_export& second)
     {
         using std::swap;
-        swap(static_cast<linear_line<address_size_t>&>(first), static_cast<linear_line<address_size_t>&>(second));
+        swap(static_cast<masm::ir::linear_line<address_size_t>&>(first), 
+            static_cast<masm::ir::linear_line<address_size_t>&>(second));
         swap(first.argument, second.argument);
     }
 
@@ -120,3 +121,4 @@ public:
 };
 */
 }; // End namespace asmb::pep10
+#include "directives.tpp"

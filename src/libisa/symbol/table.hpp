@@ -62,9 +62,9 @@ public:
     // already exists, the symbol will be flagged as multiply defined.
     SymbolEntryPtr define(const std::string& symbolName);
     // Declare a symbol as external, allowing it to be used in other translation units.
-    void declareExternal(const std::string& symbolName);
+    void markExternal(const std::string& symbolName);
     // Return the list of symbols that may be linked externally.
-    auto getExternalSymbols() const -> std::vector<const SymbolEntryPtr>;
+    auto getExternalSymbols() const -> std::vector<SymbolEntryPtr>;
 
     // Check if a symbol exists.
     bool exists(const std::string& symbolName) const;

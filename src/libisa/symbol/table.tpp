@@ -118,16 +118,18 @@ typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr
 }
 
 template <typename offset_size_t>
-void symbol::SymbolTable<offset_size_t>::declareExternal(const std::string &symbolName)
+void symbol::SymbolTable<offset_size_t>::markExternal(const std::string &symbolName)
 {
+    
     // an EXPORT statement does not declare a symbol,
     // so therefore we are referencing one that already exists.
-    externalSymbols.push_back(reference(symbolName));
+    auto symbol = reference(symbolName);
+    externalSymbols.push_back(symbol);
 }
 
 template <typename offset_size_t>
 auto symbol::SymbolTable<offset_size_t>::getExternalSymbols() const 
-    -> std::vector<const SymbolEntryPtr>
+    -> std::vector<SymbolEntryPtr>
 {
 
     return this->externalSymbols;

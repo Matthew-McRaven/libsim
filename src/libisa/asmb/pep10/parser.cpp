@@ -8,6 +8,7 @@
 #include "symbol/entry.hpp"
 #include "masm/frontend/tokenizer.hpp"
 #include "asmb/pep10/ir.hpp"
+#include "asmb/pep10/directives.hpp"
 #include "isa/pep10/instruction.hpp"
 #include "masm/ir/empty.hpp"
 #include "masm/ir/directives.hpp"
@@ -117,7 +118,7 @@ auto asmb::pep10::parser::parse(
 			else if(text_dot == "BYTE") std::tie(local_success, local_message, local_line) = parse_BYTE(start, last);
 			else if(text_dot == "END") std::tie(local_success, local_message, local_line) = parse_END(start, last);
 			else if(text_dot == "EQUATE") std::tie(local_success, local_message, local_line) = parse_EQUATE(start, last);
-			else if(text_dot == "EXPORT") std::tie(local_success, local_message, local_line) = parse_EXPORT(start, last);
+			else if(text_dot == "EXPORT") std::tie(local_success, local_message, local_line) = parse_EXPORT(start, last, project->symbol_table);
 			else if(text_dot == "SYCALL") std::tie(local_success, local_message, local_line) = parse_SYCALL(start, last);
 			else if(text_dot == "USYCALL") std::tie(local_success, local_message, local_line) = parse_USYCALL(start, last);
 			else if(text_dot == "WORD") std::tie(local_success, local_message, local_line) = parse_WORD(start, last);
@@ -347,7 +348,6 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_BLOCK(token_iterator_t& start, const token_iterator_t& last)
 {
 	return {false, {}, nullptr};
-
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_BURN(token_iterator_t& start, const token_iterator_t& last)
@@ -367,13 +367,51 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_EQUATE(token_iterator_t& start, const token_iterator_t& last)
 {
-	return {false, {}, nullptr};
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {
+		masm::frontend::token_type::kDecConstant,
+		masm::frontend::token_type::kHexConstant,
+		masm::frontend::token_type::kStrConstant,
+		masm::frontend::token_type::kCharConstant
+	};
+
+	auto ret_val = std::make_shared<masm::ir::dot_equate<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .EQUATE requires a literal argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, nullptr); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else if(!argument->fits_in(2)) {
+		return {false, ";ERROR: Operand must be smaller than 2 bytes.", nullptr};
+	}
+	else {
+		ret_val->argument = argument;
+		return {true, "", ret_val};
+	};
 
 }
 
-std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_EXPORT(token_iterator_t& start, const token_iterator_t& last)
+std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_EXPORT(token_iterator_t& start, 
+	const token_iterator_t& last, symbol_table_pointer_t symbol_table)
 {
-	return {false, {}, nullptr};
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {masm::frontend::token_type::kIdentifier};
+
+	auto ret_val = std::make_shared<asmb::pep10::dot_export<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .EXPORT requires a symbolic argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, symbol_table); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else {
+		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
+		symbol_table->markExternal(as_ref->symbol_value()->getName());
+		assert(as_ref);
+		ret_val->argument = as_ref;
+		return {true, "", ret_val};
+	}
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_SYCALL(token_iterator_t& start, const token_iterator_t& last)
