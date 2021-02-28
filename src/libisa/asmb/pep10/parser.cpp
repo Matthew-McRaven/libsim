@@ -195,11 +195,27 @@ std::tuple<bool, std::string, asmb::pep10::parser::arg_pointer_t > asmb::pep10::
 			auto arg = std::make_shared<masm::ir::symbol_ref_argument<uint16_t>>(symbol);
 			return {true, "", arg};
 		}
+	case masm::frontend::token_type::kCharConstant:
+		// TODO: Range check values.
+		if(masm::byte_string_length(value) <= 1) {
+			return {true, "", std::make_shared<masm::ir::char_argument<uint16_t>>(value)};
+		}
+		else return {false, ";ERROR: Character literal may only be one byte." , nullptr};
+	case masm::frontend::token_type::kStrConstant:
+		// TODO: Range check values.
+		if(masm::byte_string_length(value) <= 2) {
+			return {true, "", std::make_shared<masm::ir::string_argument<uint16_t>>(value)};
+		}
+		else {
+			return {true, "", std::make_shared<masm::ir::ascii_argument<uint16_t>>(value, 0xffff)};
+		}
 	case masm::frontend::token_type::kDecConstant:
+		// TODO: Range check values.
 		as_long = strtol(value.data(), &end, 10);
 		if(end != &*value.end()) return {false, ";ERROR: Not a valid dec constant", nullptr};
 		return {true, "",  std::make_shared<masm::ir::dec_argument<uint16_t>>(as_long)};
 	case masm::frontend::token_type::kHexConstant:
+		// TODO: Range check values.
 		as_long = strtol(value.data(), &end, 16);
 		if(end != &*value.end()) return {false, ";ERROR: Not a valid dec constant", nullptr};
 		return {true, "",  std::make_shared<masm::ir::dec_argument<uint16_t>>(as_long)};
@@ -372,5 +388,26 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_WORD(token_iterator_t& start, const token_iterator_t& last)
 {
-	return {false, {}, nullptr};
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {
+		masm::frontend::token_type::kDecConstant,
+		masm::frontend::token_type::kHexConstant,
+		masm::frontend::token_type::kStrConstant,
+		masm::frontend::token_type::kCharConstant
+	};
+
+	auto ret_val = std::make_shared<masm::ir::dot_word<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .WORD requires a literal argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, nullptr); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else if(!argument->fits_in(2)) {
+		return {false, ";ERROR: Operand must be smaller than 2 bytes.", nullptr};
+	}
+	else {
+		ret_val->argument = argument;
+		return {true, "", ret_val};
+	};
 }
