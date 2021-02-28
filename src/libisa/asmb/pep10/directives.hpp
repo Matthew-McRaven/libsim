@@ -1,3 +1,35 @@
+#pragma once
+#include <memory>
+#include <optional>
+
+#include "base.hpp"
+#include "args.hpp
+
+namespace asmb::pep10
+{
+template <typename address_size_t>
+class dot_export: public masm::ir::linear_line<address_size_t>
+{
+public:
+    dot_export();
+    ~dot_export() override = default;
+    dot_export(const dot_export& other);
+    dot_export& operator=(dot_export other);
+    std::shared_ptr<linear_line<address_size_t> > clone() const override;
+
+    // linear_line interface
+    std::string generate_listing_string() const override;
+    std::string generate_source_string() const override;
+
+    friend void swap(dot_export& first, dot_export& second)
+    {
+        using std::swap;
+        swap(static_cast<linear_line<address_size_t>&>(first), static_cast<linear_line<address_size_t>&>(second));
+        swap(first.argument, second.argument);
+    }
+
+    std::shared_ptr<masm::ir::symbol_ref_argument<address_size_t> > argument = nullptr;
+};
 
 /*
 class DotExport: public AsmCode
@@ -87,3 +119,4 @@ public:
     }
 };
 */
+}; // End namespace asmb::pep10
