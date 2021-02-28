@@ -182,6 +182,8 @@ auto asmb::pep10::parser::parse(
 std::tuple<bool, std::string, asmb::pep10::parser::arg_pointer_t > asmb::pep10::parser::parse_operand(
 	masm::frontend::token_type token, std::string value, symbol_table_pointer_t symbol_table)
 {
+	char *end = nullptr;
+	long long as_long = 0;
 	switch(token)
 	{
 	case masm::frontend::token_type::kIdentifier:
@@ -193,6 +195,14 @@ std::tuple<bool, std::string, asmb::pep10::parser::arg_pointer_t > asmb::pep10::
 			auto arg = std::make_shared<masm::ir::symbol_ref_argument<uint16_t>>(symbol);
 			return {true, "", arg};
 		}
+	case masm::frontend::token_type::kDecConstant:
+		as_long = strtol(value.data(), &end, 10);
+		if(end != &*value.end()) return {false, ";ERROR: Not a valid dec constant", nullptr};
+		return {true, "",  std::make_shared<masm::ir::dec_argument<uint16_t>>(as_long)};
+	case masm::frontend::token_type::kHexConstant:
+		as_long = strtol(value.data(), &end, 16);
+		if(end != &*value.end()) return {false, ";ERROR: Not a valid dec constant", nullptr};
+		return {true, "",  std::make_shared<masm::ir::dec_argument<uint16_t>>(as_long)};
 	default:
 		return {false, {}, nullptr};
 	}
@@ -296,7 +306,26 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_ALIGN(token_iterator_t& start, const token_iterator_t& last)
 {
-	return {false, {}, nullptr};
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {
+		masm::frontend::token_type::kDecConstant,
+		masm::frontend::token_type::kHexConstant
+	};
+
+	auto ret_val = std::make_shared<masm::ir::dot_align<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .ALIGN requires a (hexa)decimal argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, nullptr); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else if(auto v=argument->value();v%2!=0 && v%4!=0 && v%8!=0) {
+		return {false, ";ERROR: .ALIGN argument must be in {2,4,8}.", nullptr};
+	}
+	else {
+		ret_val->argument = argument;
+		return {true, "", ret_val};
+	};
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_BLOCK(token_iterator_t& start, const token_iterator_t& last)
