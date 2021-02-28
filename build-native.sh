@@ -8,5 +8,5 @@ cd build
 	mkdir -p native
 	cd native
 	cmake ../.. -DCMAKE_BUILD_TYPE=Debug
-	make -j30 && make test
+	make -j$(nproc) && make test
 )

@@ -6,5 +6,5 @@ cd build
 	mkdir -p js
 	cd js
 	emcmake cmake -DBoost_INCLUDE_DIR=/boost/ ../..
-	emmake make -j30
+	emmake make -j$(nproc)
 )
