@@ -5,6 +5,7 @@
 #include "masm/project/project.hpp"
 #include "masm/project/section.hpp"
 #include "masm/ir/args.hpp"
+#include "masm/registry.hpp"
 
 namespace asmb::pep10
 {
@@ -20,6 +21,7 @@ namespace asmb::pep10
 		using ir_pointer_t = std::shared_ptr<masm::ir::linear_line<uint16_t>>;
 		using arg_pointer_t = std::shared_ptr<masm::ir::lir_argument<uint16_t>>;
 		using symbol_table_pointer_t = std::shared_ptr<symbol::SymbolTable<uint16_t>>;
+		using macro_registry_pointer_t = std::shared_ptr<masm::macro_registry>;
 		virtual auto parse(
         	std::shared_ptr<masm::project::project<uint16_t> >& project, 
         	std::shared_ptr<masm::elf::code_section<uint16_t> >& section
@@ -45,8 +47,10 @@ namespace asmb::pep10
 		std::tuple<bool, std::string, ir_pointer_t> parse_EQUATE(token_iterator_t& start, const token_iterator_t& last);
 		std::tuple<bool, std::string, ir_pointer_t> parse_EXPORT(token_iterator_t& start, const token_iterator_t& last,
 			symbol_table_pointer_t symbol_table);
-		std::tuple<bool, std::string, ir_pointer_t> parse_SYCALL(token_iterator_t& start, const token_iterator_t& last);
-		std::tuple<bool, std::string, ir_pointer_t> parse_USYCALL(token_iterator_t& start, const token_iterator_t& last);
+		std::tuple<bool, std::string, ir_pointer_t> parse_SYCALL(token_iterator_t& start, const token_iterator_t& last,
+			symbol_table_pointer_t symbol_table, macro_registry_pointer_t registry);
+		std::tuple<bool, std::string, ir_pointer_t> parse_USYCALL(token_iterator_t& start, const token_iterator_t& last,
+			symbol_table_pointer_t symbol_table, macro_registry_pointer_t registry);
 		std::tuple<bool, std::string, ir_pointer_t> parse_WORD(token_iterator_t& start, const token_iterator_t& last,
 			symbol_table_pointer_t symbol_table);
 	};
