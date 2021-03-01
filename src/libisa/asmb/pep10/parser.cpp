@@ -110,8 +110,7 @@ auto asmb::pep10::parser::parse(
 			
 		}
 		else if(auto [match_dot, _2, text_dot] = masm::frontend::match(start, last, dot, true); match_dot) {
-			if(text_dot == "ADDRSS") std::tie(local_success, local_message, local_line) = parse_ADDRSS(start, last, project->symbol_table);
-			else if(text_dot == "ASCII") std::tie(local_success, local_message, local_line) = parse_ASCII(start, last);
+			 if(text_dot == "ASCII") std::tie(local_success, local_message, local_line) = parse_ASCII(start, last);
 			else if(text_dot == "ALIGN") std::tie(local_success, local_message, local_line) = parse_ALIGN(start, last);
 			else if(text_dot == "BLOCK") std::tie(local_success, local_message, local_line) = parse_BLOCK(start, last);
 			else if(text_dot == "BURN") std::tie(local_success, local_message, local_line) = parse_BURN(start, last);
@@ -121,7 +120,7 @@ auto asmb::pep10::parser::parse(
 			else if(text_dot == "EXPORT") std::tie(local_success, local_message, local_line) = parse_EXPORT(start, last, project->symbol_table);
 			else if(text_dot == "SYCALL") std::tie(local_success, local_message, local_line) = parse_SYCALL(start, last);
 			else if(text_dot == "USYCALL") std::tie(local_success, local_message, local_line) = parse_USYCALL(start, last);
-			else if(text_dot == "WORD") std::tie(local_success, local_message, local_line) = parse_WORD(start, last);
+			else if(text_dot == "WORD") std::tie(local_success, local_message, local_line) = parse_WORD(start, last, project->symbol_table);
 			else {
 				std::tie(local_success, local_message) = std::make_tuple(false, ";ERROR: Invalid dot command.");
 			}
@@ -285,26 +284,6 @@ asmb::pep10::parser::ir_pointer_t asmb::pep10::parser::parse_macro_invocation(to
 	return nullptr;
 }
 
-std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_ADDRSS(token_iterator_t& start, 
-	const token_iterator_t& last, symbol_table_pointer_t symbol_table)
-{
-	using token_class_t = const std::set<masm::frontend::token_type>;
-	static const token_class_t arg = {masm::frontend::token_type::kIdentifier};
-
-	auto ret_val = std::make_shared<masm::ir::dot_address<uint16_t>>();
-	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
-		return {false, ";ERROR: .ADDRSS requires a symbolic argument.", nullptr};
-	}
-	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, symbol_table); !valid_operand) {
-		return {false, err_msg, nullptr};
-	}
-	else {
-		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
-		assert(as_ref);
-		ret_val->argument = as_ref;
-		return {true, "", ret_val};
-	}
-}
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_ASCII(token_iterator_t& start, const token_iterator_t& last)
 {

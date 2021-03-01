@@ -36,8 +36,6 @@ namespace asmb::pep10
 		);
 		ir_pointer_t parse_macro_invocation(token_iterator_t& start, const token_iterator_t& last);
 
-		std::tuple<bool, std::string, ir_pointer_t> parse_ADDRSS(token_iterator_t& start, const token_iterator_t& last, 
-			symbol_table_pointer_t symbol_table);
 		std::tuple<bool, std::string, ir_pointer_t> parse_ASCII(token_iterator_t& start, const token_iterator_t& last);
 		std::tuple<bool, std::string, ir_pointer_t> parse_ALIGN(token_iterator_t& start, const token_iterator_t& last);
 		std::tuple<bool, std::string, ir_pointer_t> parse_BLOCK(token_iterator_t& start, const token_iterator_t& last);
