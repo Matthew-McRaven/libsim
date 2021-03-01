@@ -347,7 +347,26 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_BLOCK(token_iterator_t& start, const token_iterator_t& last)
 {
-	return {false, {}, nullptr};
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {
+		masm::frontend::token_type::kDecConstant,
+		masm::frontend::token_type::kHexConstant,
+	};
+
+	auto ret_val = std::make_shared<masm::ir::dot_block<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .BLOCK requires a literal argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, nullptr); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else if(!argument->fits_in(2)) {
+		return {false, ";ERROR: Operand must be smaller than 2 bytes.", nullptr};
+	}
+	else {
+		ret_val->argument = argument;
+		return {true, "", ret_val};
+	};
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_BURN(token_iterator_t& start, const token_iterator_t& last)
