@@ -4,3 +4,5 @@
 ARG VARIANT="ubuntu-20.04"
 ARG boost_version="1.75.0"
 FROM registry.gitlab.com/pep10/libsim/pyboost:v0.3.0
+
+RUN rm -f /usr/bin/ld && ln -s /emsdk/llvm/git/build_main_64/bin/lld /usr/bin/ld
