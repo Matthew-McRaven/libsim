@@ -110,13 +110,14 @@ auto asmb::pep10::parser::parse(
 			else if(local_symbol) local_line->symbol_entry = local_symbol;
 			
 		}
+		// TODO: Fix case sensitivity on dot commands.
 		else if(auto [match_dot, _2, text_dot] = masm::frontend::match(start, last, dot, true); match_dot) {
 			 if(text_dot == "ASCII") std::tie(local_success, local_message, local_line) = parse_ASCII(start, last);
 			else if(text_dot == "ALIGN") std::tie(local_success, local_message, local_line) = parse_ALIGN(start, last);
 			else if(text_dot == "BLOCK") std::tie(local_success, local_message, local_line) = parse_BLOCK(start, last);
 			else if(text_dot == "BURN") {
 				std::tie(local_success, local_message, local_line) = parse_BURN(start, last);
-				if(local_success && local_symbol) { // EQUATE lines need a symbol declaration.
+				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .BURN does not support symbol declaration.";
 				}
@@ -124,7 +125,7 @@ auto asmb::pep10::parser::parse(
 			else if(text_dot == "BYTE") std::tie(local_success, local_message, local_line) = parse_BYTE(start, last);
 			else if(text_dot == "END") {
 				std::tie(local_success, local_message, local_line) = parse_END(start, last);
-					if(local_success && local_symbol) { // EQUATE lines need a symbol declaration.
+					if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .END does not support symbol declaration.";
 				}
@@ -144,21 +145,21 @@ auto asmb::pep10::parser::parse(
 			}
 			else if(text_dot == "EXPORT") {
 				std::tie(local_success, local_message, local_line) = parse_EXPORT(start, last, project->symbol_table);
-				if(local_success && local_symbol) { // EQUATE lines need a symbol declaration.
+				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .EXPORT does not support symbol declaration.";
 				}
 			}
 			else if(text_dot == "SYCALL") {
 				std::tie(local_success, local_message, local_line) = parse_SYCALL(start, last, project->symbol_table, project->macro_registry);
-				if(local_success && local_symbol) { // EQUATE lines need a symbol declaration.
+				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .SYCALL does not support symbol declaration.";
 				}
 			}
 			else if(text_dot == "USYCALL") {
 				std::tie(local_success, local_message, local_line) = parse_USYCALL(start, last, project->symbol_table, project->macro_registry);
-				if(local_success && local_symbol) { // EQUATE lines need a symbol declaration.
+				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .USYCALL does not support symbol declaration.";
 				}
@@ -497,7 +498,24 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_SYCALL(token_iterator_t& start, 
 	const token_iterator_t& last, symbol_table_pointer_t symbol_table, macro_registry_pointer_t registry)
 {
-	return {false, {}, nullptr};
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {
+		masm::frontend::token_type::kIdentifier
+	};
+
+	auto ret_val = std::make_shared<asmb::pep10::dot_sycall<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .USYCALL requires a symbolic argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, symbol_table); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else {
+		registry->register_nonunary_system_call(text_arg, "@{0} 2\nLDWT {0},i SCALL $1, $2\n.END\n");
+		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
+		ret_val->argument = as_ref;
+		return {true, "", ret_val};
+	};
 }
 
 std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_USYCALL(token_iterator_t& start, 
