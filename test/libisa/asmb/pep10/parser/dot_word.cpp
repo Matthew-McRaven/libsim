@@ -48,7 +48,7 @@ TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
 		REQUIRE(res.first);
 		auto x = project->images[0]->sections[0];
 		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 2);
-		auto maybe_word = project->images[0]->sections[0]->body_ir->ir_lines[0];
+		auto maybe_word = project->images[0]->sections[0]->body_ir->ir_lines[1];
 		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
 		// TODO: Check back after finishing equate.
 		REQUIRE(as_word->argument->value() == 33);
