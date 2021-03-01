@@ -97,7 +97,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 		line.argument = std::make_shared<masm::ir::dec_argument<uint16_t> >(18);
 
 		CHECK(line.generate_source_string() == "         .BURN   18          ");
-		CHECK(line.generate_listing_string() == "0x0011                .BURN   18          ");
+		CHECK(line.generate_listing_string() == "                      .BURN   18          ");
 		CHECK(line.object_code_bytes() == 0);
 		CHECK_FALSE(line.contains_memory_address());
 		CHECK_FALSE(line.tracks_trace_tags());
