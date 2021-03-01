@@ -13,6 +13,7 @@
 #include "masm/ir/empty.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/args.hpp"
+#include "symbol/value.hpp"
 //#include "masm/ir.macro.hpp"
 
 bool asmb::pep10::requires_byte_operand(isa::pep10::instruction_mnemonic mn)
@@ -116,7 +117,19 @@ auto asmb::pep10::parser::parse(
 			else if(text_dot == "BURN") std::tie(local_success, local_message, local_line) = parse_BURN(start, last);
 			else if(text_dot == "BYTE") std::tie(local_success, local_message, local_line) = parse_BYTE(start, last);
 			else if(text_dot == "END") std::tie(local_success, local_message, local_line) = parse_END(start, last);
-			else if(text_dot == "EQUATE") std::tie(local_success, local_message, local_line) = parse_EQUATE(start, last);
+			else if(text_dot == "EQUATE") {
+				std::tie(local_success, local_message, local_line) = parse_EQUATE(start, last);
+				if(!local_success) {} // Don't try fixup EQUATE lines that are clearly long.
+				else if(!local_symbol) { // EQUATE lines need a symbol declaration.
+					local_success = false;
+					local_message = ";ERROR: .EQUATE requires a symbol declaration.";
+				}
+				else {
+					auto arg = std::dynamic_pointer_cast<masm::ir::dot_equate<uint16_t> >(local_line)->argument->value();
+					auto sym_value = std::make_shared<symbol::SymbolValueNumeric<uint16_t>>(arg);
+					local_symbol->setValue(sym_value);
+				}
+			}
 			else if(text_dot == "EXPORT") std::tie(local_success, local_message, local_line) = parse_EXPORT(start, last, project->symbol_table);
 			else if(text_dot == "SYCALL") std::tie(local_success, local_message, local_line) = parse_SYCALL(start, last);
 			else if(text_dot == "USYCALL") std::tie(local_success, local_message, local_line) = parse_USYCALL(start, last);

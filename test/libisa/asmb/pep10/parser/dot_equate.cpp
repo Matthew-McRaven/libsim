@@ -4,98 +4,92 @@
 #include "asmb/pep10/ir.hpp"
 #include "masm/ir/directives.hpp"
 
-TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
+TEST_CASE( "Parse dot equate", "[asmb::pep10::parser]"  ) {
 
 	auto driver = make_driver();
 
-	SECTION("decimal .WORD") {	
+	SECTION("decimal .EQUATE") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = ".WORD 33\n";
+		file->body = "s:.EQUATE 33\n";
 		std::vector<driver_t::source_t> vec = {file};
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
 		auto x = project->images[0]->sections[0];
 		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 1);
 		auto maybe_word = project->images[0]->sections[0]->body_ir->ir_lines[0];
-		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
+		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_equate<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == 33);
 	}
 	
-	SECTION("signed decimal .WORD") {	
+	SECTION("signed decimal .EQUATE") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = ".WORD -33\n";
+		file->body = "s:.EQUATE -33\n";
 		std::vector<driver_t::source_t> vec = {file};
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
 		auto x = project->images[0]->sections[0];
 		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 1);
 		auto maybe_word = project->images[0]->sections[0]->body_ir->ir_lines[0];
-		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
+		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_equate<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == static_cast<uint16_t>(-33));
 	}
 
-	SECTION("symbolic .WORD") {	
+	SECTION("no symbolic .EQUATE") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = "s:.EQUATE 33\n.WORD s\n";
+		file->body = "s:.EQUATE 33\nk:.EQUATE s\n";
 		std::vector<driver_t::source_t> vec = {file};
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
-		REQUIRE(res.first);
-		auto x = project->images[0]->sections[0];
-		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 2);
-		auto maybe_word = project->images[0]->sections[0]->body_ir->ir_lines[0];
-		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
-		// TODO: Check back after finishing equate.
-		REQUIRE(as_word->argument->value() == 33);
+		REQUIRE_FALSE(res.first);
 	}
 
-	SECTION("hex .WORD") {	
+	SECTION("hex .EQUATE") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = ".WORD 0x21\n";
+		file->body = "s:.EQUATE 0x21\n";
 		std::vector<driver_t::source_t> vec = {file};
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
 		auto x = project->images[0]->sections[0];
 		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 1);
 		auto maybe_word = project->images[0]->sections[0]->body_ir->ir_lines[0];
-		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
+		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_equate<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == 33);
 	}
 
-	SECTION("char .WORD") {	
+	SECTION("char .EQUATE") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = ".WORD '!'\n";
+		file->body = "s:.EQUATE '!'\n";
 		std::vector<driver_t::source_t> vec = {file};
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
 		auto x = project->images[0]->sections[0];
 		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 1);
 		auto maybe_word = project->images[0]->sections[0]->body_ir->ir_lines[0];
-		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
+		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_equate<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == 33);
 	}
 
-	SECTION("string .WORD") {	
+	SECTION("string .EQUATE") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = ".WORD \"!\"\n";
+		file->body = "s:.EQUATE \"!\"\n";
 		std::vector<driver_t::source_t> vec = {file};
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
 		auto x = project->images[0]->sections[0];
 		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 1);
 		auto maybe_word = project->images[0]->sections[0]->body_ir->ir_lines[0];
-		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
+		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_equate<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == 33);
 	}
 
@@ -103,7 +97,7 @@ TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = ".WORD \"!!!\"\n";
+		file->body = "s:.EQUATE \"!!!\"\n";
 		std::vector<driver_t::source_t> vec = {file};
 		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
