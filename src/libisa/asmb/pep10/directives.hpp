@@ -32,6 +32,31 @@ public:
     std::shared_ptr<masm::ir::symbol_ref_argument<address_size_t> > argument = nullptr;
 };
 
+template <typename address_size_t>
+class dot_usycall: public masm::ir::linear_line<address_size_t>
+{
+public:
+    dot_usycall();
+    ~dot_usycall() override = default;
+    dot_usycall(const dot_usycall& other);
+    dot_usycall& operator=(dot_usycall other);
+    std::shared_ptr<masm::ir::linear_line<address_size_t> > clone() const override;
+
+    // linear_line interface
+    std::string generate_listing_string() const override;
+    std::string generate_source_string() const override;
+
+    friend void swap(dot_usycall& first, dot_usycall& second)
+    {
+        using std::swap;
+        swap(static_cast<masm::ir::linear_line<address_size_t>&>(first), 
+            static_cast<masm::ir::linear_line<address_size_t>&>(second));
+        swap(first.argument, second.argument);
+    }
+
+    std::shared_ptr<masm::ir::symbol_ref_argument<address_size_t> > argument = nullptr;
+};
+
 /*
 class DotExport: public AsmCode
 {
