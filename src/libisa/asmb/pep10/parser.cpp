@@ -21,25 +21,62 @@ bool asmb::pep10::requires_byte_operand(isa::pep10::instruction_mnemonic mn)
 	return mn == isa::pep10::instruction_mnemonic::LDBA
 		|| mn == isa::pep10::instruction_mnemonic::LDBX;
 }
-bool asmb::pep10::requires_addr_mode(isa::pep10::instruction_mnemonic)
+bool asmb::pep10::requires_addr_mode(isa::pep10::instruction_mnemonic mn)
 {
-
+	return !(mn == isa::pep10::instruction_mnemonic::BR
+		|| mn == isa::pep10::instruction_mnemonic::BRLT
+		|| mn == isa::pep10::instruction_mnemonic::BRLE
+		|| mn == isa::pep10::instruction_mnemonic::BRNE
+		|| mn == isa::pep10::instruction_mnemonic::BREQ
+		|| mn == isa::pep10::instruction_mnemonic::BRGT
+		|| mn == isa::pep10::instruction_mnemonic::BRGE
+		|| mn == isa::pep10::instruction_mnemonic::BRV
+		|| mn == isa::pep10::instruction_mnemonic::BRC
+		|| mn == isa::pep10::instruction_mnemonic::CALL);
 }
 std::optional<isa::pep10::addressing_mode> asmb::pep10::parse_addr_mode(std::string addr_mode)
 {
-
+	boost::algorithm::to_lower(addr_mode);
+	if(addr_mode == "i") return isa::pep10::addressing_mode::I;
+	else if(addr_mode == "d") return isa::pep10::addressing_mode::D;
+	else if(addr_mode == "x") return isa::pep10::addressing_mode::X;
+	else if(addr_mode == "n") return isa::pep10::addressing_mode::N;
+	else if(addr_mode == "s") return isa::pep10::addressing_mode::S;
+	else if(addr_mode == "sf") return isa::pep10::addressing_mode::SF;
+	else if(addr_mode == "sx") return isa::pep10::addressing_mode::SX;
+	else if(addr_mode == "sfx") return isa::pep10::addressing_mode::SFX;
 }
 
-bool asmb::pep10::allowed_addressing_mode(isa::pep10::instruction_mnemonic, isa::pep10::addressing_mode)
+bool asmb::pep10::allowed_addressing_mode(isa::pep10::instruction_mnemonic mn, isa::pep10::addressing_mode am)
 {
-
+	using namespace isa::pep10;
+	auto isa = isa::pep10::isa_definition::get_definition();
+	auto def_ptr = isa.isa.find(mn);
+	if(def_ptr == isa.isa.end()) return false;
+	switch(def_ptr->second->iformat)
+	{
+	case isa::pep10::addressing_class::U_none:
+	case isa::pep10::addressing_class::R_none:
+		return false;
+	case isa::pep10::addressing_class::A_ix:
+		return am == addressing_mode::I || am == addressing_mode::X;
+	case isa::pep10::addressing_class::RAAA_all:
+	case isa::pep10::addressing_class::AAA_all:
+		return true;
+	case isa::pep10::addressing_class::AAA_i:
+		return am == addressing_mode::I;
+	case isa::pep10::addressing_class::RAAA_noi:
+		return am != addressing_mode::I;
+	}
 }
+
 bool asmb::pep10::valid_symbol_name(const std::string& symbol)
 {
 	// TODO: Determine what makes a valid symbol;
 	if(symbol.size() > 8) return false;
 	return true;
 }
+
 auto asmb::pep10::parser::parse(
 	std::shared_ptr<masm::project::project<uint16_t> >& project, 
 	std::shared_ptr<masm::elf::code_section<uint16_t> >& section) -> bool
@@ -301,10 +338,12 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 	else if(auto [match_comma, _1, _2] = masm::frontend::match(start, last, comma, true); requires_addr_mode(mn) && !match_comma) {
 		return {false, ";ERROR: mnemonic requires addressing mode.", nullptr};
 	}
-	else if(auto [match_addr, _1, text_addr] = masm::frontend::match(start, last, identifier, true); !match_addr) {
+	else if(auto [match_addr, _1, text_addr] = masm::frontend::match(start, last, identifier, true); requires_addr_mode(mn) && !match_addr) {
 		return {false, ";ERROR: Invalid addressing mode.", nullptr};
 	}
-	else if(auto addr = parse_addr_mode(text_addr); !addr) return {false, ";ERROR: Invalid addressing mode.", nullptr};
+	else if(auto addr = requires_addr_mode(mn)?parse_addr_mode(text_addr):isa::pep10::addressing_mode::I; !addr) {
+		return {false, ";ERROR: Invalid addressing mode.", nullptr};
+	}
 	else if(!allowed_addressing_mode(mn, addr.value())) {
 		return {false, fmt::format(";ERROR: Illegal addressing mode \"{}\"", isa::pep10::as_string(addr.value())), nullptr};
 	}
