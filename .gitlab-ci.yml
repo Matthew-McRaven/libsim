@@ -43,6 +43,7 @@ Generate documentation:
     - mkdir -p build/docs/md && cd build/docs/md
     - moxygen ../xml
   artifacts:
+    expire_in: 1 week
     paths:
       - build/docs/html/
       - build/docs/latex/
