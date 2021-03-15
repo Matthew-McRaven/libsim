@@ -59,8 +59,47 @@ TEST_CASE( "Recognize existing macros", "[asmb::pep10::preprocessor]"  ) {
 		auto res = driver.assemble_project(project, vec, masm::project::toolchain_stage::PREPROCESS);
 		CHECK(res.first);
 	}
-
-	SECTION("Invoke 1-arity macro.") {	
+	SECTION("Invoke 1-arty macro with dec constant.") {	
+		auto project = masm::project::init_project<uint16_t>();
+		project->macro_registry->register_macro("HELLO1", "@HELLO1 1\n.END\n", masm::MacroType::CoreMacro);
+		auto file = std::make_shared<masm::project::source_file>();
+		file->name = "main";
+		file->body = "@HELLO1 01\n.END\n";
+		std::vector<driver_t::source_t> vec = {file};
+		auto res = driver.assemble_project(project, vec, masm::project::toolchain_stage::PREPROCESS);
+		CHECK(res.first);
+	}
+	SECTION("Invoke 1-arty macro with hex constant.") {	
+		auto project = masm::project::init_project<uint16_t>();
+		project->macro_registry->register_macro("HELLO1", "@HELLO1 1\n.END\n", masm::MacroType::CoreMacro);
+		auto file = std::make_shared<masm::project::source_file>();
+		file->name = "main";
+		file->body = "@HELLO1 0x01\n.END\n";
+		std::vector<driver_t::source_t> vec = {file};
+		auto res = driver.assemble_project(project, vec, masm::project::toolchain_stage::PREPROCESS);
+		CHECK(res.first);
+	}
+	SECTION("Invoke 1-arty macro with string constant.") {	
+		auto project = masm::project::init_project<uint16_t>();
+		project->macro_registry->register_macro("HELLO1", "@HELLO1 1\n.END\n", masm::MacroType::CoreMacro);
+		auto file = std::make_shared<masm::project::source_file>();
+		file->name = "main";
+		file->body = "@HELLO1 \"01\"\n.END\n";
+		std::vector<driver_t::source_t> vec = {file};
+		auto res = driver.assemble_project(project, vec, masm::project::toolchain_stage::PREPROCESS);
+		CHECK(res.first);
+	}
+	SECTION("Invoke 1-arty macro with character constant.") {	
+		auto project = masm::project::init_project<uint16_t>();
+		project->macro_registry->register_macro("HELLO1", "@HELLO1 1\n.END\n", masm::MacroType::CoreMacro);
+		auto file = std::make_shared<masm::project::source_file>();
+		file->name = "main";
+		file->body = "@HELLO1 '0'\n.END\n";
+		std::vector<driver_t::source_t> vec = {file};
+		auto res = driver.assemble_project(project, vec, masm::project::toolchain_stage::PREPROCESS);
+		CHECK(res.first);
+	}
+	SECTION("Invoke 1-arity macro with identifier.") {	
 		auto project = masm::project::init_project<uint16_t>();
 		project->macro_registry->register_macro("HELLO1", "@HELLO1 1\n.END\n", masm::MacroType::CoreMacro);
 		auto file = std::make_shared<masm::project::source_file>();
