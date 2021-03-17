@@ -25,9 +25,9 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 
 		// Check for externalized symbol definition.
 		REQUIRE(project->symbol_table->exists("s"));
-		auto externs = project->symbol_table->getExternalSymbols();
-		REQUIRE(externs.size() == 1);
-		CHECK(externs[0]->getName() == "s");
+		auto externs = symbol::externals<uint16_t>(project->symbol_table->entries());
+		REQUIRE(boost::size(externs) == 1);
+		CHECK((*externs.begin())->name == "s");
 	}
 
 	SECTION("Valid .EXPORT + comment") {	
@@ -48,9 +48,9 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 
 		// Check for externalized symbol definition.
 		REQUIRE(project->symbol_table->exists("s"));
-		auto externs = project->symbol_table->getExternalSymbols();
-		REQUIRE(externs.size() == 1);
-		CHECK(externs[0]->getName() == "s");
+		auto externs = symbol::externals<uint16_t>(project->symbol_table->entries());
+		REQUIRE(boost::size(externs) == 1);
+		CHECK((*externs.begin())->name == "s");
 	}
 
 	SECTION("Invalid .EXPORT + symbol + comment") {	

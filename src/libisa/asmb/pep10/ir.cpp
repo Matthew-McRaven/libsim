@@ -48,7 +48,7 @@ std::string asmb::pep10::unary_instruction::generate_source_string() const
 {
     std::string symbol_string;
     if (this->symbol_entry != nullptr) {
-        symbol_string = this->symbol_entry->getName()+":";
+        symbol_string = this->symbol_entry->name + ":";
     }
     // TODO: Get correct mnemonic string
     auto mnemonic_string = ".ADDRSS";
@@ -114,7 +114,7 @@ std::string asmb::pep10::nonunary_instruction::generate_source_string() const
 {
     std::string symbol_string;
     if (this->symbol_entry != nullptr) {
-        symbol_string = this->symbol_entry->getName()+":";
+        symbol_string = this->symbol_entry->name + ":";
     }
     // TODO: Get correct mnemonic string
     // TODO: Get correct addressing mode string.

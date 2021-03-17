@@ -7,7 +7,9 @@
 #include <vector>
 #include <type_traits>
 
-#include "symbol/helper.hpp"
+#include <boost/range/adaptors.hpp>
+#include <boost/range/any_range.hpp>
+
 #include "symbol/entry.hpp"
 
 namespace symbol {
@@ -21,69 +23,72 @@ class AbstractSymbolValue;
  *
  */
 
-template <typename offset_size_t>
+template <typename value_t>
 	//requires (UnsignedIntegral<offset_t>)
-class SymbolTable
+class table
 {
 public:
     // This type uniquely identifies a SymbolEntry within a symbol table.
     // It is not gaurenteed to be unique across runs or between multiple SymbolTable instances at runtime.
-    using SymbolID = uint16_t;
+    using ID = uint16_t;
     // Convenience typdefs of commonly used templated types to reduce code verbosity.
-    using SymbolEntryPtr = std::shared_ptr<symbol::SymbolEntry<offset_size_t> >;
-    using AbstractSymbolValuePtr = std::shared_ptr<symbol::AbstractSymbolValue<offset_size_t> >;
+    using entry_ptr_t = std::shared_ptr<symbol::entry<value_t> >;
+    using value_ptr_t = std::shared_ptr<symbol::abstract_value<value_t> >;
 
 private:
-    static SymbolID nextUserSymbolID;
-    static SymbolID getNextUserSymbolID();
-    std::vector<SymbolEntryPtr> externalSymbols;
-    std::map<SymbolID, SymbolEntryPtr> symbolDictionary;
-    std::map<std::string, SymbolID> symbolLookup;
+    static ID next_id_;
+    static ID generate_new_ID();
+
+    std::map<ID, entry_ptr_t> id_to_entry_;
+    std::map<std::string, ID> name_to_id_;
 
 public:
-    explicit SymbolTable();
-    ~SymbolTable();
-    // Return a symbol entry by name or ID. Returns an empty shared_ptr if the symbol being looked for doesn't exist.
-    SymbolEntryPtr getValue(SymbolID symbolID) const;
-    SymbolEntryPtr getValue(const std::string& symbolName) const;
-    // Create a new SymbolEntry with the passed name.
-    SymbolEntryPtr insertSymbol(const std::string& symbolName);
-    // Change the value of a SymbolEntry.
-    // If the symbol already exists, it will be be set to multiple defined.
-    // If one wants to update a symbol value in place, getValue(...) on the symbol,
-    // and setValue(...) on that symbol.
-    SymbolEntryPtr setValue(SymbolID symbolID, AbstractSymbolValuePtr value);
-    SymbolEntryPtr setValue(const std::string& symbolName, AbstractSymbolValuePtr value);
+    using range = boost::any_range<entry_ptr_t, boost::forward_traversal_tag, entry_ptr_t&, std::ptrdiff_t>;//decltype(id_to_entry_.begin() | boost::adaptors::map_values);
+    using const_range = boost::any_range<const entry_ptr_t, boost::forward_traversal_tag, const entry_ptr_t&, std::ptrdiff_t>;//decltype(id_to_entry_.cbegin() | boost::adaptors::map_values);
+
+    explicit table();
+    ~table();
 
     // Indicate that you are referencing a (supposedly) declared symbol.
-    // If the symbol is not in the symbol table, it will bre created.
-    SymbolEntryPtr reference(const std::string& symbolName);
+    // If the symbol is not in the symbol table, it will be created.
+    entry_ptr_t reference(const std::string& symbolName);
     // Indicate that you are defining a new symbol. If the symbol
     // already exists, the symbol will be flagged as multiply defined.
-    SymbolEntryPtr define(const std::string& symbolName);
+    entry_ptr_t define(const std::string& symbolName);
     // Declare a symbol as external, allowing it to be used in other translation units.
-    void markExternal(const std::string& symbolName);
-    // Return the list of symbols that may be linked externally.
-    auto getExternalSymbols() const -> std::vector<SymbolEntryPtr>;
+
+    // Modify ST_INFO fields of an ELF symbol.
+    void set_binding(const std::string& name, binding binding);
+    void set_type(const std::string& name, type type);
 
     // Check if a symbol exists.
-    bool exists(const std::string& symbolName) const;
-    bool exists(SymbolID symbolID) const;
+    bool exists(const std::string& name) const;
+    bool exists(ID ID) const;
+
+    auto entries() const -> const_range;
+    auto entries() -> range;
+
+    std::string listing() const;
+};
+
+    // Return the list of symbols that may be linked externally.
+    template <typename symbol_value_t>
+    auto externals(typename table<symbol_value_t>::const_range rng) -> decltype(rng);
+
     // Get the count of symbols that have definition problems.
-    uint32_t numMultiplyDefinedSymbols() const;
-    uint32_t numUndefinedSymbols() const;
+    template <typename symbol_value_t>
+    size_t count_multiply_defined_symbols(typename table<symbol_value_t>::const_range rng);
+    template <typename symbol_value_t>
+    size_t count_undefined_symbols(typename table<symbol_value_t>::const_range rng);
 
     // Set the offset of all relocatable symbols with an address
     // above threshhold to value.
-    void setOffset(offset_size_t value, offset_size_t threshhold = 0);
-    // Set the offset of all relocatable symbols to 0.
-    void clearOffset();
-    auto getSymbolEntries() const -> std::vector<const SymbolEntryPtr>;
-    // Return the map of all symbolic definitions. Used to provide access to iterators
-    // to perform custom operations and comparisions over all symbols.
-    const std::map<SymbolID, SymbolEntryPtr> getSymbolMap() const;
+    template <typename symbol_value_t>
+    void set_offset(typename table<symbol_value_t>::range rng, symbol_value_t offset, symbol_value_t threshhold = 0);
 
-    std::string getSymbolTableListing() const;
-};
+    // Set the offset of all relocatable symbols to 0.
+    template <typename symbol_value_t>
+    void clear_offset(typename table<symbol_value_t>::range rng);
+
 }; //end namespace symbol
 #include "table.tpp"

@@ -24,156 +24,116 @@
 #include "symbol/entry.hpp"
 
 template <typename value_t>
-symbol::AbstractSymbolValue<value_t>::AbstractSymbolValue()
+symbol::value_empty<value_t>::value_empty(): abstract_value<value_t>()
 {
 }
 
 template <typename value_t>
-symbol::AbstractSymbolValue<value_t>::~AbstractSymbolValue()
-{
-
-}
-
-template <typename value_t>
-symbol::SymbolValueEmpty<value_t>::SymbolValueEmpty(): AbstractSymbolValue<value_t>()
-{
-}
-
-template <typename value_t>
-symbol::SymbolValueEmpty<value_t>::~SymbolValueEmpty()
-{
-}
-
-template <typename value_t>
-value_t symbol::SymbolValueEmpty<value_t>::getValue() const
+value_t symbol::value_empty<value_t>::value() const
 {
     return value_t();
 }
 
 template <typename value_t>
-symbol::SymbolType symbol::SymbolValueEmpty<value_t>::getSymbolType() const
+symbol::type symbol::value_empty<value_t>::type() const
 {
-    return SymbolType::EMPTY;
-}
-
-template <typename value_t>
-symbol::SymbolValueNumeric<value_t>::SymbolValueNumeric(value_t value): value(value)
-{
-
+    return type::kEmpty;
 }
 
 
+
 template <typename value_t>
-symbol::SymbolValueNumeric<value_t>::~SymbolValueNumeric()
+symbol::value_const<value_t>::value_const(value_t value): abstract_value<value_t>(), value_(value)
 {
 
 }
 
 template <typename value_t>
-void symbol::SymbolValueNumeric<value_t>::setValue(value_t value)
+value_t symbol::value_const<value_t>::value() const
 {
-    this->value = value;
-}
-
-
-template <typename value_t>
-value_t symbol::SymbolValueNumeric<value_t>::getValue() const
-{
-    return value;
+    return value_;
 }
 
 template <typename value_t>
-symbol::SymbolType symbol::SymbolValueNumeric<value_t>::getSymbolType() const
+void symbol::value_const<value_t>::set_value(value_t value)
 {
-    return SymbolType::NUMERIC_CONSTANT;
+    value_ = value;
 }
 
 template <typename value_t>
-symbol::SymbolValueLocation<value_t>::SymbolValueLocation(value_t base, value_t offset):
-    AbstractSymbolValue<value_t>(), base(base), offset(offset)
+symbol::type symbol::value_const<value_t>::type() const
 {
+    return type::kConstant;
 }
 
+
+
 template <typename value_t>
-symbol::SymbolValueLocation<value_t>::~SymbolValueLocation()
+symbol::value_location<value_t>::value_location(value_t base, value_t offset):
+    abstract_value<value_t>(), base_(base), offset_(offset)
 {
 }
 
 template <typename value_t>
-void symbol::SymbolValueLocation<value_t>::setBase(value_t value)
+void symbol::value_location<value_t>::set_offset(value_t value)
 {
-    this->base = value;
+    this->offset_ = value;
 }
 
 template <typename value_t>
-void symbol::SymbolValueLocation<value_t>::setOffset(value_t value)
+void symbol::value_location<value_t>::add_to_offset(value_t value)
 {
-    this->offset = value;
+    this->offset_ += value;
 }
 
 template <typename value_t>
-value_t symbol::SymbolValueLocation<value_t>::getValue() const
+value_t symbol::value_location<value_t>::value() const
 {
-    return base + offset;
+    return base_ + offset_;
 
 }
 
 template <typename value_t>
-symbol::SymbolType symbol::SymbolValueLocation<value_t>::getSymbolType() const
+symbol::type symbol::value_location<value_t>::type() const
 {
-    return SymbolType::ADDRESS;
+    return type::kLocation;
 }
 
 template <typename value_t>
-bool symbol::SymbolValueLocation<value_t>::canRelocate() const
+bool symbol::value_location<value_t>::relocatable() const
 {
     return true;
 }
 
 template <typename value_t>
-value_t symbol::SymbolValueLocation<value_t>::getOffset() const
+value_t symbol::value_location<value_t>::offset() const
 {
     return offset;
 }
 
 template <typename value_t>
-value_t symbol::SymbolValueLocation<value_t>::getBase() const
+value_t symbol::value_location<value_t>::base() const
 {
     return base;
 }
 
+
+
 template <typename value_t>
-symbol::SymbolValueExternal<value_t>::SymbolValueExternal(std::shared_ptr<const SymbolEntry<value_t> >symbol): 
-    symbol(std::move(symbol))
+symbol::value_pointer<value_t>::value_pointer(std::shared_ptr<const entry<value_t> > symbol): 
+    abstract_value<value_t>(), symbol_pointer(std::move(symbol))
 {
 
 }
 
 template <typename value_t>
-symbol::SymbolValueExternal<value_t>::~SymbolValueExternal() = default;
-
-template <typename value_t>
-value_t symbol::SymbolValueExternal<value_t>::getValue() const
+value_t symbol::value_pointer<value_t>::value() const
 {
-    return symbol->getValue();
+    return symbol_pointer->value();
 }
 
 template <typename value_t>
-symbol::SymbolType symbol::SymbolValueExternal<value_t>::getSymbolType() const
+symbol::type symbol::value_pointer<value_t>::type() const
 {
-    return SymbolType::EXTERNAL;
-}
-
-template <typename value_t>
-bool symbol::SymbolValueExternal<value_t>::canRelocate() const
-{
-    // We should not allow relocation of a symbol defined in
-    // another translation unit.
-    return false;
-}
-
-template <typename value_t>
-std::shared_ptr<const symbol::SymbolEntry<value_t> >symbol:: SymbolValueExternal<value_t>::getSymbolValue()
-{
-    return symbol;
+    return type::kPtrToSym;
 }

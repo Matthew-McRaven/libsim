@@ -2,6 +2,8 @@
 
 #include <climits>
 #include <memory>
+
+#include "types.hpp"
 // File: symbolvalue.h
 /*
     The Pep/9 suite of applications (Pep9, Pep9CPU, Pep9Micro) are
@@ -25,67 +27,63 @@
 */
 
 namespace symbol {
-template <typename AT>
-class SymbolEntry;
+template <typename value_t>
+class entry;
 
 /*
  * A symbol's value type can be EMPTY (i.e the symbol is undefined), or an address (i.e. the symbol is singly defined, so it describes a ADDRESS in a program).
  * A symbol's value type is not meaninful in the case of a multiply defined symbol, so no special type is required for it.
  */
-enum class SymbolType
-{
-    EMPTY, ADDRESS, NUMERIC_CONSTANT, EXTERNAL
-};
 
 /*
  * Abstract base class defining the properties of a symbolic value.
  */
 template <typename value_t=uint16_t>
-class AbstractSymbolValue
+class abstract_value
 {
 private:
 public:
-    AbstractSymbolValue();
-	virtual ~AbstractSymbolValue();
-	virtual value_t getValue() const = 0;
-    virtual SymbolType getSymbolType() const = 0;
-    virtual bool canRelocate() const {return false;}
+    abstract_value() = default;
+	virtual ~abstract_value() = default;
+	virtual value_t value() const = 0;
+    virtual type type() const = 0;
+    // Number of bytes needed to store the value of the symbol.
+    // Can be variable, especially if the symbol *is a* string.
+    virtual size_t size() const {return 2;} 
+    virtual bool relocatable() const {return false;}
 };
 
-/*
- * A symbol value representing the value contained by an undefined symbol.
+/**
+ * A symbol value containing an indefinite value.
  */
 template <typename value_t=uint16_t>
-class SymbolValueEmpty :
-public AbstractSymbolValue<value_t>
+class value_empty :
+public abstract_value<value_t>
 {
 public:
-    SymbolValueEmpty();
-    virtual ~SymbolValueEmpty() override;
-    
-    // Inherited via AbstractSymbolValue
-    virtual value_t getValue() const override;
-    virtual SymbolType getSymbolType() const override;
+    value_empty();
+    virtual ~value_empty() override = default;
+    value_t value() const override;
+    symbol::type type() const override;
 };
 
-/*
- * A symbol value representing an constant numeric value.
+/**
+ * A symbol value containing an constant numeric value.
  */
 template <typename value_t=uint16_t>
-class SymbolValueNumeric :
-public AbstractSymbolValue<value_t>
+class value_const :
+public abstract_value<value_t>
 {
-    value_t value;
+    value_t value_;
 public:
-    explicit SymbolValueNumeric(value_t value);
-    virtual ~SymbolValueNumeric() override;
-    void setValue(value_t value);
-    // Inherited via AbstractSymbolValue
-    virtual value_t getValue() const override;
-    virtual SymbolType getSymbolType() const override;
+    explicit value_const(value_t value);
+    virtual ~value_const() override = default;
+    value_t value() const override;
+    void set_value(value_t);
+    symbol::type type() const override;
 };
 
-/*
+/**
  * A symbol value representing an address of a line of code.
  * The effective address (and thus the value) is base + offset.
  *
@@ -93,21 +91,25 @@ public:
  * which is necessary when compiling the Pep9OS.
  */
 template <typename value_t=uint16_t>
-class SymbolValueLocation :
-public AbstractSymbolValue<value_t>
+class value_location :
+public abstract_value<value_t>
 {
-    value_t base, offset;
+    value_t base_, offset_;
 public:
-    explicit SymbolValueLocation(value_t base, value_t offset);
-    virtual ~SymbolValueLocation() override; 
-    void setBase(value_t value);
-    void setOffset(value_t value);
-    // Inherited via AbstractSymbolValue
-    virtual value_t getValue() const override;
-    virtual SymbolType getSymbolType() const override;
-    virtual bool canRelocate() const override;
-    value_t getOffset() const;
-    value_t getBase() const;
+    explicit value_location(value_t base, value_t offset);
+    virtual ~value_location() override = default; 
+
+    // Necessary to relocate symbols while linking.
+    void add_to_offset(value_t value);
+    void set_offset(value_t value);
+
+    value_t offset() const;
+    value_t base() const;
+
+    // Inherited via value.
+    virtual value_t value() const override;
+    symbol::type type() const override;
+    bool relocatable() const override;
 };
 
 /*
@@ -117,21 +119,18 @@ public:
  * the PEP10 operating system.
  */
 template <typename value_t=uint16_t>
-class SymbolValueExternal :
-public AbstractSymbolValue<value_t>
+class value_pointer :
+public abstract_value<value_t>
 {
 public:
-    explicit SymbolValueExternal(std::shared_ptr<const SymbolEntry<value_t>>);
-    ~SymbolValueExternal() override;
+    explicit value_pointer(std::shared_ptr<const entry<value_t>>);
+    ~value_pointer() override;
     // Inherited via AbstractSymbolValue
-    value_t getValue() const override;
-    SymbolType getSymbolType() const override;
-    bool canRelocate() const override;
+    value_t value() const override;
+    symbol::type type() const override;
     // Since we are pointing to a symbol in another table,
     // don't allow the symbol to be modified here.
-    std::shared_ptr<const SymbolEntry<value_t>> getSymbolValue();
-private:
-    std::shared_ptr<const SymbolEntry<value_t>> symbol;
+    std::shared_ptr<const entry<value_t>> symbol_pointer;
 
 };
 }; // end namespace symbol

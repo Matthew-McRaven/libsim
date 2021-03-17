@@ -20,7 +20,7 @@ namespace asmb::pep10
 	public:
 		using ir_pointer_t = std::shared_ptr<masm::ir::linear_line<uint16_t>>;
 		using arg_pointer_t = std::shared_ptr<masm::ir::lir_argument<uint16_t>>;
-		using symbol_table_pointer_t = std::shared_ptr<symbol::SymbolTable<uint16_t>>;
+		using symbol_table_pointer_t = std::shared_ptr<symbol::table<uint16_t>>;
 		using macro_registry_pointer_t = std::shared_ptr<masm::macro_registry>;
 		virtual auto parse(
         	std::shared_ptr<masm::project::project<uint16_t> >& project, 

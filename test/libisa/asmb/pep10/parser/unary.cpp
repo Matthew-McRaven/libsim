@@ -40,7 +40,7 @@ TEST_CASE( "Parse unary instructions", "[asmb::pep10::parser]"  ) {
 		CHECK(as_unary->mnemonic == isa::pep10::instruction_mnemonic::ASRA);
 		CHECK(!as_unary->comment);
 		REQUIRE(as_unary->symbol_entry);
-		CHECK(as_unary->symbol_entry->getName() == "maybe");
+		CHECK(as_unary->symbol_entry->name == "maybe");
 	}
 
 	SECTION("Unary instruction with symbol + comment.") {	
@@ -59,7 +59,7 @@ TEST_CASE( "Parse unary instructions", "[asmb::pep10::parser]"  ) {
 		REQUIRE(as_unary->comment);
 		CHECK(as_unary->comment.value() == "A comment");
 		REQUIRE(as_unary->symbol_entry);
-		CHECK(as_unary->symbol_entry->getName() == "maybe");
+		CHECK(as_unary->symbol_entry->name  == "maybe");
 	}
 
 	SECTION("Unary instruction with comment.") {	

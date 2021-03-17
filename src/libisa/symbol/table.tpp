@@ -30,189 +30,98 @@
 #include "symbol/value.hpp"
 
 template <typename T>
-typename symbol::SymbolTable<T>::SymbolID symbol::SymbolTable<T>::nextUserSymbolID = {0};
+typename symbol::table<T>::ID symbol::table<T>::next_id_ = {0};
 
-template <typename offset_size_t>
-typename symbol::SymbolTable<offset_size_t>::SymbolID symbol::SymbolTable<offset_size_t>::getNextUserSymbolID()
+template <typename symbol_value_t>
+typename symbol::table<symbol_value_t>::ID symbol::table<symbol_value_t>::generate_new_ID()
 {
-    return ++nextUserSymbolID;
+    return ++next_id_;
 }
 
-template <typename offset_size_t>
-symbol::SymbolTable<offset_size_t>::SymbolTable() = default;
+template <typename symbol_value_t>
+symbol::table<symbol_value_t>::table() = default;
 
-template <typename offset_size_t>
-symbol::SymbolTable<offset_size_t>::~SymbolTable() = default;
+template <typename symbol_value_t>
+symbol::table<symbol_value_t>::~table() = default;
 
-template <typename offset_size_t>
-typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr 
-    symbol::SymbolTable<offset_size_t>::getValue(SymbolID symbolID) const
+template <typename symbol_value_t>
+typename symbol::table<symbol_value_t>::entry_ptr_t 
+    symbol::table<symbol_value_t>::reference(const std::string& name)
 {
-    if(auto index = symbolDictionary.find(symbolID); index == symbolDictionary.end()) return nullptr;
-    else return index->second;
-}
-
-template <typename offset_size_t>
-typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr 
-    symbol::SymbolTable<offset_size_t>::getValue(const std::string & symbolName) const
-{
-    if(auto index = symbolLookup.find(symbolName); index == symbolLookup.end())  return nullptr;
-    else return getValue(index->second);
-}
-
-template <typename offset_size_t>
-typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr 
-    symbol::SymbolTable<offset_size_t>::insertSymbol(const std::string & symbolName)
-{
-    // We don't want multiple symbols to exists in the same table with the same name.
-    if(exists(symbolName)) return getValue(symbolName);
-    SymbolID id = SymbolTable::getNextUserSymbolID();
-    symbolLookup[symbolName] = id;
-    std::string name = symbolName;
-    symbolDictionary[id] = std::make_shared<SymbolEntry<offset_size_t>>(this, id, name);
-    return symbolDictionary[id];
-}
-
-template <typename offset_size_t>
-typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr 
-symbol::SymbolTable<offset_size_t>::setValue(SymbolID symbolID, AbstractSymbolValuePtr value)
-{
-    SymbolEntryPtr rval = symbolDictionary[symbolID];
-    // If the symbol has already been defined, this function vall constitutes a redefinition.
-    if(rval->isDefined()) {
-        rval->setMultiplyDefined();
+    if(auto index = name_to_id_.find(name); index == name_to_id_.end()) {
+        // Must create symbol and put in correct tables.
+        auto id = generate_new_ID();
+        name_to_id_[name] = id;
+        auto ret = std::make_shared<entry<symbol_value_t>>(*this, id, name);
+        id_to_entry_[id] = ret;
+        return ret;
     }
-    rval->setValue(std::move(value));
-    return rval;
+    else return id_to_entry_[index->second];
 }
 
-template <typename offset_size_t>
-typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr 
-    symbol::SymbolTable<offset_size_t>::setValue(const std::string& symbolName, AbstractSymbolValuePtr value)
+template <typename symbol_value_t>
+typename symbol::table<symbol_value_t>::entry_ptr_t 
+    symbol::table<symbol_value_t>::define(const std::string& name)
 {
-    // If the table doesn't contain a symbol, create it first.
-    if(!exists(symbolName)) insertSymbol(symbolName);
-    return setValue(symbolLookup.find(symbolName)->second, std::move(value));
-}
-
-template <typename offset_size_t>
-typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr 
-    symbol::SymbolTable<offset_size_t>::reference(const std::string& symbolName)
-{
-    if(auto index = symbolLookup.find(symbolName); index == symbolLookup.end()) return insertSymbol(symbolName);
-    else return getValue(index->second);
-}
-
-template <typename offset_size_t>
-typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr 
-    symbol::SymbolTable<offset_size_t>::define(const std::string& symbolName)
-{
-    auto index = symbolLookup.find(symbolName);
-    SymbolTable::SymbolEntryPtr entry;
-    if(index == symbolLookup.end()) entry = insertSymbol(symbolName);
-    else entry = getValue(index->second);
-    // Defining a symbol "increases" the definition state by one.
-    if(entry->isUndefined()) entry->setDefinedState(DefStates::SINGLE);
-    else if(entry->isDefined()) entry->setDefinedState(DefStates::MULTIPLE);
+    auto entry = reference(name);
+    if(entry->state == definition_state::kUndefined) entry->state = definition_state::kSingle;
+    else if(entry->state == definition_state::kSingle) entry->state = definition_state::kMultiple;
     return entry;
 }
 
-template <typename offset_size_t>
-void symbol::SymbolTable<offset_size_t>::markExternal(const std::string &symbolName)
+template <typename symbol_value_t>
+void symbol::table<symbol_value_t>::set_binding(const std::string &name, symbol::binding binding)
 {
-    
-    // an EXPORT statement does not declare a symbol,
-    // so therefore we are referencing one that already exists.
-    auto symbol = reference(symbolName);
-    externalSymbols.push_back(symbol);
+    auto symbol = reference(name);
+    symbol->binding = binding;
+}
+
+template <typename symbol_value_t>
+void symbol::table<symbol_value_t>::set_type(const std::string &name, symbol::type type)
+{
+    auto symbol = reference(name);
+    symbol->type = type;
+}
+
+template <typename symbol_value_t>
+bool symbol::table<symbol_value_t>::exists(const std::string& name) const
+{
+    return name_to_id_.find(name) != name_to_id_.end();
+}
+
+template <typename symbol_value_t>
+bool symbol::table<symbol_value_t>::exists(ID id) const
+{
+    return id_to_entry_.find(id) != id_to_entry_.end();
 }
 
 template <typename offset_size_t>
-auto symbol::SymbolTable<offset_size_t>::getExternalSymbols() const 
-    -> std::vector<SymbolEntryPtr>
+auto symbol::table<offset_size_t>::entries() const -> symbol::table<offset_size_t>::const_range
 {
-
-    return this->externalSymbols;
+    return id_to_entry_ | boost::adaptors::map_values;
 }
 
 template <typename offset_size_t>
-bool symbol::SymbolTable<offset_size_t>::exists(const std::string& symbolName) const
+auto symbol::table<offset_size_t>::entries() -> symbol::table<offset_size_t>::range
 {
-    return symbolLookup.find(symbolName) != symbolLookup.end();
+    return id_to_entry_ | boost::adaptors::map_values;
 }
 
 template <typename offset_size_t>
-bool symbol::SymbolTable<offset_size_t>::exists(SymbolID symbolID) const
-{
-    return symbolDictionary.find(symbolID) != symbolDictionary.end();
-}
-
-template <typename offset_size_t>
-uint32_t symbol::SymbolTable<offset_size_t>::numMultiplyDefinedSymbols() const
-{
-    uint32_t count = 0;
-    for(const auto& ptr : this->symbolDictionary) {
-        count += ptr->isMultiplyDefined() ? 1 : 0;
-    }
-    return count;
-}
-
-template <typename offset_size_t>
-uint32_t symbol::SymbolTable<offset_size_t>::numUndefinedSymbols() const
-{
-    uint32_t count = 0;
-    for(const auto& ptr : this->symbolDictionary) {
-        count += ptr->isUndefined() ? 1 : 0;
-    }
-    return count;
-}
-
-template <typename offset_size_t>
-void symbol::SymbolTable<offset_size_t>::setOffset(offset_size_t value, offset_size_t threshhold)
-{
-    for(SymbolEntryPtr ptr : this->symbolDictionary) {
-        if(ptr->getRawValue()->getSymbolType() == SymbolType::ADDRESS && ptr->getValue() >= threshhold) {
-            static_cast<SymbolValueLocation<offset_size_t>*>(ptr->getRawValue().data())->setOffset(value);
-        }
-    }
-}
-
-template <typename offset_size_t>
-void symbol::SymbolTable<offset_size_t>::clearOffset()
-{
-    // Clearing offsets is the same thing as setting all offsets to 0.
-    setOffset(0, 0);
-}
-
-template <typename offset_size_t>
-auto symbol::SymbolTable<offset_size_t>::getSymbolEntries() const
-    -> std::vector<const SymbolEntryPtr>
-{
-    return symbolDictionary.values();
-}
-
-template <typename offset_size_t>
-const std::map<typename symbol::SymbolTable<offset_size_t>::SymbolID, typename symbol::SymbolTable<offset_size_t>::SymbolEntryPtr> 
-    symbol::SymbolTable<offset_size_t>::getSymbolMap() const
-{
-    return symbolDictionary;
-}
-
-template <typename offset_size_t>
-std::string symbol::SymbolTable<offset_size_t>::getSymbolTableListing() const
+std::string symbol::table<offset_size_t>::listing() const
 {
 
     static const std::string line = "--------------------------------------\n";
     static const std::string symTableStr = "Symbol table\n";
     static const std::string headerStr = "Symbol    Value        Symbol    Value\n";
     std::string build;
-    auto list = getSymbolEntries();
-    std::sort(list.begin(),list.end(), SymbolAlphabeticComparator);
+    /*auto list = getSymbolEntries();
+    //std::sort(list.begin(),list.end(), SymbolAlphabeticComparator);
 
     // Don't generate an empty symbol table.
     if(list.isEmpty()) {
         return "";
-    }
+    }*/
     throw std::logic_error("Not yet implemented");
     // TODO: finish implementation.
     /*for(auto it = list.begin(); it != list.end(); ++it) {
@@ -230,4 +139,56 @@ std::string symbol::SymbolTable<offset_size_t>::getSymbolTableListing() const
     }
     return symTableStr % line % headerStr %line % build % line;*/
     return "";
+}
+
+
+
+template <typename symbol_value_t>
+auto symbol::externals(typename symbol::table<symbol_value_t>::const_range rng) -> decltype(rng)
+{
+    static const auto filter = [](const auto& it){return it->binding == symbol::binding::kGlobal;};
+    return rng | boost::adaptors::filtered(filter);
+}
+
+template <typename symbol_value_t>
+size_t symbol::count_multiply_defined_symbols(typename symbol::table<symbol_value_t>::const_range rng)
+{
+    auto it = rng.begin();
+    uint32_t count = 0;
+    while(it) {
+        count += it->isMultiplyDefined() ? 1 : 0;
+        it++;
+    }
+    return count;
+}
+
+template <typename symbol_value_t>
+size_t symbol::count_undefined_symbols(typename symbol::table<symbol_value_t>::const_range rng)
+{
+    auto it = rng.cbegin();
+    uint32_t count = 0;
+    while(it) {
+        count += it->isUndefined() ? 1 : 0;
+        it++;
+    }
+    return count;
+}
+
+template <typename symbol_value_t>
+void symbol::set_offset(typename symbol::table<symbol_value_t>::range rng, symbol_value_t offset, symbol_value_t threshhold)
+{
+    auto it = rng.begin();
+    while(it) {
+        if(it->raw_value()->type() == symbol::type::kLocation && it->value() >= threshhold) {
+            std::static_pointer_cast<symbol::value_location<symbol_value_t>>(it->raw_value())->set_offset(offset);
+        }
+        ++it;
+    }
+}
+
+template <typename symbol_value_t>
+void symbol::clear_offset(typename symbol::table<symbol_value_t>::range rng)
+{
+    // Clearing offsets is the same thing as setting all offsets to 0.
+    set_offset(rng, 0, 0);
 }

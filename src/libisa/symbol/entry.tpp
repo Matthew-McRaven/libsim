@@ -23,113 +23,22 @@
 #include "symbol/entry.hpp"
 #include "symbol/value.hpp"
 
-template<typename symbol_value_t>
-symbol::SymbolEntry<symbol_value_t>::SymbolEntry(symbol::SymbolTable<symbol_value_t>* parent, 
-    typename symbol::SymbolTable<symbol_value_t>::SymbolID symbolID, std::string name): 
-    symbolID(symbolID), name(name),
-    symbolValue(std::make_shared<SymbolValueEmpty<symbol_value_t>>()), definedState(DefStates::UNDEFINED), parent(parent)
+
+template<typename value_t>
+symbol::entry<value_t>::entry(symbol::table<value_t>& parent, 
+    typename symbol::table<value_t>::ID ID,
+    std::string name): 
+    parent(parent), ID(ID),
+    state(definition_state::kUndefined), name(name), binding(binding::kLocal),
+    value(std::make_shared<symbol::value_empty<value_t>>())
 {
 }
 
-template<typename symbol_value_t>
-symbol::SymbolEntry<symbol_value_t>::SymbolEntry(symbol::SymbolTable<symbol_value_t>* parent, 
-    typename symbol::SymbolTable<symbol_value_t>::SymbolID symbolID,
-    std::string name, typename symbol::SymbolTable<symbol_value_t>::AbstractSymbolValuePtr value): 
-    symbolID(symbolID), name(name), symbolValue(nullptr), parent(parent)
+template<typename value_t>
+symbol::entry<value_t>::entry(symbol::table<value_t>& parent, 
+    typename symbol::table<value_t>::ID ID,
+    std::string name, typename symbol::table<value_t>::value_ptr_t value): 
+    parent(parent), ID(ID), 
+    state(definition_state::kSingle), name(name), binding(binding::kLocal), value(value)
 {
-    setValue(value);
-}
-
-template<typename symbol_value_t>
-symbol::SymbolEntry<symbol_value_t>::~SymbolEntry()
-{
-
-}
-
-template<typename symbol_value_t>
-const symbol::SymbolTable<symbol_value_t>* symbol::SymbolEntry<symbol_value_t>::getParentTable() const
-{
-    return parent;
-}
-
-template<typename symbol_value_t>
-void symbol::SymbolEntry<symbol_value_t>::setValue(typename symbol::SymbolTable<symbol_value_t>::AbstractSymbolValuePtr value)
-{
-    // A SymbolEntry will not transfer from SINGLE to MULTIPLE on its own.
-    // This is because a symbol table / assembler might need to update the value
-    // of the symbol in place to achieve code relocation, and so the responsibility
-    // to make that decision is delegated to owning objects.
-	symbolValue = value;
-    // If given an empty value, then the symbol is undefined
-    if (dynamic_cast<SymbolValueEmpty<symbol_value_t>*>(value.get())) {
-        definedState = DefStates::UNDEFINED;
-	}
-    //If the symbol is multiply defined, it remains multiply defined
-    else if(definedState == DefStates::MULTIPLE) {
-        definedState = DefStates::MULTIPLE;
-    }
-    else {
-        definedState = DefStates::SINGLE;
-	}
-}
-
-template<typename symbol_value_t>
-std::string symbol::SymbolEntry<symbol_value_t>::getName() const
-{
-	return name;
-}
-
-template<typename symbol_value_t>
-bool symbol::SymbolEntry<symbol_value_t>::isDefined() const
-{
-    return definedState == DefStates::SINGLE;
-}
-
-template<typename symbol_value_t>
-bool symbol::SymbolEntry<symbol_value_t>::isUndefined() const
-{
-    return definedState == DefStates::UNDEFINED;
-}
-
-template<typename symbol_value_t>
-bool symbol::SymbolEntry<symbol_value_t>::isMultiplyDefined() const
-{
-	return definedState == DefStates::MULTIPLE;
-}
-
-template<typename symbol_value_t>
-void symbol::SymbolEntry<symbol_value_t>::setMultiplyDefined()
-{
-    definedState = DefStates::MULTIPLE;
-}
-
-template<typename symbol_value_t>
-void symbol::SymbolEntry<symbol_value_t>::setDefinedState(DefStates state)
-{
-    this->definedState = state;
-}
-
-template<typename symbol_value_t>
-typename symbol::SymbolTable<symbol_value_t>::SymbolID symbol::SymbolEntry<symbol_value_t>::getSymbolID() const
-{
-	return symbolID;
-}
-
-template<typename symbol_value_t>
-symbol_value_t symbol::SymbolEntry<symbol_value_t>::getValue() const
-{
-	return symbolValue->getValue();
-}
-
-template<typename symbol_value_t>
-typename symbol::SymbolTable<symbol_value_t>::AbstractSymbolValuePtr symbol::SymbolEntry<symbol_value_t>::getRawValue()
-{
-    return symbolValue;
-}
-
-template<typename symbol_value_t>
-bool SymbolAlphabeticComparator(std::shared_ptr<const symbol::SymbolEntry<symbol_value_t>> &lhs, 
-    std::shared_ptr<const symbol::SymbolEntry<symbol_value_t> > &rhs)
-{
-    return lhs->getName() < rhs->getName();
 }

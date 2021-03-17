@@ -35,10 +35,10 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("Address line") {
 		auto line = masm::ir::dot_address<uint16_t>();
-		auto table = symbol::SymbolTable<uint16_t>();
+		auto table = symbol::table<uint16_t>();
 		auto symbol = table.define("sym");
-		auto sym_val = std::make_shared<symbol::SymbolValueNumeric<uint16_t>>(0x16);
-		symbol->setValue(sym_val); 
+		auto sym_val = std::make_shared<symbol::value_const<uint16_t>>(0x16);
+		symbol->value = sym_val; 
 		line.symbol_entry= symbol;
 		line.argument = std::make_shared<masm::ir::symbol_ref_argument<uint16_t> >(symbol);
 		line.base_address = 0x100;

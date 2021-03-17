@@ -55,7 +55,7 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		REQUIRE(as_ascii);
 		REQUIRE(as_ascii->comment);
 		REQUIRE(as_ascii->symbol_entry);
-		CHECK(as_ascii->symbol_entry->getName() == "s");
+		CHECK(as_ascii->symbol_entry->name == "s");
 	}
 
 	SECTION("No dec in .ASCII") {	

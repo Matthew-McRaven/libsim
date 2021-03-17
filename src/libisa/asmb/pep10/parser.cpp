@@ -96,7 +96,7 @@ auto asmb::pep10::parser::parse(
 		bool local_success = true;
 		std::string local_message = {};
 		ir_pointer_t local_line = nullptr;
-		std::shared_ptr<symbol::SymbolEntry<uint16_t>> local_symbol = nullptr;
+		std::shared_ptr<symbol::entry<uint16_t>> local_symbol = nullptr;
 
 		// Check if we comment or empty line. If so, we can skip a lot of processing.
 		if(auto [match_comment, _1, text_comment] = masm::frontend::match(start, last, comment, true); match_comment) {
@@ -176,8 +176,8 @@ auto asmb::pep10::parser::parse(
 				}
 				else {
 					auto arg = std::dynamic_pointer_cast<masm::ir::dot_equate<uint16_t> >(local_line)->argument->value();
-					auto sym_value = std::make_shared<symbol::SymbolValueNumeric<uint16_t>>(arg);
-					local_symbol->setValue(sym_value);
+					auto sym_value = std::make_shared<symbol::value_const<uint16_t>>(arg);
+					local_symbol->value = sym_value;
 				}
 			}
 			else if(text_dot == "EXPORT") {
@@ -527,7 +527,7 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 	}
 	else {
 		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
-		symbol_table->markExternal(as_ref->symbol_value()->getName());
+		symbol_table->set_binding(as_ref->symbol_value()->name, symbol::binding::kGlobal);
 		assert(as_ref);
 		ret_val->argument = as_ref;
 		return {true, "", ret_val};
