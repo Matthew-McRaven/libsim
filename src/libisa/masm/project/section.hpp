@@ -18,6 +18,9 @@
 namespace masm::elf {
 	template <typename address_size_t>
 	class macro_subsection;
+
+	template <typename address_size_t>
+	class image;
 }
 
 namespace masm::elf::code {
@@ -62,6 +65,7 @@ struct code_section
 {
 	virtual ~code_section() = default;
 	section_info header;
+	std::weak_ptr<masm::elf::image<address_size_t>> containing_image;
 
 	std::optional<code::raw> body_raw;
 	std::optional<code::token> body_token;

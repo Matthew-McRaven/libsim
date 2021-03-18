@@ -90,6 +90,7 @@ auto asmb::pep10::parser::parse(
 	static const token_class_t macro = {masm::frontend::token_type::kMacroInvoke};
 
 	bool success = true, had_dot_end = false;
+	auto symbol_table = section->containing_image.lock()->symbol_table;
 	decltype(section->body_ir->ir_lines) ir_lines;
 	for(auto [index, line] : section->body_token.value().tokens | boost::adaptors::indexed(0)) {
 		auto start=line.begin(), last=line.end();
@@ -117,7 +118,7 @@ auto asmb::pep10::parser::parse(
 
 		// Extract symbol declaration if present,
 		if(auto [match_symbol, _1, text_symbol] = masm::frontend::match(start, last, symbol, true); match_symbol) {
-			local_symbol = project->symbol_table->define(text_symbol);
+			local_symbol = symbol_table->define(text_symbol);
 		}
 
 		// Begin parsing for mnemonics, dot commands, and macros.
@@ -135,8 +136,7 @@ auto asmb::pep10::parser::parse(
 				std::tie(local_success, local_message, local_line) = parse_unary(start, last, mnemonic);
 			}
 			else {
-				std::tie(local_success, local_message, local_line) = parse_nonunary(start, last, 
-					project->symbol_table, mnemonic);
+				std::tie(local_success, local_message, local_line) = parse_nonunary(start, last, symbol_table, mnemonic);
 			}
 
 			success &= local_success;
@@ -181,27 +181,27 @@ auto asmb::pep10::parser::parse(
 				}
 			}
 			else if(text_dot == "EXPORT") {
-				std::tie(local_success, local_message, local_line) = parse_EXPORT(start, last, project->symbol_table);
+				std::tie(local_success, local_message, local_line) = parse_EXPORT(start, last, symbol_table);
 				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .EXPORT does not support symbol declaration.";
 				}
 			}
 			else if(text_dot == "SYCALL") {
-				std::tie(local_success, local_message, local_line) = parse_SYCALL(start, last, project->symbol_table, project->macro_registry);
+				std::tie(local_success, local_message, local_line) = parse_SYCALL(start, last, symbol_table, project->macro_registry);
 				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .SYCALL does not support symbol declaration.";
 				}
 			}
 			else if(text_dot == "USYCALL") {
-				std::tie(local_success, local_message, local_line) = parse_USYCALL(start, last, project->symbol_table, project->macro_registry);
+				std::tie(local_success, local_message, local_line) = parse_USYCALL(start, last, symbol_table, project->macro_registry);
 				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .USYCALL does not support symbol declaration.";
 				}
 			}
-			else if(text_dot == "WORD") std::tie(local_success, local_message, local_line) = parse_WORD(start, last, project->symbol_table);
+			else if(text_dot == "WORD") std::tie(local_success, local_message, local_line) = parse_WORD(start, last, symbol_table);
 			else {
 				std::tie(local_success, local_message) = std::make_tuple(false, ";ERROR: Invalid dot command.");
 			}

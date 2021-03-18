@@ -17,10 +17,11 @@ masm::frontend::section_program(std::shared_ptr<masm::project::project<address_s
 		int source_section=0;
 		std::transform(prog.begin(), prog.end(), std::back_inserter(prog_image->sections), 
 		// Convert from ::section_text to masm::elf::code_section<T>.
-		[&source_section](const auto& text) { 
+		[&source_section, &prog_image](const auto& text) { 
 			auto x = std::make_shared<masm::elf::top_level_section<address_size_t>>();
 			x->header.name = text.section_name;
 			x->header.index = source_section++;
+			x->containing_image = prog_image;
 			x->body_raw = masm::elf::code::raw();
 			x->body_raw.value().text = boost::algorithm::join(text.lines, "");
 			x->body_raw.value().lines = text.lines;

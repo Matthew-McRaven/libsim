@@ -24,7 +24,7 @@ TEST_CASE( "Parse dot sycall", "[asmb::pep10::parser]"  ) {
 		REQUIRE(as_sycall);
 
 		// Check for externalized symbol definition.
-		REQUIRE(project->symbol_table->exists("s"));
+		REQUIRE(project->images[0]->symbol_table->exists("s"));
 		REQUIRE(project->macro_registry->contains("s"));
 	}
 
@@ -45,7 +45,7 @@ TEST_CASE( "Parse dot sycall", "[asmb::pep10::parser]"  ) {
 		CHECK(as_sycall->comment.value() == "Hi guys");
 
 		// Check for externalized symbol definition.
-		REQUIRE(project->symbol_table->exists("s"));
+		REQUIRE(project->images[0]->symbol_table->exists("s"));
 		REQUIRE(project->macro_registry->contains("s"));
 	}
 
