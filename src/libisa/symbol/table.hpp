@@ -36,11 +36,7 @@ public:
     using value_ptr_t = std::shared_ptr<symbol::abstract_value<value_t> >;
 
 private:
-    static ID next_id_;
-    static ID generate_new_ID();
-
-    std::map<ID, entry_ptr_t> id_to_entry_;
-    std::map<std::string, ID> name_to_id_;
+    std::map<std::string, entry_ptr_t> name_to_entry_;
 
 public:
     using range = boost::any_range<entry_ptr_t, boost::forward_traversal_tag, entry_ptr_t&, std::ptrdiff_t>;//decltype(id_to_entry_.begin() | boost::adaptors::map_values);

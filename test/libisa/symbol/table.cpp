@@ -16,7 +16,6 @@ TEST_CASE( "Validate functionality of symbol table." ) {
 		auto x = st->reference("hello");
 		auto y = st->reference("hello");
 		CHECK(x == y);
-		CHECK(x->ID == y->ID);
 	}
 
 	SECTION("Require case matching.") {
@@ -24,7 +23,6 @@ TEST_CASE( "Validate functionality of symbol table." ) {
 		auto x = st->reference("hello");
 		auto y = st->reference("Hello");
 		CHECK_FALSE(x == y);
-		CHECK_FALSE(x->ID == y->ID);
 	}
 
 	SECTION("Singly referenced symbol marked for deletion.") {

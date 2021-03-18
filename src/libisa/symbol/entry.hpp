@@ -42,16 +42,13 @@ class entry
 
 public:
     //Default constructor, assumes value is SymbolEmpty
-    entry(typename symbol::table<value_t>& parent, typename symbol::table<value_t>::ID ID, std::string name);
-    entry(typename symbol::table<value_t>& parent, typename symbol::table<value_t>::ID ID,
-        std::string name, typename symbol::table<value_t>::value_ptr_t value);
+    entry(typename symbol::table<value_t>& parent, std::string name);
+    entry(typename symbol::table<value_t>& parent, std::string name, typename symbol::table<value_t>::value_ptr_t value);
     ~entry() = default;
     type type() const {return value->type();}
 
     // Non-owning reference to containing symbol table.
     typename symbol::table<value_t> const &  parent;
-    // Unique identifier describing this symbol
-    typename symbol::table<value_t>::ID const ID;
 
     // Unique string name of symbol as appearing in the sources
     std::string name;

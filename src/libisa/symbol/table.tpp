@@ -29,15 +29,6 @@
 #include "symbol/entry.hpp"
 #include "symbol/value.hpp"
 
-template <typename T>
-typename symbol::table<T>::ID symbol::table<T>::next_id_ = {0};
-
-template <typename symbol_value_t>
-typename symbol::table<symbol_value_t>::ID symbol::table<symbol_value_t>::generate_new_ID()
-{
-    return ++next_id_;
-}
-
 template <typename symbol_value_t>
 symbol::table<symbol_value_t>::table() = default;
 
@@ -48,15 +39,13 @@ template <typename symbol_value_t>
 typename symbol::table<symbol_value_t>::entry_ptr_t 
     symbol::table<symbol_value_t>::reference(const std::string& name)
 {
-    if(auto index = name_to_id_.find(name); index == name_to_id_.end()) {
-        // Must create symbol and put in correct tables.
-        auto id = generate_new_ID();
-        name_to_id_[name] = id;
-        auto ret = std::make_shared<entry<symbol_value_t>>(*this, id, name);
-        id_to_entry_[id] = ret;
+    if(auto index = name_to_entry_.find(name); index == name_to_entry_.end()) {
+        // Must create symbol and put in table.
+        auto ret = std::make_shared<entry<symbol_value_t>>(*this, name);
+        name_to_entry_[name] = ret;
         return ret;
     }
-    else return id_to_entry_[index->second];
+    else return index->second;
 }
 
 template <typename symbol_value_t>
@@ -73,10 +62,9 @@ template <typename symbol_value_t>
 bool symbol::table<symbol_value_t>::del(const std::string& name)
 {
     // Symbol does not exist, so the delete succeded.
-    if(auto index = name_to_id_.find(name); index == name_to_id_.end()) return true;
+    if(auto index = name_to_entry_.find(name); index == name_to_entry_.end()) return true;
     auto entry = reference(name);
-    id_to_entry_.erase(entry->ID);
-    name_to_id_.erase(entry->name);
+    name_to_entry_.erase(entry->name);
     if(entry.use_count() == 1) return true;
     else {
         entry->value = std::make_shared<symbol::value_deleted<symbol_value_t>>();
@@ -102,19 +90,19 @@ void symbol::table<symbol_value_t>::set_type(const std::string &name, symbol::ty
 template <typename symbol_value_t>
 bool symbol::table<symbol_value_t>::exists(const std::string& name) const
 {
-    return name_to_id_.find(name) != name_to_id_.end();
+    return name_to_entry_.find(name) != name_to_entry_.end();
 }
 
 template <typename offset_size_t>
 auto symbol::table<offset_size_t>::entries() const -> symbol::table<offset_size_t>::const_range
 {
-    return id_to_entry_ | boost::adaptors::map_values;
+    return name_to_entry_ | boost::adaptors::map_values;
 }
 
 template <typename offset_size_t>
 auto symbol::table<offset_size_t>::entries() -> symbol::table<offset_size_t>::range
 {
-    return id_to_entry_ | boost::adaptors::map_values;
+    return  name_to_entry_ | boost::adaptors::map_values;
 }
 
 template <typename offset_size_t>
