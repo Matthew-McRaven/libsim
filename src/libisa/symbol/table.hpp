@@ -64,7 +64,6 @@ public:
 
     // Check if a symbol exists.
     bool exists(const std::string& name) const;
-    bool exists(ID ID) const;
 
     auto entries() const -> const_range;
     auto entries() -> range;

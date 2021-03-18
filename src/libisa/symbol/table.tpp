@@ -105,12 +105,6 @@ bool symbol::table<symbol_value_t>::exists(const std::string& name) const
     return name_to_id_.find(name) != name_to_id_.end();
 }
 
-template <typename symbol_value_t>
-bool symbol::table<symbol_value_t>::exists(ID id) const
-{
-    return id_to_entry_.find(id) != id_to_entry_.end();
-}
-
 template <typename offset_size_t>
 auto symbol::table<offset_size_t>::entries() const -> symbol::table<offset_size_t>::const_range
 {
