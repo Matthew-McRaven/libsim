@@ -13,6 +13,7 @@
 #include "masm/ir/empty.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/args.hpp"
+#include "masm/ir/macro.hpp"
 #include "symbol/value.hpp"
 //#include "masm/ir.macro.hpp"
 
@@ -216,10 +217,16 @@ auto asmb::pep10::parser::parse(
 			// Insert symbol declaration if present.
 		}
 		else if(auto [match_macro, _3, text_macro] = masm::frontend::match(start, last, macro, true); match_macro) {
-			// Construct macro line.
-			project->message_resolver->log_message(section, index, {masm::message_type::kError, ";ERROR: Macros currently unsupported."});
-			success = false;
-			continue;
+			auto macro = project->macro_registry->macro(text_macro);
+
+			// Tokenizer + preprocessor already handled parsing of macro args, so we can skip over them
+			int skip = macro->arg_count * 2 - 1;
+			if (skip>0) start += skip;
+			auto macro_line = std::make_shared<masm::ir::macro_invocation<uint16_t>>();
+			macro_line->macro = nullptr;
+
+			local_line = macro_line;
+			if(local_symbol) local_line->symbol_entry = local_symbol;
 			// Insert symbol declaration if present.
 		}
 		// We had an error, let's try and provide helpful messages for what went wrong.
