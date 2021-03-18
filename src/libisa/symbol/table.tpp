@@ -171,7 +171,7 @@ size_t symbol::count_multiply_defined_symbols(typename symbol::table<symbol_valu
 {
     auto it = rng.begin();
     uint32_t count = 0;
-    while(it) {
+    while(it != rng.end()) {
         count += it->isMultiplyDefined() ? 1 : 0;
         it++;
     }
@@ -183,7 +183,7 @@ size_t symbol::count_undefined_symbols(typename symbol::table<symbol_value_t>::c
 {
     auto it = rng.cbegin();
     uint32_t count = 0;
-    while(it) {
+    while(it != rng.end()) {
         count += it->isUndefined() ? 1 : 0;
         it++;
     }
@@ -194,9 +194,9 @@ template <typename symbol_value_t>
 void symbol::set_offset(typename symbol::table<symbol_value_t>::range rng, symbol_value_t offset, symbol_value_t threshhold)
 {
     auto it = rng.begin();
-    while(it) {
-        if(it->raw_value()->type() == symbol::type::kLocation && it->value() >= threshhold) {
-            std::static_pointer_cast<symbol::value_location<symbol_value_t>>(it->raw_value())->set_offset(offset);
+    while(it != rng.end()) {
+        if((*it)->value->type() == symbol::type::kLocation && (*it)->value->value() >= threshhold) {
+            std::static_pointer_cast<symbol::value_location<symbol_value_t>>((*it)->value)->set_offset(offset);
         }
         ++it;
     }

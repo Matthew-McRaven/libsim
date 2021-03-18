@@ -3,13 +3,19 @@
 #include "symbol/value.hpp"
 
 
-TEST_CASE( "Validate functionality of symbol table." ) {
+TEST_CASE( "Test symbol values." ) {
 	
-	// TODO: Add symbol table unit tests
 	SECTION("Empty Value") {
 		auto value = symbol::value_empty<uint16_t>();
 		CHECK_NOFAIL(value.value());
 		CHECK(value.value() == 0);
+	}
+
+	SECTION("Deleted Value") {
+		auto value = symbol::value_deleted<uint16_t>();
+		CHECK_NOFAIL(value.value());
+		CHECK(value.value() == 0);
+		CHECK(value.type() == symbol::type::kDeleted);
 	}
 
 	// Check that the values on a numeric value can be mutated.

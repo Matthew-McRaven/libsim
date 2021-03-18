@@ -51,11 +51,10 @@ public:
 
     // Indicate that you are referencing a (supposedly) declared symbol.
     // If the symbol is not in the symbol table, it will be created.
-    entry_ptr_t reference(const std::string& symbolName);
+    entry_ptr_t reference(const std::string& name);
     // Indicate that you are defining a new symbol. If the symbol
     // already exists, the symbol will be flagged as multiply defined.
-    entry_ptr_t define(const std::string& symbolName);
-    // Declare a symbol as external, allowing it to be used in other translation units.
+    entry_ptr_t define(const std::string& name);
     // Return true if there are no remaining references to "name".
     bool del(const std::string& name);
 
