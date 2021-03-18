@@ -67,6 +67,17 @@ public:
     symbol::type type() const override;
 };
 
+
+template <typename value_t=uint16_t>
+class value_deleted : 
+public value_empty<value_t>
+{
+public:
+    value_deleted() = default;
+    virtual ~value_deleted() override = default;
+    symbol::type type() const override;
+};
+
 /**
  * A symbol value containing an constant numeric value.
  */

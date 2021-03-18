@@ -42,6 +42,16 @@ symbol::type symbol::value_empty<value_t>::type() const
 
 
 
+
+template <typename value_t>
+symbol::type symbol::value_deleted<value_t>::type() const
+{
+    return type::kDeleted;
+}
+
+
+
+
 template <typename value_t>
 symbol::value_const<value_t>::value_const(value_t value): abstract_value<value_t>(), value_(value)
 {

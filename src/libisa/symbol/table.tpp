@@ -70,6 +70,22 @@ typename symbol::table<symbol_value_t>::entry_ptr_t
 }
 
 template <typename symbol_value_t>
+bool symbol::table<symbol_value_t>::del(const std::string& name)
+{
+    // Symbol does not exist, so the delete succeded.
+    if(auto index = name_to_id_.find(name); index == name_to_id_.end()) return true;
+    auto entry = reference(name);
+    id_to_entry_.erase(entry->ID);
+    name_to_id_.erase(entry->name);
+    if(entry.use_count() == 1) return true;
+    else {
+        entry->value = std::make_shared<symbol::value_deleted<symbol_value_t>>();
+        entry->state = symbol::definition_state::kUndefined;
+        return false;
+    }
+}
+
+template <typename symbol_value_t>
 void symbol::table<symbol_value_t>::set_binding(const std::string &name, symbol::binding binding)
 {
     auto symbol = reference(name);

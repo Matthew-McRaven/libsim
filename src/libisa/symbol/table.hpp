@@ -56,6 +56,8 @@ public:
     // already exists, the symbol will be flagged as multiply defined.
     entry_ptr_t define(const std::string& symbolName);
     // Declare a symbol as external, allowing it to be used in other translation units.
+    // Return true if there are no remaining references to "name".
+    bool del(const std::string& name);
 
     // Modify ST_INFO fields of an ELF symbol.
     void set_binding(const std::string& name, binding binding);

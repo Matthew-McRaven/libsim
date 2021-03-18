@@ -15,7 +15,7 @@ enum class definition_state
 
 enum class type
 {
-    kEmpty, kLocation, kConstant, kPtrToSym
+    kEmpty, kLocation, kConstant, kPtrToSym, kDeleted
 };
 
 enum class binding
