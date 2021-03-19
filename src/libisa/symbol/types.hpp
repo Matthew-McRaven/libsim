@@ -88,5 +88,3 @@ enum class binding
 };
 
 }; //end namespace symbol
-
-#include "types.tpp"
