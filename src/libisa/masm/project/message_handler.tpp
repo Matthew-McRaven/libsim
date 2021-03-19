@@ -5,7 +5,7 @@ template <typename address_size_t>
 void masm::message_handler<address_size_t>::log_message(std::shared_ptr<masm::elf::code_section<address_size_t> > section, 
 	uint32_t line, message message)
 {
-	messages.emplace_front(message_t{section, line, message});
+	messages_.emplace_front(message_t{section, line, message});
 }
 
 template <typename address_size_t>
@@ -25,9 +25,16 @@ std::list<std::tuple<uint32_t /*line*/, masm::message> > masm::message_handler<a
 		return ret;
 	}
 	else{
-		auto errors = messages 
+		auto errors = messages_ 
 			| boost::adaptors::filtered([&section](auto line){return std::get<0>(line) == section;})
 			| boost::adaptors::transformed([](auto& line){return ret_t{std::get<1>(line), std::get<2>(line)};});
 		return std::list<ret_t>(errors.begin(), errors.end());
 	}
+}
+
+template <typename address_size_t>
+const std::list<typename masm::message_handler<address_size_t>::message_t>& 
+	masm::message_handler<address_size_t>::messages() const
+{
+	return messages_;
 }
