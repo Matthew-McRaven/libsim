@@ -19,6 +19,7 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 	static const token_class_t symbol = {masm::frontend::token_type::kSymbolDecl};
 	static const token_class_t macro_invoke = {masm::frontend::token_type::kMacroInvoke};
 
+	// Must also update asmb::pep10::parser
 	static const token_class_t token_macro_args = {
 		masm::frontend::token_type::kIdentifier,
 		masm::frontend::token_type::kDecConstant,
