@@ -50,8 +50,10 @@ std::shared_ptr<masm::elf::macro_subsection<address_size_t> > masm::elf::top_lev
 	}
 	child_macro->header.name = macro_name;
 	child_macro->header.index = index;
+	child_macro->containing_image = this->containing_image;
 	child_macro->body_raw = masm::elf::code::raw();
 	child_macro->body_raw.value().text = macro_text;
+	child_macro->line_number = line_number;
 
 	// Courtesy of:
 	// 	https://stackoverflow.com/questions/5607589/right-way-to-split-an-stdstring-into-a-vectorstring

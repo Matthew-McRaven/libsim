@@ -86,10 +86,8 @@ struct top_level_section : public code_section<address_size_t> {
 	NGraph::tGraph<invoke_class_t> invoke_dependency_graph;
 	std::map<std::pair<std::string, std::vector<std::string>>, invoke_class_t> macro_def_to_invoke_class;
 	// Lookup macro found a section info index.
-	std::map<macro_index_t, std::shared_ptr<macro_subsection<address_size_t> > > index_to_macro;
-
+	std::map<macro_index_t, std::shared_ptr<macro_subsection<address_size_t> > > index_to_macro;	
 	invoke_class_t add_or_get_invoke_class(const std::shared_ptr<code_section<address_size_t> >& section);
-
 	std::shared_ptr<macro_subsection<address_size_t> > insert_macro(
 		std::shared_ptr<code_section<address_size_t> > direct_parent, uint32_t line_number,
 		std::string macro_name, std::vector<std::string> macro_args, std::string macro_text
@@ -101,6 +99,7 @@ struct macro_subsection : public code_section<address_size_t> {
 	virtual ~macro_subsection() = default;
 	std::weak_ptr<code_section<address_size_t> > direct_parent;
 	std::weak_ptr<top_level_section<address_size_t> > containing_section;
+	uint32_t line_number;
 	std::vector<std::string> macro_args;
 };
 
