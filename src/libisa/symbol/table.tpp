@@ -33,9 +33,6 @@ template <typename symbol_value_t>
 symbol::table<symbol_value_t>::table() = default;
 
 template <typename symbol_value_t>
-symbol::table<symbol_value_t>::~table() = default;
-
-template <typename symbol_value_t>
 typename symbol::table<symbol_value_t>::entry_ptr_t 
     symbol::table<symbol_value_t>::reference(const std::string& name)
 {
