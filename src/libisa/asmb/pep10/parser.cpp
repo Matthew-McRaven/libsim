@@ -227,48 +227,39 @@ auto asmb::pep10::parser::parse(
 			// Insert symbol declaration if present.
 		}
 		else if(auto [match_macro, _3, text_macro] = masm::frontend::match(start, last, macro, true); match_macro) {
-			bool local_success = true;
-			std::vector<std::string> local_args;
 
+			
 			// Extract the args of the macro.
 			auto macro = project->macro_registry->macro(text_macro);
-			if(macro->arg_count > 0) {
-				int matched = 0;
-				while(local_success && matched < macro->arg_count) {
-					auto [match_arg, _1, text_arg] = masm::frontend::match(start, last, macro_args, true);
-					if(!match_arg) {} // TODO: Insert error message for what should be an impossible error.
-					local_success &= match_arg;
-					// Matched args
-					local_args.emplace_back(text_arg);
-					if(auto [match_comma, _1, _2] = masm::frontend::match(start, last, comma, true); 
-						matched + 1 < macro->arg_count) {
-						if(!match_comma) {} // TODO: Insert error message for what should be an impossible error.
-						local_success &= match_comma;
-					}
-					++matched;
-				}
-			}
+
+			// Preprocessor already did all the hard work of parsing macros so we don't have to.
+			// All we have to do is match on (parent, line number) pairs.
+			auto skip = 2*macro->arg_count - 1;
+			if(skip>0) start+= skip;
 
 			auto macro_line = std::make_shared<masm::ir::macro_invocation<uint16_t>>();
 
 			// Find the top level section that contains the current section.
 			std::shared_ptr<masm::elf::top_level_section<uint16_t>> ptr;
 			if(ptr = std::dynamic_pointer_cast<masm::elf::top_level_section<uint16_t>>(section); ptr);
-			else if(auto as_macro = std::dynamic_pointer_cast<masm::elf::macro_subsection<uint16_t>>(section); as_macro) {
+			else if(auto as_macro = std::dynamic_pointer_cast<masm::elf::macro_subsection<uint16_t>>(section); 
+				as_macro) {
+
 				ptr = as_macro->containing_section.lock();
 			}
 
 			// Find the macro subsection which this invocation describes.
 			for(auto [_, macro_section] : ptr->index_to_macro) {
 				if(macro_section->header.name == text_macro 
-					&& local_args == macro_section->macro_args
+					// Make sure that (parent, line number) pair matches the selected section.
+					&& macro_section->direct_parent.lock() == section
 					&& macro_section->line_number == index) {
 					macro_line->macro = macro_section;
 					break;
 				}
 			}
 
-			success &= local_success;
+			success = macro_line->macro != nullptr;
 			local_line = macro_line;
 			// Insert symbol declaration if present.
 			if(local_symbol) local_line->symbol_entry = local_symbol;
