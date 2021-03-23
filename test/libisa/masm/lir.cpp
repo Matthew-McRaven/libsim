@@ -41,7 +41,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 		symbol->value = sym_val; 
 		line.symbol_entry= symbol;
 		line.argument = std::make_shared<masm::ir::symbol_ref_argument<uint16_t> >(symbol);
-		line.base_address = 0x100;
+		line.set_begin_address(0x100);
 
 		CHECK(line.generate_source_string() == "sym:     .ADDRSS sym         ");
 		CHECK(line.generate_listing_string() == "0x0100       sym:     .ADDRSS sym         ");
@@ -53,9 +53,9 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("Align line") {
 		auto line = masm::ir::dot_align<uint16_t>();
-		line.base_address = 0x11;
-		line.direction = masm::ir::dot_align<uint16_t>::AlignDirection::kTop;
 		line.argument = std::make_shared<masm::ir::dec_argument<uint16_t> >(4);
+		line.set_begin_address(0x11);
+		line.direction = masm::ir::dot_align<uint16_t>::AlignDirection::kTop;
 
 		CHECK(line.generate_source_string() == "         .ALIGN  4           ");
 		CHECK(line.generate_listing_string() == "0x0011 000000         .ALIGN  4           ");
@@ -67,8 +67,8 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("ASCII line") {
 		auto line = masm::ir::dot_ascii<uint16_t>();
-		line.base_address = 0x11;
 		line.argument = std::make_shared<masm::ir::ascii_argument<uint16_t> >("\"NIT\"", 0xffff);
+		line.set_begin_address(0x11);
 
 		CHECK(line.generate_source_string() == "         .ASCII  \"NIT\"       ");
 		CHECK(line.generate_listing_string() == "0x0011 4E4954         .ASCII  \"NIT\"       ");
@@ -80,8 +80,8 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("Block line") {
 		auto line = masm::ir::dot_block<uint16_t>();
-		line.base_address = 0x11;
 		line.argument = std::make_shared<masm::ir::dec_argument<uint16_t> >(3);
+		line.set_begin_address(0x11);
 
 		CHECK(line.generate_source_string() == "         .BLOCK  3           ");
 		CHECK(line.generate_listing_string() == "0x0011 000000         .BLOCK  3           ");
@@ -93,7 +93,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("Burn line") {
 		auto line = masm::ir::dot_burn<uint16_t>();
-		line.base_address = 0x11;
+		line.set_begin_address(0x11);
 		line.argument = std::make_shared<masm::ir::dec_argument<uint16_t> >(18);
 
 		CHECK(line.generate_source_string() == "         .BURN   18          ");
@@ -106,7 +106,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("Byte line") {
 		auto line = masm::ir::dot_byte<uint16_t>();
-		line.base_address = 0x11;
+		line.set_begin_address(0x11);
 		line.argument = std::make_shared<masm::ir::dec_argument<uint16_t> >(0xda);
 
 		CHECK(line.generate_source_string() == "         .BYTE   218         ");
@@ -119,7 +119,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("End line") {
 		auto line = masm::ir::dot_end<uint16_t>();
-		line.base_address = 0x11;
+		line.set_begin_address(0x11);
 
 		CHECK(line.generate_source_string() == "         .END                ");
 		CHECK(line.generate_listing_string() == "                      .END                ");
@@ -131,7 +131,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("Equate line") {
 		auto line = masm::ir::dot_equate<uint16_t>();
-		line.base_address = 0x11;
+		line.set_end_address(0x11);
 		line.argument = std::make_shared<masm::ir::dec_argument<uint16_t> >(0xca);
 
 		CHECK(line.generate_source_string() == "         .EQUATE 202         ");
@@ -144,7 +144,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("Word line") {
 		auto line = masm::ir::dot_word<uint16_t>();
-		line.base_address = 0x11;
+		line.set_begin_address(0x11);
 		line.argument = std::make_shared<masm::ir::hex_argument<uint16_t> >(0xcafe);
 
 		CHECK(line.generate_source_string() == "         .BYTE   0xCAFE      ");

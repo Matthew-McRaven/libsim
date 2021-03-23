@@ -38,7 +38,7 @@ std::string asmb::pep10::unary_instruction::generate_listing_string() const
     }
 
 	return fmt::format("{:<6}{:>7}{}",
-		fmt::format("0x{:04X}", this->base_address),
+		fmt::format("0x{:04X}", this->base_address()),
 		code_string,
 		generate_source_string()
 	);
@@ -104,7 +104,7 @@ std::string asmb::pep10::nonunary_instruction::generate_listing_string() const
     }
 
 	return fmt::format("{:<6}{:>7}{}",
-		fmt::format("0x{:04X}", this->base_address),
+		fmt::format("0x{:04X}", this->base_address()),
 		code_string,
 		generate_source_string()
 	);
