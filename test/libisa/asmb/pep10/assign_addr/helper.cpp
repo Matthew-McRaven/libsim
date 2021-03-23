@@ -45,5 +45,24 @@ std::shared_ptr<asmb::pep10::assign_addr::driver_t> asmb::pep10::assign_addr::ma
 		return driver_t::result_t{success, result_work};
 	};
 	driver->register_transform(tx_parser, stage_t::PREPROCESS);
+
+	masm::backend::region<uint16_t> node;
+	node.input_sections = {".TEXT"};
+	node.base_address = 0;
+	transform_t tx_addr = [=](project_t& proj, std::list<driver_t::work_t>& work) {
+		bool success = true;
+		std::set<std::shared_ptr<masm::elf::image<uint16_t>>> images;
+		for(auto& value : work) {
+			images.insert(std::get<driver_t::section_t>(value)->containing_image.lock());
+		}
+
+		driver_t::work_iterable_t result_work;
+		std::transform(images.begin(), images.end(), std::back_inserter(result_work),[&](auto image){
+			masm::backend::assign_image(proj, image, {node});
+			return driver_t::work_iterable_t::value_type{stage_t::ADDRESS_ASSIGN, image};
+		});
+		return driver_t::result_t{success, result_work};
+	};
+	driver->register_transform(tx_addr, stage_t::SYMANTIC);
 	return driver;
 }
