@@ -55,7 +55,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 		auto line = masm::ir::dot_align<uint16_t>();
 		line.argument = std::make_shared<masm::ir::dec_argument<uint16_t> >(4);
 		line.set_begin_address(0x11);
-		line.direction = masm::ir::dot_align<uint16_t>::AlignDirection::kTop;
+		line.direction = masm::ir::dot_align<uint16_t>::align_direction::kNext;
 
 		CHECK(line.generate_source_string() == "         .ALIGN  4           ");
 		CHECK(line.generate_listing_string() == "0x0011 000000         .ALIGN  4           ");
