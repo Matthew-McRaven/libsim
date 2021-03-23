@@ -67,7 +67,7 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 
 	SECTION("ASCII line") {
 		auto line = masm::ir::dot_ascii<uint16_t>();
-		line.argument = std::make_shared<masm::ir::ascii_argument<uint16_t> >("\"NIT\"", 0xffff);
+		line.argument = std::make_shared<masm::ir::ascii_argument<uint16_t> >("NIT", 0xffff);
 		line.set_begin_address(0x11);
 
 		CHECK(line.generate_source_string() == "         .ASCII  \"NIT\"       ");
