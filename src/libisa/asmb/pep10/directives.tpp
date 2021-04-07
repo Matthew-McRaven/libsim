@@ -53,6 +53,14 @@ std::string asmb::pep10::dot_export<address_size_t>::generate_source_string() co
 	);
 
 }
+
+template <typename address_size_t>
+void asmb::pep10::dot_export<address_size_t>::append_object_code(std::vector<uint8_t>& bytes) const
+{
+	return;
+}
+
+
 /*
  * .SYCALL
  */
@@ -109,6 +117,12 @@ std::string asmb::pep10::dot_sycall<address_size_t>::generate_source_string() co
 
 }
 
+template <typename address_size_t>
+void asmb::pep10::dot_sycall<address_size_t>::append_object_code(std::vector<uint8_t>& bytes) const
+{
+	return;
+}
+
 /*
  * .USYCALL
  */
@@ -163,4 +177,10 @@ std::string asmb::pep10::dot_usycall<address_size_t>::generate_source_string() c
 		comment
 	);
 
+}
+
+template <typename address_size_t>
+void asmb::pep10::dot_usycall<address_size_t>::append_object_code(std::vector<uint8_t>& bytes) const
+{
+	return;
 }

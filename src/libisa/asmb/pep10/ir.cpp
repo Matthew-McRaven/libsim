@@ -67,6 +67,12 @@ uint16_t asmb::pep10::unary_instruction::object_code_bytes() const
     return 1;
 }
 
+void asmb::pep10::unary_instruction::append_object_code(std::vector<uint8_t>& bytes) const
+{
+	assert(0);
+}
+
+
 /*
  * Non-unary Instruction
  */
@@ -132,4 +138,9 @@ std::string asmb::pep10::nonunary_instruction::generate_source_string() const
 uint16_t asmb::pep10::nonunary_instruction::object_code_bytes() const
 {
     return 3;
+}
+
+void asmb::pep10::nonunary_instruction::append_object_code(std::vector<uint8_t>& bytes) const
+{
+	assert(0);
 }

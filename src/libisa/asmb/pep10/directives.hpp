@@ -20,6 +20,8 @@ public:
     // linear_line interface
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
+
 
     friend void swap(dot_export& first, dot_export& second)
     {
@@ -45,6 +47,7 @@ public:
     // linear_line interface
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     friend void swap(dot_sycall& first, dot_sycall& second)
     {
@@ -70,6 +73,7 @@ public:
     // linear_line interface
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     friend void swap(dot_usycall& first, dot_usycall& second)
     {

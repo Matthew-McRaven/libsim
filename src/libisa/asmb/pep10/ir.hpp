@@ -19,6 +19,7 @@ public:
     // Returns the properly formatted source line.
     std::string generate_source_string() const override;
     uint16_t object_code_bytes() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     bool is_code() const override { return true;}
 
@@ -48,6 +49,7 @@ public:
     // Returns the properly formatted source line.
     std::string generate_source_string() const override;
     uint16_t object_code_bytes() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     bool is_code() const override { return true;}
 
