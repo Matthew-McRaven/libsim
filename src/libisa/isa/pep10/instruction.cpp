@@ -204,3 +204,50 @@ bool isa::pep10::is_store(uint8_t opcode)
 	auto [inst, addr] = definition.riproll[opcode];
 	return is_store(inst->mnemonic);
 }
+
+// Convert unary instruction definition to its opcode.
+uint8_t isa::pep10::opcode(instruction_mnemonic mn)
+{
+	return (uint8_t) mn;
+}
+
+// Convert nonunary instruction definition to its opcode.
+uint8_t isa::pep10::opcode(instruction_mnemonic mn, addressing_mode addr)
+{
+	auto base = (uint8_t) mn;
+	uint8_t offset = 0;
+	auto addr_class = definition.isa.at(mn)->iformat;
+	if(addr_class == addressing_class::A_ix
+		&& addr == addressing_mode::X) offset = 1;
+	else {
+		switch(addr) {
+		case addressing_mode::I:
+			offset = 0;
+			break;
+		case addressing_mode::D:
+			offset = 1;
+			break;
+		case addressing_mode::N:
+			offset = 2;
+			break;
+		case addressing_mode::S:
+			offset = 3;
+			break;
+		case addressing_mode::SF:
+			offset = 4;
+			break;
+		case addressing_mode::X:
+			offset = 5;
+			break;
+		case addressing_mode::SX:
+			offset = 6;
+			break;
+		case addressing_mode::SFX:
+			offset = 7;
+			break;
+		default:
+			throw std::invalid_argument("Invalid addressing mode");
+		}
+	}
+	return base+offset;
+}

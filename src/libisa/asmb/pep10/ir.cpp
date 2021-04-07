@@ -2,6 +2,7 @@
 
 #include "symbol/entry.hpp"
 #include "symbol/table.hpp"
+#include "isa/pep10/instruction.hpp"
 /*
  * Unary Instruction
  */
@@ -69,7 +70,7 @@ uint16_t asmb::pep10::unary_instruction::object_code_bytes() const
 
 void asmb::pep10::unary_instruction::append_object_code(std::vector<uint8_t>& bytes) const
 {
-	assert(0);
+	bytes.emplace_back(isa::pep10::opcode(mnemonic));
 }
 
 
@@ -142,5 +143,10 @@ uint16_t asmb::pep10::nonunary_instruction::object_code_bytes() const
 
 void asmb::pep10::nonunary_instruction::append_object_code(std::vector<uint8_t>& bytes) const
 {
-	assert(0);
+	bytes.emplace_back(isa::pep10::opcode(mnemonic, addressing_mode));
+    // Convert argument from 16 bits to 2x8 bits.
+    uint16_t arg = argument->value();
+    uint8_t hi = (arg >> 8 ) & 0xff, lo = arg & 0xff;
+    bytes.emplace_back(hi);
+    bytes.emplace_back(lo);
 }

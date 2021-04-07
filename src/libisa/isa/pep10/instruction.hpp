@@ -43,5 +43,9 @@ bool is_opcode_unary(instruction_mnemonic);
 bool is_opcode_unary(uint8_t);
 bool is_store(instruction_mnemonic);
 bool is_store(uint8_t);
+// Convert unary instruction definition to its opcode.
+uint8_t opcode(instruction_mnemonic);
+// Convert nonunary instruction definition to its opcode.
+uint8_t opcode(instruction_mnemonic, addressing_mode);
 
 };
