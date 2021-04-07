@@ -82,3 +82,12 @@ std::shared_ptr<masm::elf::macro_subsection<address_size_t> > masm::elf::top_lev
 
 	return child_macro;
 }
+
+template <typename address_size_t>
+std::vector<uint8_t> masm::elf::to_bytes(std::shared_ptr<const masm::elf::code_section<address_size_t>> section) {
+	std::vector<uint8_t> ret;
+	for(const auto& line : section->body_ir->ir_lines) {
+		line->append_object_code(ret);
+	}
+	return ret;
+}

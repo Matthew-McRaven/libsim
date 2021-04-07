@@ -107,7 +107,8 @@ struct macro_subsection : public code_section<address_size_t> {
 /*
  * Helper methods
  */
-
+template <typename address_size_t>
+std::vector<uint8_t> to_bytes(std::shared_ptr<const code_section<address_size_t>> section);
 // Check if a macro with a certain set of args exists withing a top level section.
 // TODO: Implement
 template <typename address_size_t>
