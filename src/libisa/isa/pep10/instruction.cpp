@@ -140,6 +140,8 @@ std::array<isa::pep10::addr_map, 256> init_mmap() {
 				else if (it-lb.second->bit_pattern == 7) mode = addressing_mode::SFX;
 				else throw std::invalid_argument("Invalid AAA addressing mode.");
 				break;
+			default:
+				break;
 			}
 			riproll[it].inst = lb.second;
 			riproll[it].addr = mode;

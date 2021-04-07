@@ -45,17 +45,17 @@ int isa_processor::step()
 
 void isa_processor::init()
 {
-	throw std::invalid_argument("Not a valid addressing mode");
+	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
 }
 
 void isa_processor::debug(bool)
 {
-	throw std::invalid_argument("Not a valid addressing mode");
+	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
 }
 
 void isa_processor::clear()
 {
-	throw std::invalid_argument("Not a valid addressing mode");
+	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
 }
 
 void isa_processor::unary_dispatch(uint8_t is)
@@ -236,7 +236,8 @@ void isa_processor::unary_dispatch(uint8_t is)
 		vector_value = addr_from_vector(memory_vectors::TRAP);
 		write_reg(Registers::PC, read_word(vector_value, false));    
 		break;
-
+	default:
+		throw std::invalid_argument("Illegal instruction in unary decoder.");
 	}
 }
 void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
@@ -501,13 +502,13 @@ void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
 	case instruction_mnemonic::STBX:
 		write_byte(decoded_operand, read_reg(Registers::X), false);
 		break;
-
-	
+	default:
+		throw std::invalid_argument("Illegal instruction in nonunary decoder.");
 	}
 }
 
 uint16_t isa_processor::addr_from_vector(isa::pep9::memory_vectors vec) {
-	throw std::invalid_argument("thing");
+	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
 }
 
 uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t>& instr, addressing_mode mode, uint16_t addr) const
@@ -540,6 +541,8 @@ uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t
 		case addressing_mode::SFX:
 			addr = read_word(addr + read_reg(Registers::SP), false);
 			return read_byte(addr + read_reg(Registers::X), false);
+		default:
+			throw std::invalid_argument("Not a valid addressing mode");
 		}
 	}
 	else {
@@ -565,6 +568,8 @@ uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t
 		case addressing_mode::SFX:
 			addr = read_word(addr + read_reg(Registers::SP), false);
 			return read_word(addr + read_reg(Registers::X), false);
+		default:
+			throw std::invalid_argument("Not a valid addressing mode");
 		}
 	}
 	throw std::invalid_argument("Not a valid addressing mode");
@@ -590,8 +595,9 @@ uint16_t isa_processor::decode_store_operand(const instruction_definition<uint8_
 	case addressing_mode::SFX:
 		addr = read_word(addr + read_reg(Registers::SP), false);
 		return addr + read_reg(Registers::X);
+	default:
+		throw std::invalid_argument("Not a valid addressing mode");
 	}
-	throw std::invalid_argument("Not a valid addressing mode");
 }
 
 uint16_t isa_processor::read_reg(Registers reg) const
