@@ -24,6 +24,7 @@ enum class toolchain_stage
 	ADDRESS_ASSIGN,
 	DEBUG0,
 	DEBUG1,
+	PACK,
 	INTERLINK,
 	SANITY,
 	FINISHED

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <elfio/elfio.hpp>
 /*
  * At this point in the project, I needed some humor.
  * The methods and classes described in this file are responsible for turning our IR into an ELF binary.
@@ -10,12 +10,16 @@
  * See: https://lotr.fandom.com/wiki/Eru_Il%C3%BAvatar
  */
 
-namespace masm::backend
+namespace masm::elf
 {
-	class elf_pack
-	{
 
-	};
 
-	typedef elf_pack eru_illuvatar;
+	template <typename addr_size_t>
+	auto pack_image(std::shared_ptr<masm::project::project<addr_size_t> >& project, 
+		std::shared_ptr<masm::elf::image<addr_size_t> >& image
+	) -> bool;
+
+	template <typename addr_size_t>
+	auto eru = pack_image<addr_size_t>;
 }
+#include "pack.tpp"
