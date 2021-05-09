@@ -54,7 +54,7 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	// Set the entry point, if applicable.
 	if(false) writer.set_entry( 0xfefe );
 	std::ostringstream stream;
-	writer.save(std::mkstemp(nullptr));
+	writer.save(std::tmpnam(nullptr));
 
 	return true;
 }
