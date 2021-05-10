@@ -7,8 +7,9 @@
 template <typename addr_size_t>
 auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >& project, 
 	std::shared_ptr<masm::elf::image<addr_size_t> >& image
-) -> bool
+) -> std::pair<bool, std::istream&&>
 {
+	std::stringstream stream;
 	using namespace ELFIO;
 	elfio writer;
 	
@@ -50,11 +51,9 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 		// TODO: Handle types, section pointer correctly.
 		sym_ac.add_symbol( str_ac, symbol->name.data(), symbol->value->value(), 0, binding, STT_NOTYPE, 0, SHN_ABS);
 	}
-	// TODO: Generate relocation entries.
-	// Set the entry point, if applicable.
+	// Do not generate relocation entries, since Pep/9 and 10 programs are not relocatable.
 	if(false) writer.set_entry( 0xfefe );
-	std::ostringstream stream;
-	writer.save(std::tmpnam(nullptr));
+	writer.save(stream);
 
-	return true;
+	return {true, std::move(stream)};
 }

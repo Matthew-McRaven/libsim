@@ -69,7 +69,8 @@ std::shared_ptr<asmb::pep10::pack::driver_t> asmb::pep10::pack::make_driver()
 		bool success = true;
 		driver_t::work_iterable_t result_work;
 		std::transform(work.begin(), work.end(), std::back_inserter(result_work),[&](auto value){
-			success &= masm::elf::pack_image(proj, std::get<driver_t::image_t>(value));
+			auto [local_success, stream] = masm::elf::pack_image(proj, std::get<driver_t::image_t>(value));
+			success &= local_success;
 			return driver_t::work_iterable_t::value_type{stage_t::PACK, value};
 		});
 		return driver_t::result_t{success, result_work};

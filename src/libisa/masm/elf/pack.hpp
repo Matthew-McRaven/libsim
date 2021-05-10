@@ -17,7 +17,7 @@ namespace masm::elf
 	template <typename addr_size_t>
 	auto pack_image(std::shared_ptr<masm::project::project<addr_size_t> >& project, 
 		std::shared_ptr<masm::elf::image<addr_size_t> >& image
-	) -> bool;
+	) -> std::pair<bool, std::istream&&>;
 
 	template <typename addr_size_t>
 	auto eru = pack_image<addr_size_t>;
