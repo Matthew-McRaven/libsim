@@ -7,7 +7,7 @@ std::pair<bool, std::string> masm::driver<address_size_t, stage_t>::assemble_pro
 	project_t& project, std::vector<source_t>& sources, stage_t target_stage)
 {
 	// TODO: Move to a stage
-	auto sections = masm::frontend::section_program<address_size_t>(project, sources, ".TEXT");
+	auto sections = masm::frontend::section_program<address_size_t>(project, sources, ".text");
 	if(sections.empty()) return {false, ";ERROR: Failed to section program"};
 	
 	work_queue_[stage_t::RAW] = {};
