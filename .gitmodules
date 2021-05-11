@@ -1,12 +1,12 @@
 [submodule "3rd-party/fmt"]
-	path = 3rd-party/fmt
+	path = dependencies/fmt
 	url = https://github.com/fmtlib/fmt.git
 [submodule "3rd-party/ngraph"]
-	path = 3rd-party/ngraph
+	path = dependencies/ngraph
 	url = https://gitlab.com/pep10/ngraph.git
 [submodule "3rd-party/elfio"]
-	path = 3rd-party/elfio
+	path = dependencies/elfio
 	url = https://github.com/serge1/ELFIO
 [submodule "3rd-party/moxygen"]
-	path = 3rd-party/moxygen
+	path = dependencies/moxygen
 	url = https://github.com/sourcey/moxygen
