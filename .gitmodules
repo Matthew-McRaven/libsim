@@ -10,3 +10,6 @@
 [submodule "3rd-party/moxygen"]
 	path = dependencies/moxygen
 	url = https://github.com/sourcey/moxygen
+[submodule "test/libisa/builtins/builtins"]
+	path = test/libisa/builtins/builtins
+	url = ssh://git@gitlab.com/pep10/builtins
