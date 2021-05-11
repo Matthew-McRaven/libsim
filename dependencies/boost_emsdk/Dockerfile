@@ -2,7 +2,7 @@
 
 # [Choice] Debian / Ubuntu version: debian-10, debian-9, ubuntu-20.04, ubuntu-18.04
 ARG VARIANT="ubuntu-20.04"
-ARG boost_version="1.75.0"
+ARG boost_version="1.76.0"
 FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-${VARIANT}
 
 # [Optional] Uncomment this section to install additional packages.
