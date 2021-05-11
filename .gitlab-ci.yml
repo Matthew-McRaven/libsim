@@ -6,7 +6,7 @@ stages:
 - test
 
 variables:
-  BUILD_VERSION: v0.3.3
+  BUILD_VERSION: v0.4.0
 
 Build Boost and Emscripten:
   stage: build dependencies
