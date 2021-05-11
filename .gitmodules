@@ -12,4 +12,4 @@
 	url = https://github.com/sourcey/moxygen
 [submodule "test/libisa/builtins/builtins"]
 	path = test/libisa/builtins/builtins
-	url = ssh://git@gitlab.com/pep10/builtins
+	url = https://gitlab.com/pep10/builtins
