@@ -17,6 +17,6 @@ if(EMSCRIPTEN)
 endif()
 
 
-target_link_libraries(test-lib RTL-Lib catch magic_enum)
+target_link_libraries(test-lib RTL-Lib catch magic_enum builtins)
 
 add_test (NAME test-lib COMMAND test-lib)
