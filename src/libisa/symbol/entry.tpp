@@ -27,7 +27,7 @@
 template<typename value_t>
 symbol::entry<value_t>::entry(symbol::table<value_t>& parent, std::string name): 
     parent(parent),
-    state(definition_state::kUndefined), name(name), binding(binding::kLocal),
+    state(definition_state::kUndefined), name(name), binding(binding_t::kLocal),
     value(std::make_shared<symbol::value_empty<value_t>>())
 {
 }
@@ -36,6 +36,6 @@ template<typename value_t>
 symbol::entry<value_t>::entry(symbol::table<value_t>& parent, 
     std::string name, typename symbol::table<value_t>::value_ptr_t value): 
     parent(parent),
-    state(definition_state::kSingle), name(name), binding(binding::kLocal), value(value)
+    state(definition_state::kSingle), name(name), binding(binding_t::kLocal), value(value)
 {
 }

@@ -58,7 +58,7 @@ public:
     definition_state state;
     /*! The binding type of this symbol (i.e., global vs local).
      * \sa symbol::binding*/
-    binding binding;
+    binding_t binding;
     /*! The value taken on by this symbol.
      * \sa symbol::abstract_value */
     typename symbol::table<value_t>::value_ptr_t value;

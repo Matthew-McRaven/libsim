@@ -15,7 +15,7 @@ TEST_CASE( "Test symbol values." ) {
 		auto value = symbol::value_deleted<uint16_t>();
 		CHECK_NOFAIL(value.value());
 		CHECK(value.value() == 0);
-		CHECK(value.type() == symbol::type::kDeleted);
+		CHECK(value.type() == symbol::type_t::kDeleted);
 	}
 
 	// Check that the values on a numeric value can be mutated.

@@ -71,14 +71,14 @@ bool symbol::table<symbol_value_t>::del(const std::string& name)
 }
 
 template <typename symbol_value_t>
-void symbol::table<symbol_value_t>::set_binding(const std::string &name, symbol::binding binding)
+void symbol::table<symbol_value_t>::set_binding(const std::string &name, symbol::binding_t binding)
 {
     auto symbol = reference(name);
     symbol->binding = binding;
 }
 
 template <typename symbol_value_t>
-void symbol::table<symbol_value_t>::set_type(const std::string &name, symbol::type type)
+void symbol::table<symbol_value_t>::set_type(const std::string &name, symbol::type_t type)
 {
     auto symbol = reference(name);
     symbol->type = type;
@@ -141,7 +141,7 @@ std::string symbol::table<offset_size_t>::listing() const
 template <typename symbol_value_t>
 auto symbol::externals(typename symbol::table<symbol_value_t>::const_range rng) -> decltype(rng)
 {
-    static const auto filter = [](const auto& it){return it->binding == symbol::binding::kGlobal;};
+    static const auto filter = [](const auto& it){return it->binding == symbol::binding_t::kGlobal;};
     return rng | boost::adaptors::filtered(filter);
 }
 
@@ -174,7 +174,7 @@ void symbol::set_offset(typename symbol::table<symbol_value_t>::range rng, symbo
 {
     auto it = rng.begin();
     while(it != rng.end()) {
-        if((*it)->value->type() == symbol::type::kLocation && (*it)->value->value() >= threshhold) {
+        if((*it)->value->type() == symbol::type_t::kLocation && (*it)->value->value() >= threshhold) {
             std::static_pointer_cast<symbol::value_location<symbol_value_t>>((*it)->value)->set_offset(offset);
         }
         ++it;

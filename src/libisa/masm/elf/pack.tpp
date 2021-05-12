@@ -46,8 +46,8 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
     symbol_section_accessor sym_ac( writer, sym_tab );
 	for(auto symbol : symbols) {
 		auto binding = STB_LOCAL;
-		if(symbol->binding == symbol::binding::kGlobal) binding = STB_GLOBAL;
-		else if(symbol->binding == symbol::binding::kWeak) binding = STB_WEAK;
+		if(symbol->binding == symbol::binding_t::kGlobal) binding = STB_GLOBAL;
+		else if(symbol->binding == symbol::binding_t::kWeak) binding = STB_WEAK;
 		// TODO: Handle types, section pointer correctly.
 		sym_ac.add_symbol( str_ac, symbol->name.data(), symbol->value->value(), 0, binding, STT_NOTYPE, 0, SHN_ABS);
 	}

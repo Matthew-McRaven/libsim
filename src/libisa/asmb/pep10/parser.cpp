@@ -570,7 +570,7 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 	}
 	else {
 		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
-		symbol_table->set_binding(as_ref->symbol_value()->name, symbol::binding::kGlobal);
+		symbol_table->set_binding(as_ref->symbol_value()->name, symbol::binding_t::kGlobal);
 		assert(as_ref);
 		ret_val->argument = as_ref;
 		return {true, "", ret_val};

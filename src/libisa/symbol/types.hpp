@@ -39,7 +39,7 @@ enum class definition_state
  * toolchain. As demonstrated in `/src/masm/elf/pack.hpp` there is more-or-less a 1-1 mapping between our types and ELF 
  * types.
  */
-enum class type
+enum class type_t
 {
     /*! Represent a not-yet-defined symbol's value. 
     * Maps to ELF's STT_NOTYPE.*/
@@ -80,7 +80,7 @@ enum class type
  * be replaced by the global symbol.
  *  
  */
-enum class binding
+enum class binding_t
 {
     kLocal, /*!< Local definitons allows a symbol to be declared in every translation unit.*/
     kGlobal, /*!< Global definiton requires a symbol be defined in only one translation unit.*/

@@ -93,7 +93,7 @@ public:
      * 
      * \sa symbol::binding
      */
-    void set_binding(const std::string& name, binding binding);
+    void set_binding(const std::string& name, binding_t binding);
 
     /*! \brief Modify ST_INFO fields of an ELF symbol.
      * 
@@ -104,7 +104,7 @@ public:
      * 
      * \sa symbol::type
      */
-    void set_type(const std::string& name, type type);
+    void set_type(const std::string& name, type_t type);
 
     /*! \brief Check if a symbol is present in this table.
      * \arg name The name of the symbol to check for the existence ofl

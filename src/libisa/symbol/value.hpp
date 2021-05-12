@@ -64,7 +64,7 @@ public:
      * \returns The kind of object represented by this value.
      * \sa symbol::type
      */
-    virtual type type() const = 0;
+    virtual type_t type() const = 0;
 
     /*!
      * \brief Return the number of bytes needed to hold the symbol's value.
@@ -96,7 +96,7 @@ public:
     value_empty();
     virtual ~value_empty() override = default;
     value_t value() const override;
-    symbol::type type() const override;
+    symbol::type_t type() const override;
 };
 
 /*!
@@ -114,7 +114,7 @@ public value_empty<value_t>
 public:
     value_deleted() = default;
     virtual ~value_deleted() override = default;
-    symbol::type type() const override;
+    symbol::type_t type() const override;
 };
 
 /*!
@@ -131,7 +131,7 @@ public:
     explicit value_const(value_t value);
     virtual ~value_const() override = default;
     value_t value() const override;
-    symbol::type type() const override;
+    symbol::type_t type() const override;
 
     /*!
      * \brief Overwrite the internal value of this object using the given parameters.
@@ -160,7 +160,7 @@ public:
     virtual ~value_location() override = default; 
     // Inherited via value.
     virtual value_t value() const override;
-    symbol::type type() const override;
+    symbol::type_t type() const override;
     bool relocatable() const override;
 
     /*!
@@ -209,7 +209,7 @@ public:
     ~value_pointer() override;
     // Inherited via value.
     value_t value() const override;
-    symbol::type type() const override;
+    symbol::type_t type() const override;
 
     //! Symbol whose value is to be taken on.
     std::shared_ptr<const entry<value_t>> symbol_pointer;
