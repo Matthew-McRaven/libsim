@@ -35,13 +35,13 @@ public:
 };
 
 template <typename address_size_t>
-class dot_sycall: public masm::ir::linear_line<address_size_t>
+class dot_scall: public masm::ir::linear_line<address_size_t>
 {
 public:
-    dot_sycall();
-    ~dot_sycall() override = default;
-    dot_sycall(const dot_sycall& other);
-    dot_sycall& operator=(dot_sycall other);
+    dot_scall();
+    ~dot_scall() override = default;
+    dot_scall(const dot_scall& other);
+    dot_scall& operator=(dot_scall other);
     std::shared_ptr<masm::ir::linear_line<address_size_t> > clone() const override;
 
     // linear_line interface
@@ -49,7 +49,7 @@ public:
     std::string generate_source_string() const override;
     void append_object_code(std::vector<uint8_t>& code) const override;
 
-    friend void swap(dot_sycall& first, dot_sycall& second)
+    friend void swap(dot_scall& first, dot_scall& second)
     {
         using std::swap;
         swap(static_cast<masm::ir::linear_line<address_size_t>&>(first), 
@@ -61,13 +61,13 @@ public:
 };
 
 template <typename address_size_t>
-class dot_usycall: public masm::ir::linear_line<address_size_t>
+class dot_uscall: public masm::ir::linear_line<address_size_t>
 {
 public:
-    dot_usycall();
-    ~dot_usycall() override = default;
-    dot_usycall(const dot_usycall& other);
-    dot_usycall& operator=(dot_usycall other);
+    dot_uscall();
+    ~dot_uscall() override = default;
+    dot_uscall(const dot_uscall& other);
+    dot_uscall& operator=(dot_uscall other);
     std::shared_ptr<masm::ir::linear_line<address_size_t> > clone() const override;
 
     // linear_line interface
@@ -75,7 +75,7 @@ public:
     std::string generate_source_string() const override;
     void append_object_code(std::vector<uint8_t>& code) const override;
 
-    friend void swap(dot_usycall& first, dot_usycall& second)
+    friend void swap(dot_uscall& first, dot_uscall& second)
     {
         using std::swap;
         swap(static_cast<masm::ir::linear_line<address_size_t>&>(first), 

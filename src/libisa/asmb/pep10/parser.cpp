@@ -198,18 +198,18 @@ auto asmb::pep10::parser::parse(
 					local_message = ";ERROR: .EXPORT does not support symbol declaration.";
 				}
 			}
-			else if(text_dot == "SYCALL") {
-				std::tie(local_success, local_message, local_line) = parse_SYCALL(start, last, symbol_table, project->macro_registry);
+			else if(text_dot == "SCALL") {
+				std::tie(local_success, local_message, local_line) = parse_SCALL(start, last, symbol_table, project->macro_registry);
 				if(local_success && local_symbol) {
 					local_success = false;
-					local_message = ";ERROR: .SYCALL does not support symbol declaration.";
+					local_message = ";ERROR: .SCALL does not support symbol declaration.";
 				}
 			}
-			else if(text_dot == "USYCALL") {
-				std::tie(local_success, local_message, local_line) = parse_USYCALL(start, last, symbol_table, project->macro_registry);
+			else if(text_dot == "USCALL") {
+				std::tie(local_success, local_message, local_line) = parse_USCALL(start, last, symbol_table, project->macro_registry);
 				if(local_success && local_symbol) {
 					local_success = false;
-					local_message = ";ERROR: .USYCALL does not support symbol declaration.";
+					local_message = ";ERROR: .USCALL does not support symbol declaration.";
 				}
 			}
 			else if(text_dot == "WORD") std::tie(local_success, local_message, local_line) = parse_WORD(start, last, symbol_table);
@@ -577,7 +577,7 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 	}
 }
 
-std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_SYCALL(token_iterator_t& start, 
+std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_SCALL(token_iterator_t& start, 
 	const token_iterator_t& last, symbol_table_pointer_t symbol_table, macro_registry_pointer_t registry)
 {
 	using token_class_t = const std::set<masm::frontend::token_type>;
@@ -585,9 +585,9 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 		masm::frontend::token_type::kIdentifier
 	};
 
-	auto ret_val = std::make_shared<asmb::pep10::dot_sycall<uint16_t>>();
+	auto ret_val = std::make_shared<asmb::pep10::dot_scall<uint16_t>>();
 	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
-		return {false, ";ERROR: .USYCALL requires a symbolic argument.", nullptr};
+		return {false, ";ERROR: .SCALL requires a symbolic argument.", nullptr};
 	}
 	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, symbol_table); !valid_operand) {
 		return {false, err_msg, nullptr};
@@ -600,7 +600,7 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 	};
 }
 
-std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_USYCALL(token_iterator_t& start, 
+std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_USCALL(token_iterator_t& start, 
 	const token_iterator_t& last, symbol_table_pointer_t symbol_table, macro_registry_pointer_t registry)
 {
 	using token_class_t = const std::set<masm::frontend::token_type>;
@@ -608,9 +608,9 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 		masm::frontend::token_type::kIdentifier
 	};
 
-	auto ret_val = std::make_shared<asmb::pep10::dot_usycall<uint16_t>>();
+	auto ret_val = std::make_shared<asmb::pep10::dot_uscall<uint16_t>>();
 	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
-		return {false, ";ERROR: .USYCALL requires a symbolic argument.", nullptr};
+		return {false, ";ERROR: .USCALL requires a symbolic argument.", nullptr};
 	}
 	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, symbol_table); !valid_operand) {
 		return {false, err_msg, nullptr};

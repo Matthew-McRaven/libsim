@@ -47,9 +47,9 @@ namespace asmb::pep10
 		std::tuple<bool, std::string, ir_pointer_t> parse_EQUATE(token_iterator_t& start, const token_iterator_t& last);
 		std::tuple<bool, std::string, ir_pointer_t> parse_EXPORT(token_iterator_t& start, const token_iterator_t& last,
 			symbol_table_pointer_t symbol_table);
-		std::tuple<bool, std::string, ir_pointer_t> parse_SYCALL(token_iterator_t& start, const token_iterator_t& last,
+		std::tuple<bool, std::string, ir_pointer_t> parse_SCALL(token_iterator_t& start, const token_iterator_t& last,
 			symbol_table_pointer_t symbol_table, macro_registry_pointer_t registry);
-		std::tuple<bool, std::string, ir_pointer_t> parse_USYCALL(token_iterator_t& start, const token_iterator_t& last,
+		std::tuple<bool, std::string, ir_pointer_t> parse_USCALL(token_iterator_t& start, const token_iterator_t& last,
 			symbol_table_pointer_t symbol_table, macro_registry_pointer_t registry);
 		std::tuple<bool, std::string, ir_pointer_t> parse_WORD(token_iterator_t& start, const token_iterator_t& last,
 			symbol_table_pointer_t symbol_table);

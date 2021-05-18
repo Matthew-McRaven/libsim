@@ -62,22 +62,22 @@ void asmb::pep10::dot_export<address_size_t>::append_object_code(std::vector<uin
 
 
 /*
- * .SYCALL
+ * .scall
  */
 template <typename address_size_t>
-asmb::pep10::dot_sycall<address_size_t>::dot_sycall()
+asmb::pep10::dot_scall<address_size_t>::dot_scall()
 {
 }
 
 template <typename address_size_t>
-asmb::pep10::dot_sycall<address_size_t>::dot_sycall(const asmb::pep10::dot_sycall<address_size_t>& other)
+asmb::pep10::dot_scall<address_size_t>::dot_scall(const asmb::pep10::dot_scall<address_size_t>& other)
 {
 
 }
 
 template <typename address_size_t>
-asmb::pep10::dot_sycall<address_size_t> &asmb::pep10::dot_sycall<address_size_t>::operator=(
-	asmb::pep10::dot_sycall<address_size_t> other)
+asmb::pep10::dot_scall<address_size_t> &asmb::pep10::dot_scall<address_size_t>::operator=(
+	asmb::pep10::dot_scall<address_size_t> other)
 {
     swap(*this, other);
     return *this;
@@ -85,13 +85,13 @@ asmb::pep10::dot_sycall<address_size_t> &asmb::pep10::dot_sycall<address_size_t>
 
 
 template <typename address_size_t>
-std::shared_ptr<masm::ir::linear_line<address_size_t>> asmb::pep10::dot_sycall<address_size_t>::clone() const
+std::shared_ptr<masm::ir::linear_line<address_size_t>> asmb::pep10::dot_scall<address_size_t>::clone() const
 {
-    return std::make_shared<dot_sycall<address_size_t> >(*this);
+    return std::make_shared<dot_scall<address_size_t> >(*this);
 }
 
 template <typename address_size_t>
-std::string asmb::pep10::dot_sycall<address_size_t>::generate_listing_string() const
+std::string asmb::pep10::dot_scall<address_size_t>::generate_listing_string() const
 {
 	auto temp = fmt::format("{:<6} {:<6}{}",
 		"",
@@ -103,9 +103,9 @@ std::string asmb::pep10::dot_sycall<address_size_t>::generate_listing_string() c
 }
 
 template <typename address_size_t>
-std::string asmb::pep10::dot_sycall<address_size_t>::generate_source_string() const
+std::string asmb::pep10::dot_scall<address_size_t>::generate_source_string() const
 {
-    auto dot_string = ".SYCALL";
+    auto dot_string = ".SCALL";
     auto operand_string = argument->string();
 	std::string comment = this->comment.value_or("");
     return fmt::format("{:<9}{:<8}{:<12}{}",
@@ -118,28 +118,28 @@ std::string asmb::pep10::dot_sycall<address_size_t>::generate_source_string() co
 }
 
 template <typename address_size_t>
-void asmb::pep10::dot_sycall<address_size_t>::append_object_code(std::vector<uint8_t>& bytes) const
+void asmb::pep10::dot_scall<address_size_t>::append_object_code(std::vector<uint8_t>& bytes) const
 {
 	return;
 }
 
 /*
- * .USYCALL
+ * .uscall
  */
 template <typename address_size_t>
-asmb::pep10::dot_usycall<address_size_t>::dot_usycall()
+asmb::pep10::dot_uscall<address_size_t>::dot_uscall()
 {
 }
 
 template <typename address_size_t>
-asmb::pep10::dot_usycall<address_size_t>::dot_usycall(const asmb::pep10::dot_usycall<address_size_t>& other)
+asmb::pep10::dot_uscall<address_size_t>::dot_uscall(const asmb::pep10::dot_uscall<address_size_t>& other)
 {
 
 }
 
 template <typename address_size_t>
-asmb::pep10::dot_usycall<address_size_t> &asmb::pep10::dot_usycall<address_size_t>::operator=(
-	asmb::pep10::dot_usycall<address_size_t> other)
+asmb::pep10::dot_uscall<address_size_t> &asmb::pep10::dot_uscall<address_size_t>::operator=(
+	asmb::pep10::dot_uscall<address_size_t> other)
 {
     swap(*this, other);
     return *this;
@@ -147,13 +147,13 @@ asmb::pep10::dot_usycall<address_size_t> &asmb::pep10::dot_usycall<address_size_
 
 
 template <typename address_size_t>
-std::shared_ptr<masm::ir::linear_line<address_size_t>> asmb::pep10::dot_usycall<address_size_t>::clone() const
+std::shared_ptr<masm::ir::linear_line<address_size_t>> asmb::pep10::dot_uscall<address_size_t>::clone() const
 {
-    return std::make_shared<dot_usycall<address_size_t> >(*this);
+    return std::make_shared<dot_uscall<address_size_t> >(*this);
 }
 
 template <typename address_size_t>
-std::string asmb::pep10::dot_usycall<address_size_t>::generate_listing_string() const
+std::string asmb::pep10::dot_uscall<address_size_t>::generate_listing_string() const
 {
 	auto temp = fmt::format("{:<6} {:<6}{}",
 		"",
@@ -165,9 +165,9 @@ std::string asmb::pep10::dot_usycall<address_size_t>::generate_listing_string() 
 }
 
 template <typename address_size_t>
-std::string asmb::pep10::dot_usycall<address_size_t>::generate_source_string() const
+std::string asmb::pep10::dot_uscall<address_size_t>::generate_source_string() const
 {
-    auto dot_string = ".USYCALL";
+    auto dot_string = ".USCALL";
     auto operand_string = argument->string();
 	std::string comment = this->comment.value_or("");
     return fmt::format("{:<9}{:<8}{:<12}{}",
@@ -180,7 +180,7 @@ std::string asmb::pep10::dot_usycall<address_size_t>::generate_source_string() c
 }
 
 template <typename address_size_t>
-void asmb::pep10::dot_usycall<address_size_t>::append_object_code(std::vector<uint8_t>& bytes) const
+void asmb::pep10::dot_uscall<address_size_t>::append_object_code(std::vector<uint8_t>& bytes) const
 {
 	return;
 }
