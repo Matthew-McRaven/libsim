@@ -4,7 +4,6 @@
 #include "masm/registry.hpp"
 #include "masm/frontend/preprocesser.hpp"
 #include "masm/project/section.hpp"
-#include "masm/frontend/sectionize.hpp"
 
 TEST_CASE( "Preprocess" ) {
 	/*

@@ -2,16 +2,18 @@
 
 #include <algorithm>
 
+#include "masm/frontend/imagize.hpp"
+
 template <typename address_size_t, typename stage_t>
 std::pair<bool, std::string> masm::driver<address_size_t, stage_t>::assemble_project(
-	project_t& project, std::vector<source_t>& sources, stage_t target_stage)
+	project_t& project, std::shared_ptr<masm::project::source_file> os, stage_t target_stage)
 {
+	masm::frontend::text_to_image(project, os);
 	// TODO: Move to a stage
-	auto sections = masm::frontend::section_program<address_size_t>(project, sources, ".text");
-	if(sections.empty()) return {false, ";ERROR: Failed to section program"};
 	
 	work_queue_[stage_t::RAW] = {};
-	for(auto item : sections) {
+	for(auto &[index, image] : project->images) {
+		auto item = image->section;
 		work_t val = {std::static_pointer_cast<masm::elf::code_section<address_size_t>>(item)};
 		work_queue_[stage_t::RAW].emplace_back(val);
 	}

@@ -47,7 +47,7 @@ std::shared_ptr<asmb::pep10::assign_addr::driver_t> asmb::pep10::assign_addr::ma
 	driver->register_transform(tx_parser, stage_t::PREPROCESS);
 
 	masm::backend::region<uint16_t> node;
-	node.input_sections = {".text"};
+	node.input_sections = {"os"};
 	node.base_address = 0;
 	transform_t tx_addr = [=](project_t& proj, std::list<driver_t::work_t>& work) {
 		bool success = true;

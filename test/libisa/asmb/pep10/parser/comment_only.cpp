@@ -14,12 +14,11 @@ TEST_CASE( "Parse comment line", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ";Hello world!\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->sections[0];
-		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 1);
-		auto maybe_comment = project->images[0]->sections[0]->body_ir->ir_lines[0];
+		auto x = project->images[0]->section;
+		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 1);
+		auto maybe_comment = project->images[0]->section->body_ir->ir_lines[0];
 		auto as_comment = std::dynamic_pointer_cast<masm::ir::comment_line<uint16_t> >(maybe_comment);
 		REQUIRE(as_comment);
 	}

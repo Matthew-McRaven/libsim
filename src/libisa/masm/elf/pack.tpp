@@ -18,15 +18,14 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	writer.set_type( ET_REL );
 	writer.set_machine( 0x8088 );
 	// Write code sections.
-	for(auto section : image->sections) {
-		auto elf_section = writer.sections.add( section->header.name );
-		elf_section->set_type( SHT_PROGBITS );
-		elf_section->set_flags( SHF_ALLOC | SHF_EXECINSTR | SHF_WRITE);
-		elf_section->set_addr_align( 0x1 );
-		auto as_code_section = std::static_pointer_cast<const masm::elf::code_section<addr_size_t>>(section);
-		auto as_byte_vec = masm::elf::to_bytes(as_code_section);
-		elf_section->set_data((const char*)as_byte_vec.data(), as_byte_vec.size());
-	}
+	auto section = image->section;
+	auto elf_section = writer.sections.add( section->header.name );
+	elf_section->set_type( SHT_PROGBITS );
+	elf_section->set_flags( SHF_ALLOC | SHF_EXECINSTR | SHF_WRITE);
+	elf_section->set_addr_align( 0x1 );
+	auto as_code_section = std::static_pointer_cast<const masm::elf::code_section<addr_size_t>>(section);
+	auto as_byte_vec = masm::elf::to_bytes(as_code_section);
+	elf_section->set_data((const char*)as_byte_vec.data(), as_byte_vec.size());
 
 	// Write symbol table.
 	auto symbols = image->symbol_table->entries();

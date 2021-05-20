@@ -14,12 +14,11 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = "s:asra\n.SCALL s\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->sections[0];
-		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 2);
-		auto maybe_SCALL = project->images[0]->sections[0]->body_ir->ir_lines[1];
+		auto x = project->images[0]->section;
+		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 2);
+		auto maybe_SCALL = project->images[0]->section->body_ir->ir_lines[1];
 		auto as_SCALL = std::dynamic_pointer_cast<asmb::pep10::dot_scall<uint16_t> >(maybe_SCALL);
 		REQUIRE(as_SCALL);
 
@@ -33,12 +32,11 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".SCALL s ;Hi guys\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->sections[0];
-		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 1);
-		auto maybe_SCALL = project->images[0]->sections[0]->body_ir->ir_lines[0];
+		auto x = project->images[0]->section;
+		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 1);
+		auto maybe_SCALL = project->images[0]->section->body_ir->ir_lines[0];
 		auto as_SCALL = std::dynamic_pointer_cast<asmb::pep10::dot_scall<uint16_t> >(maybe_SCALL);
 		REQUIRE(as_SCALL);
 		REQUIRE(as_SCALL->comment);
@@ -55,8 +53,7 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 		file->name = "main";
 		// TODO: Ban self-references on.SCALL, since.SCALL generates no object code.
 		file->body = "s: .SCALL s ;Hi guys\n"; // Self reference is actually okay here, but has no use.
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 
 
@@ -67,8 +64,7 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".SCALL 22\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 
@@ -77,8 +73,7 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".SCALL 0xbeef\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No signed dec in .SCALL") {	
@@ -86,8 +81,7 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".SCALL -19\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No string in .SCALL") {	
@@ -95,8 +89,7 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".SCALL \"HI\"\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 }

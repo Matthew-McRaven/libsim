@@ -14,12 +14,11 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = "s:asra\n.EXPORT s\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->sections[0];
-		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 2);
-		auto maybe_export = project->images[0]->sections[0]->body_ir->ir_lines[1];
+		auto x = project->images[0]->section;
+		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 2);
+		auto maybe_export = project->images[0]->section->body_ir->ir_lines[1];
 		auto as_export = std::dynamic_pointer_cast<asmb::pep10::dot_export<uint16_t> >(maybe_export);
 		REQUIRE(as_export);
 
@@ -35,12 +34,11 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".EXPORT s ;Hi guys\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->sections[0];
-		REQUIRE(project->images[0]->sections[0]->body_ir->ir_lines.size() == 1);
-		auto maybe_export = project->images[0]->sections[0]->body_ir->ir_lines[0];
+		auto x = project->images[0]->section;
+		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 1);
+		auto maybe_export = project->images[0]->section->body_ir->ir_lines[0];
 		auto as_export = std::dynamic_pointer_cast<asmb::pep10::dot_export<uint16_t> >(maybe_export);
 		REQUIRE(as_export);
 		REQUIRE(as_export->comment);
@@ -59,8 +57,7 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		file->name = "main";
 		// TODO: Ban self-references on EXPORT, since EXPORT generates no object code.
 		file->body = "s: .EXPORT s ;Hi guys\n"; // Self reference is actually okay here, but has no use.
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 
 
@@ -71,8 +68,7 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".EXPORT 22\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 
@@ -81,8 +77,7 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".EXPORT 0xbeef\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No signed dec in .EXPORT") {	
@@ -90,8 +85,7 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".EXPORT -19\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No string in .EXPORT") {	
@@ -99,8 +93,7 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".EXPORT \"HI\"\n";
-		std::vector<driver_t::source_t> vec = {file};
-		auto res = driver->assemble_project(project, vec, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 }
