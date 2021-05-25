@@ -1,12 +1,12 @@
 #include "catch.hpp"
-#include "helper.hpp"
 
 #include "asmb/pep10/ir.hpp"
+#include "asmb/pep10/create_driver.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/macro.hpp"
 
 TEST_CASE( "Parse macro instructions", "[asmb::pep10::parser]"  ) {
-
+	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
 
 	SECTION("0-arity macro.") {	
@@ -85,7 +85,7 @@ TEST_CASE( "Parse macro instructions", "[asmb::pep10::parser]"  ) {
 		CHECK(as_macro->comment);
 	}
 
-	SECTION("2-arity macro with a 0-arity macro, plus comment&symbol.") {	
+	SECTION("2-arity macro with a 0-arity macro, plus comment & symbol.") {	
 		auto project = masm::project::init_project<uint16_t>();
 		CHECK(project->macro_registry->register_macro("HELLO2", "@HELLO2 2\n@HELLO0\n@HELLO0\n", masm::MacroType::CoreMacro));
 		CHECK(project->macro_registry->register_macro("HELLO0", "@HELLO0 0\nASRA\nASRA\n", masm::MacroType::CoreMacro));

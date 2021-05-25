@@ -1,13 +1,13 @@
 #include "catch.hpp"
-#include "helper.hpp"
 
 #include "asmb/pep10/ir.hpp"
+#include "asmb/pep10/create_driver.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/empty.hpp"
 #include "masm/elf/pack.hpp"
 
 TEST_CASE( "Flatten simple programs to ELF binary.", "[masm::elf]"  ) {
-	using namespace asmb::pep10::pack;
+	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
 
 	SECTION("Unary instructions") {	

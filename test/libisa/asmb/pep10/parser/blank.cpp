@@ -1,12 +1,12 @@
 #include "catch.hpp"
-#include "helper.hpp"
 
 #include "asmb/pep10/ir.hpp"
+#include "asmb/pep10/create_driver.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/empty.hpp"
 
 TEST_CASE( "Parse blank line", "[asmb::pep10::parser]"  ) {
-
+	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
 
 	SECTION("Blank line") {	

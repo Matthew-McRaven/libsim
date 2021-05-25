@@ -1,12 +1,12 @@
 #include "catch.hpp"
-#include "helper.hpp"
 
 #include "asmb/pep10/ir.hpp"
+#include "asmb/pep10/create_driver.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/empty.hpp"
 
 TEST_CASE( "Allocate address to simple programs", "[masm::ir::assign_addr]"  ) {
-	using namespace asmb::pep10::assign_addr;
+	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
 
 	SECTION("Unary instructions") {	

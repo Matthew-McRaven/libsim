@@ -1,12 +1,12 @@
 #include "catch.hpp"
-#include "helper.hpp"
 
 #include "asmb/pep10/ir.hpp"
+#include "asmb/pep10/create_driver.hpp"
 #include "asmb/pep10/directives.hpp"
 #include "masm/ir/directives.hpp"
 
 TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
-
+	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
 
 	SECTION("Valid .SCALL") {	
