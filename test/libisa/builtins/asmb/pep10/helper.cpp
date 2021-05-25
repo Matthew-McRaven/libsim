@@ -46,9 +46,6 @@ std::shared_ptr<builtins::pep10::driver_t> builtins::pep10::make_driver()
 	};
 	driver->register_transform(tx_parser, stage_t::PREPROCESS);
 
-	masm::backend::region<uint16_t> node;
-	node.input_sections = {".text"};
-	node.base_address = 0;
 	transform_t tx_addr = [=](project_t& proj, std::list<driver_t::work_t>& work) {
 		bool success = true;
 		std::set<std::shared_ptr<masm::elf::image<uint16_t>>> images;
@@ -58,7 +55,7 @@ std::shared_ptr<builtins::pep10::driver_t> builtins::pep10::make_driver()
 
 		driver_t::work_iterable_t result_work;
 		std::transform(images.begin(), images.end(), std::back_inserter(result_work),[&](auto image){
-			masm::backend::assign_image(proj, image, {node});
+			masm::backend::assign_image(proj, image);
 			return driver_t::work_iterable_t::value_type{stage_t::ADDRESS_ASSIGN, image};
 		});
 		return driver_t::result_t{success, result_work};

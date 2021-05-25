@@ -100,7 +100,8 @@ auto asmb::pep10::parser::parse(
 		masm::frontend::token_type::kStrConstant
 	};
 
-	bool success = true, had_dot_end = false;
+	bool success = true;
+	int burn_count = 0, end_count = 0;
 	auto symbol_table = section->containing_image.lock()->symbol_table;
 	decltype(section->body_ir->ir_lines) ir_lines;
 	for(auto [index, line] : section->body_token.value().tokens | boost::adaptors::indexed(0)) {
@@ -165,6 +166,7 @@ auto asmb::pep10::parser::parse(
 			else if(text_dot == "BLOCK") std::tie(local_success, local_message, local_line) = parse_BLOCK(start, last);
 			else if(text_dot == "BURN") {
 				std::tie(local_success, local_message, local_line) = parse_BURN(start, last);
+				if(local_success) burn_count++;
 				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .BURN does not support symbol declaration.";
@@ -173,7 +175,8 @@ auto asmb::pep10::parser::parse(
 			else if(text_dot == "BYTE") std::tie(local_success, local_message, local_line) = parse_BYTE(start, last);
 			else if(text_dot == "END") {
 				std::tie(local_success, local_message, local_line) = parse_END(start, last);
-					if(local_success && local_symbol) {
+				if(local_success) end_count++;
+				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .END does not support symbol declaration.";
 				}
@@ -297,7 +300,10 @@ auto asmb::pep10::parser::parse(
 		local_line->source_line = index;
 		ir_lines.emplace_back(local_line);
 	}
-	
+	// TODO: Require that a .END be present.
+	// TODO: Check that OS has exactly 1 BURN. If so, assign the BURN_address field.
+		// TODO: Flag any line of code prior to a BURN as not generating object code.
+	// TOOD: Check that a USER program doesn't have a BURN.
 	section->body_ir = masm::elf::code::ir<uint16_t>{};
 	section->body_ir->ir_lines = ir_lines;
 	return success;

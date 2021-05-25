@@ -44,6 +44,10 @@ namespace masm::elf::code {
 	template <typename address_size_t>
 	struct ir
 	{
+		// If no burn is present, optional will be std::nullopt. If a single BURN 
+		// is present, then this will contain the hex argument. If multiple BURNs
+		// are present, assembling to IR will fail, and an error will be raised.
+		std::optional<uint16_t> BURN_address = std::nullopt;
 		std::vector<std::shared_ptr<masm::ir::linear_line<address_size_t> > > ir_lines;
 		void* stack_trace_info;
 	};
@@ -51,13 +55,16 @@ namespace masm::elf::code {
 
 namespace masm::elf {
 
+enum class program_type
+{
+	kUserProgram,
+	kOperatingSystem
+};
 struct section_info
 {
-	std::string name;
 	uint16_t index;
-	bool read=true, write=true, execute=true;
-	uint16_t align=2;
-	void* section_type;
+	std::string name;
+	program_type section_type = program_type::kUserProgram; 
 };
 
 template <typename address_size_t>
