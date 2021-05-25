@@ -9,7 +9,6 @@ std::pair<bool, std::string> masm::driver<address_size_t, stage_t>::assemble_pro
 	project_t& project, std::shared_ptr<masm::project::source_file> os, stage_t target_stage)
 {
 	masm::frontend::text_to_image(project, os);
-	// TODO: Move to a stage
 	
 	work_queue_[stage_t::RAW] = {};
 	for(auto &[index, image] : project->images) {

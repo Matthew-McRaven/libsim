@@ -21,6 +21,7 @@ enum class toolchain_stage
 	PREPROCESS,
 	SYNTAX,
 	SYMANTIC,
+	WHOLE_PROGRAM_SANITY, // Sanity checks like "does the image end in .BURN?"
 	ADDRESS_ASSIGN,
 	DEBUG0,
 	DEBUG1,

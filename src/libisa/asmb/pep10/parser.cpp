@@ -296,14 +296,11 @@ auto asmb::pep10::parser::parse(
 			success = false;
 			continue;
 		}
-
 		local_line->source_line = index;
 		ir_lines.emplace_back(local_line);
 	}
-	// TODO: Require that a .END be present.
-	// TODO: Check that OS has exactly 1 BURN. If so, assign the BURN_address field.
-		// TODO: Flag any line of code prior to a BURN as not generating object code.
-	// TOOD: Check that a USER program doesn't have a BURN.
+
+
 	section->body_ir = masm::elf::code::ir<uint16_t>{};
 	section->body_ir->ir_lines = ir_lines;
 	return success;

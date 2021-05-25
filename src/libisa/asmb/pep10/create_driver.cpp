@@ -1,5 +1,6 @@
 #include "create_driver.hpp"
 
+#include "masm/backend/sanity.hpp"
 std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver()
 {
 	using namespace asmb::pep10::driver;
@@ -46,6 +47,23 @@ std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver(
 	};
 	driver->register_transform(tx_parser, stage_t::PREPROCESS);
 
+	transform_t tx_sanity1 = [=](project_t& proj, std::list<driver_t::work_t>& work) {
+		bool success = true;
+		driver_t::work_iterable_t result_work;
+		std::map<driver_t::section_t, bool> parsed_tls;
+		std::transform(work.begin(), work.end(), std::back_inserter(result_work),[&](auto& value){
+				auto containing_image = std::get<driver_t::section_t>(value)->containing_image.lock();
+				std::shared_ptr<masm::elf::code_section<uint16_t>> tls = containing_image->section;
+				if(parsed_tls.find(tls) != parsed_tls.end()) {
+					bool val = parsed_tls[tls] = whole_program_sanity_fixup<uint16_t>(proj, tls);
+					success &= val;
+				}
+				return driver_t::work_iterable_t::value_type{stage_t::WHOLE_PROGRAM_SANITY, value};
+			});
+		return driver_t::result_t{success, result_work};
+	};
+	driver->register_transform(tx_sanity1, stage_t::SYMANTIC);
+
 	transform_t tx_addr = [=](project_t& proj, std::list<driver_t::work_t>& work) {
 		bool success = true;
 		std::set<std::shared_ptr<masm::elf::image<uint16_t>>> images;
@@ -60,7 +78,7 @@ std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver(
 		});
 		return driver_t::result_t{success, result_work};
 	};
-	driver->register_transform(tx_addr, stage_t::SYMANTIC);
+	driver->register_transform(tx_addr, stage_t::WHOLE_PROGRAM_SANITY);
 
 	transform_t tx_elf = [=](project_t& proj, std::list<driver_t::work_t>& work) {
 		bool success = true;
