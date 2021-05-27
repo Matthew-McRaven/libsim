@@ -102,7 +102,7 @@ auto asmb::pep10::parser::parse(
 
 	bool success = true;
 	int burn_count = 0, end_count = 0;
-	auto symbol_table = section->containing_image.lock()->symbol_table;
+	auto symbol_table = section->symbol_table;
 	decltype(section->body_ir->ir_lines) ir_lines;
 	for(auto [index, line] : section->body_token.value().tokens | boost::adaptors::indexed(0)) {
 		auto start=line.begin(), last=line.end();
@@ -573,7 +573,7 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 	}
 	else {
 		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
-		symbol_table->set_binding(as_ref->symbol_value()->name, symbol::binding_t::kGlobal);
+		symbol_table->mark_global(as_ref->symbol_value()->name);
 		assert(as_ref);
 		ret_val->argument = as_ref;
 		return {true, "", ret_val};

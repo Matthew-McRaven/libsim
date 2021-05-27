@@ -3,6 +3,7 @@
 #include <regex>
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/adaptor/indexed.hpp>
+#include <fmt/core.h>
 
 #include "tokens.hpp"
 #include "masm/project/section.hpp"
@@ -12,8 +13,7 @@ template<typename address_size_t, typename tokenizer_t>
 auto masm::frontend::tokenizer<address_size_t, tokenizer_t>::tokenize(
 	std::shared_ptr<masm::project::project<address_size_t> >& project, 
 	std::shared_ptr<masm::elf::code_section<address_size_t> >& section
-) 
-	-> bool
+) -> bool
 {
 	assert(section->body_raw);
 

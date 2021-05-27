@@ -23,10 +23,13 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		REQUIRE(as_export);
 
 		// Check for externalized symbol definition.
-		REQUIRE(project->images[0]->symbol_table->exists("s"));
-		auto externs = symbol::externals<uint16_t>(project->images[0]->symbol_table->entries());
-		REQUIRE(boost::size(externs) == 1);
-		CHECK((*externs.begin())->name == "s");
+		REQUIRE(symbol::exists<uint16_t>("s", {project->images[0]->symbol_table}));
+		// TODO: Check that "s" is marked as global
+		// TODO: Check that there is only one external symbol.
+		// TODO: Check that the list of external symbols starts with a symbol named "s".
+		//auto externs = symbol::externals<uint16_t>(project->images[0]->symbol_table->entries());
+		//REQUIRE(boost::size(externs) == 1);
+		//CHECK((*externs.begin())->name == "s");
 	}
 
 	SECTION("Valid .EXPORT + comment") {	
@@ -45,10 +48,8 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		CHECK(as_export->comment.value() == "Hi guys");
 
 		// Check for externalized symbol definition.
-		REQUIRE(project->images[0]->symbol_table->exists("s"));
-		auto externs = symbol::externals<uint16_t>(project->images[0]->symbol_table->entries());
-		REQUIRE(boost::size(externs) == 1);
-		CHECK((*externs.begin())->name == "s");
+		REQUIRE(symbol::exists<uint16_t>("s", {project->images[0]->symbol_table}));
+		// TODO: Check that "s" is marked as global
 	}
 
 	SECTION("Invalid .EXPORT + symbol + comment") {	

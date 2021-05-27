@@ -1,186 +1,109 @@
 #pragma once
 
-#include <atomic>
-#include <memory>
-#include <map>
-#include <mutex>
-#include <vector>
-#include <type_traits>
+// File: table.hpp
+/*
+    The Pep/10 suite of applications (Pep10, Pep10CPU, Pep10Term) are
+    simulators for the Pep/10 virtual machine, and allow users to
+    create, simulate, and debug across various levels of abstraction.
 
+    Copyright (C) 2021 J. Stanley Warford & Matthew McRaven, Pepperdine University
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include <iostream>
+#include <variant>
+#include <map>
+#include <string>
+#include <list>
+#include <optional>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/any_range.hpp>
 
-#include "symbol/entry.hpp"
+#include "entry.hpp"
 
 namespace symbol {
 
+template<typename value_t>
+class BranchTable;
+template<typename value_t>
+class LeafTable;
 
-/*!
- * \brief A symbol::table represents a collection of symbols that are contained within the same translation unit.
- * \tparam value_t An unsigned integral type that is large enough to contain the largest address on the target system.
- */
+/*
+ * Some implementation ideas drawn from: 
+ * Design and Implementation of the Symbol Table for Object-Oriented Programming Language,
+ * Yangsun Lee 2017, http://dx.doi.org/10.14257/ijdta.2017.10.7.03
+*/
+template<typename value_t>
+using NodeType = std::variant<std::shared_ptr<symbol::BranchTable<value_t>>, 
+	std::shared_ptr<symbol::LeafTable<value_t>> >;
 
-template <typename value_t>
-	//requires (UnsignedIntegral<offset_t>)
-class table
+template<typename value_t>
+class BranchTable : public std::enable_shared_from_this<BranchTable<value_t>>
 {
 public:
-    // Convenience typdefs of commonly used templated types to reduce code verbosity.
+	explicit BranchTable() = default;
+	explicit BranchTable(std::shared_ptr<BranchTable<value_t>> parent);
+	~BranchTable() = default;
 
-    //! The type of a pointer to a symbol.
-    using entry_ptr_t = std::shared_ptr<symbol::entry<value_t> >;
-    //! The type of a pointer to a symbol's value.
-    using value_ptr_t = std::shared_ptr<symbol::abstract_value<value_t> >;
-
+	void add_child(NodeType<value_t> child);
+	std::list<NodeType<value_t>> children(){return children_;}
+	const std::weak_ptr<BranchTable<value_t>> parent_ = {};
 private:
-    std::map<std::string, entry_ptr_t> name_to_entry_;
-
-public:
-    /*! \brief The type representing an iterable collection of mutable symbol entries.
-    Very useful for custom transformations and filters on a table's symbols.
-    */
-    using range = boost::any_range<entry_ptr_t, boost::forward_traversal_tag, entry_ptr_t&, std::ptrdiff_t>;
-    /*! \brief The type representing an iterable collection of constant symbol entries.
-    Very useful for custom transformations and filters on a table's symbols.
-    */
-    // TODO: Fix Use pointer to const rather than a const ptr
-    using const_range = boost::any_range<const entry_ptr_t, boost::forward_traversal_tag, const entry_ptr_t&, std::ptrdiff_t>; 
-
-    explicit table();
-    ~table() = default;
-
-    /*! \brief Get a symbol::entry from this symbol table by name look-up.
-     * 
-     * If the symbol is not yet in the symbol table, a new entry will be added, and it will be marked as undefined.
-     * If the symbol exists, then a pointer to the existing symbol will be returned.
-     * 
-     * All calls to reference in the same table with the same name will return pointers to the same underlying entry.
-     * 
-     * \arg name The name of the symbol to be defined.
-     * \returns Returns a pointer to a symbol whose name matches the argument exactly.
-     */
-    entry_ptr_t reference(const std::string& name);
-
-    /*! \brief Reference a symbol by name, and advance its definition state.
-     * 
-     * Calls symbol::table::reference(name) on the passed symbol.
-     * Advancing definition state takes symbols in state symbol::definition_state::kUndefined to symbol::definition_state::kSingle.
-     * It also takes symbols in state symbol::definition_state::kSingle to symbol::definition_state::kMultiple.
-     * Symbols in symbol::definition_state::kMultiple remain multiply defined.
-     * 
-     * \arg name The name of the symbol to be defined.
-     * \returns Returns the pointer to the now-defined symbol.
-     * \sa reference
-     */
-    entry_ptr_t define(const std::string& name);
-
-    /*! \brief Remove a symbol from this table by name.
-     * 
-     * Un-registers the symbol from any internal maps, and marks the symbol for deletion.
-     * If the passed symbol is not present in the table, the operation is a no-op that returns true.
-     * 
-     * \arg name The name of the symbol to be marked for deletion.
-     * \returns Return true if there are no remaining references to "name" and false otherwise.
-     */
-    bool del(const std::string& name);
-
-    /*! \brief Modify ST_INFO fields of an ELF symbol.
-     * 
-     * Changes the symbol::binding of the named symbol.
-     * If the passed symbol does not exist, it will be created and its type will be set to type.
-     * \arg name The name of the symbol whose binding is to be modified.
-     * \arg type The new binding of the symbol.
-     * 
-     * \sa symbol::binding
-     */
-    void set_binding(const std::string& name, binding_t binding);
-
-    /*! \brief Modify ST_INFO fields of an ELF symbol.
-     * 
-     * Changes the symbol::type of the named symbol.
-     * If the passed symbol does not exist, it will be created and its type will be set to type.
-     * \arg name The name of the symbol whose type is to be modified.
-     * \arg type The new type of the symbol.
-     * 
-     * \sa symbol::type
-     */
-    void set_type(const std::string& name, type_t type);
-
-    /*! \brief Check if a symbol is present in this table.
-     * \arg name The name of the symbol to check for the existence ofl
-     * \returns Returns true if a symbol with name "name" is present in the table, and false otherwise.
-     */
-    bool exists(const std::string& name) const;
-
-    /*! \brief Return a constant range of all symbols in the table.
-     * Useful for gathering data to perform operations such as finding all global symbols.
-     * \returns Returns a constant range containing all symbols in the table.
-     */
-    auto entries() const -> const_range;
-
-    /*! \brief Return a mutable range of all symbols in the table.
-     * Useful for bulk modification of symbols, such as performing symbol relocation.
-     * \returns Returns a mutable range containing all symbols in the table.
-     */
-    auto entries() -> range;
-
-    /*! \brief Converts the symbol table to a "pretty printed" string.
-     * This pretty print should be the exact format expected by our listing pane in Pep/10.
-     * \returns Returns a string representation of the symbol table
-     */
-    // TODO: Migrate listing to a non-member method
-    std::string listing() const;
+	std::list<NodeType<value_t>> children_;
 };
 
-    /*! \brief Filter a collection of symbols for those marked as global.
-     * \arg rng A collection of symbols to be filtered.
-     * \tparam value_t An unsigned integral type that is large enough to contain the largest address on the target system.
-     * \returns Returns a collection of symbols that whose binding is marked as symbol::binding::kGlobal.
-     */
-    template <typename symbol_value_t>
-    auto externals(typename table<symbol_value_t>::const_range rng) -> decltype(rng);
+template<typename value_t>
+class LeafTable : public std::enable_shared_from_this<LeafTable<value_t>>
+{
+public:
+	using entry_ptr_t = std::shared_ptr<symbol::entry<value_t>>;
+	using range = boost::any_range<entry_ptr_t, boost::forward_traversal_tag, entry_ptr_t&, std::ptrdiff_t>;
+	using const_range = boost::any_range<const entry_ptr_t, boost::forward_traversal_tag, const entry_ptr_t&, std::ptrdiff_t>; 
+	
+	explicit LeafTable() = default;
+	explicit LeafTable(std::shared_ptr<BranchTable<value_t>> parent);
+	~LeafTable() = default;
 
-    /*! \brief Count the number of multiply defined symbols in a collection.
-     * \arg rng A collection of symbols to be filtered.
-     * \tparam value_t An unsigned integral type that is large enough to contain the largest address on the target system.
-     * \returns The number of symbols in rng whose definition_state is marked as symbol::definition_state::kMultiple.
-     */
-    template <typename symbol_value_t>
-    size_t count_multiply_defined_symbols(typename table<symbol_value_t>::const_range rng);
-    
-    /*! \brief Count the number of undefined symbols in a collection.
-     * \arg rng A collection of symbols to be filtered.
-     * \tparam value_t An unsigned integral type that is large enough to contain the largest address on the target system.
-     * \returns The number of symbols in rng whose definition_state is marked as symbol::definition_state::kUndefined.
-     */
-    template <typename symbol_value_t>
-    size_t count_undefined_symbols(typename table<symbol_value_t>::const_range rng);
+	//!< Unlike reference, get() will not create an entry in the table if the symbol fails to be found.
+	std::optional<entry_ptr_t> get(const std::string& name) const;
+	entry_ptr_t reference(const std::string& name);
+	entry_ptr_t define(const std::string& name);
 
-    /*! \brief Relocate symbols by setting the offset of symbols whose base address exceeds the threshold.
-     * 
-     * This functions performs the hard work of relocation.
-     * It filters out symbols that are not relocatable, and for symbols that are (symbol::value_location),
-     * it conditionally sets the offset field, effecitvely relocating the symbol.
-     * 
-     * \arg rng A collection of symbols to be relocated.
-     * \arg offset Value to which the symbols' offsets should be set.
-     * \arg threshold Base address which symbol must exceed or equal to be eligible for relocation.
-     * \tparam value_t An unsigned integral type that is large enough to contain the largest address on the target system.
-     * \returns The number of symbols in rng whose definition_state is marked as symbol::definition_state::kUndefined.
-     */
-    template <typename symbol_value_t>
-    void set_offset(typename table<symbol_value_t>::range rng, symbol_value_t offset, symbol_value_t threshhold = 0);
+	//!< Once a symbol has been marked as global, there is no un-global'ing it. 
+	//!< This function handles walking the tree and pointing other local symbols to this tables global instance.
+	void mark_global(const std::string& name);
+	bool exists(const std::string& name) const;
 
-    /*! \brief Clear the offsets of all relocatable symbols, undoing the work of relocation.
-     * 
-     * "Undo" relocation by calling set_offset with (rng, 0, 0). 
-     * 
-     * \arg rng A collection of symbols to be relocated.
-     * \tparam value_t An unsigned integral type that is large enough to contain the largest address on the target system.
-     * \returns The number of symbols in rng whose definition_state is marked as symbol::definition_state::kUndefined.
-     */
-    template <typename symbol_value_t>
-    void clear_offset(typename table<symbol_value_t>::range rng);
+	/*
+	 * Return all symbols contained by the table.
+	 */
+	auto entries() const -> const_range;
+	auto entries() -> range;
 
-}; //end namespace symbol
+	const std::weak_ptr<BranchTable<value_t>> parent_ = {};
+private:
+	std::map<std::string, entry_ptr_t> name_to_entry_;
+};
+
+//!< Wrap the creation of a new BranchTable and the correct setup of the parent/child relationship.
+template <typename value_t>
+std::shared_ptr<LeafTable<value_t>> insert_leaf(std::shared_ptr<BranchTable<value_t>> parent);
+
+//!< Wrap the creation of a new LeafTable and the correct setup of the parent/child relationship.
+template <typename value_t>
+std::shared_ptr<BranchTable<value_t>> insert_branch(std::shared_ptr<BranchTable<value_t>> parent);
+
+} //end namespace symbol
 #include "table.tpp"

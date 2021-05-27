@@ -73,6 +73,7 @@ struct code_section
 	virtual ~code_section() = default;
 	section_info header;
 	std::weak_ptr<masm::elf::image<address_size_t>> containing_image;
+	std::shared_ptr<symbol::LeafTable<address_size_t>> symbol_table;
 
 	std::optional<code::raw> body_raw;
 	std::optional<code::token> body_token;

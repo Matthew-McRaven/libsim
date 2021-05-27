@@ -23,7 +23,8 @@ TEST_CASE( "Parse dot USCALL", "[asmb::pep10::parser]"  ) {
 		REQUIRE(as_USCALL);
 
 		// Check for externalized symbol definition.
-		REQUIRE(project->images[0]->symbol_table->exists("s"));
+		//REQUIRE(project->images[0]->symbol_table->exists("s"));
+		REQUIRE(symbol::exists<uint16_t>("s", {project->images[0]->symbol_table}));
 		REQUIRE(project->macro_registry->contains("s"));
 	}
 
@@ -43,7 +44,8 @@ TEST_CASE( "Parse dot USCALL", "[asmb::pep10::parser]"  ) {
 		CHECK(as_USCALL->comment.value() == "Hi guys");
 
 		// Check for externalized symbol definition.
-		REQUIRE(project->images[0]->symbol_table->exists("s"));
+		//REQUIRE(project->images[0]->symbol_table->exists("s"));
+		REQUIRE(symbol::exists<uint16_t>("s", {project->images[0]->symbol_table}));
 		REQUIRE(project->macro_registry->contains("s"));
 	}
 

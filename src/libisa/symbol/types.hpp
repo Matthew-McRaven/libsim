@@ -1,4 +1,27 @@
-#pragma once 
+#pragma once
+
+// File: entry.tpp
+/*
+    The Pep/10 suite of applications (Pep10, Pep10CPU, Pep10Term) are
+    simulators for the Pep/10 virtual machine, and allow users to
+    create, simulate, and debug across various levels of abstraction.
+
+    Copyright (C) 2021 J. Stanley Warford & Matthew McRaven, Pepperdine University
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <climits>
 
 /*!
@@ -27,9 +50,10 @@ enum class SymbolReprFormat: int
  */
 enum class definition_state
 {
+	kUndefined, //!< A symbol is not defined, and referenced 1+ times.
     kSingle, //!< Singlely Defined: A symbol is defined once, and referenced 0+ times.
     kMultiple, //!< Multiply Defined: A symbol is defined 2+ times, and referenced 0+ times.
-    kUndefined, //!< A symbol is not defined, and referenced 1+ times.
+	kExternalMultiple, //!< Defined in this translation unit and exported from another translation unit.
 };
 
 /*!
@@ -84,7 +108,7 @@ enum class binding_t
 {
     kLocal, /*!< Local definitons allows a symbol to be declared in every translation unit.*/
     kGlobal, /*!< Global definiton requires a symbol be defined in only one translation unit.*/
-    kWeak, /*!< Like a global, but can be overwritten by a global definition.*/
+    kImported, /*!< A global symbol that has been taken from another translation unit.*/
 };
 
 }; //end namespace symbol

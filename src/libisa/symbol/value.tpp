@@ -20,8 +20,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "symbol/value.hpp"
-#include "symbol/entry.hpp"
+#include "value.hpp"
+#include "entry.hpp"
 
 template <typename value_t>
 symbol::value_empty<value_t>::value_empty(): abstract_value<value_t>()
@@ -139,7 +139,7 @@ symbol::value_pointer<value_t>::value_pointer(std::shared_ptr<const entry<value_
 template <typename value_t>
 value_t symbol::value_pointer<value_t>::value() const
 {
-    return symbol_pointer->value();
+    return symbol_pointer->value->value();
 }
 
 template <typename value_t>

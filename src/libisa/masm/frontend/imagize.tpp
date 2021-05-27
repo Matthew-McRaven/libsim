@@ -10,13 +10,14 @@ std::shared_ptr<masm::elf::image<address_size_t>> masm::frontend::text_to_image(
 	std::shared_ptr<masm::project::source_file> os
 ) {
 	auto image = std::make_shared<masm::elf::image<address_size_t> >();
+	image->symbol_table = std::make_shared<symbol::BranchTable<address_size_t>>();
 	auto section = std::make_shared<masm::elf::top_level_section<address_size_t>>();
+	section->symbol_table = symbol::insert_leaf<address_size_t>({image->symbol_table});
 	section->header.name = "os";
 	section->header.index = 0;
 	section->containing_image = image;
 	section->body_raw = masm::elf::code::raw();
 	section->body_raw.value().text = os->body;
-	image->symbol_table = std::make_shared<symbol::table<address_size_t>>();
 	std::vector<std::string> as_lines;
 	// Courtesy of:
 	// 	https://stackoverflow.com/questions/5607589/right-way-to-split-an-stdstring-into-a-vectorstring

@@ -1,16 +1,12 @@
 #pragma once
 
-#include <climits>
-#include <memory>
-
-#include "types.hpp"
-// File: symbolvalue.h
+// File: value.hpp
 /*
-    The Pep/9 suite of applications (Pep9, Pep9CPU, Pep9Micro) are
-    simulators for the Pep/9 virtual machine, and allow users to
+    The Pep/10 suite of applications (Pep10, Pep10CPU, Pep10Term) are
+    simulators for the Pep/10 virtual machine, and allow users to
     create, simulate, and debug across various levels of abstraction.
 
-    Copyright (C) 2018 J. Stanley Warford & Matthew McRaven, Pepperdine University
+    Copyright (C) 2021 J. Stanley Warford & Matthew McRaven, Pepperdine University
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,6 +21,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#include <climits>
+#include <memory>
+
+#include "types.hpp"
 
 namespace symbol {
 template <typename value_t>
@@ -206,7 +207,7 @@ public abstract_value<value_t>
 {
 public:
     explicit value_pointer(std::shared_ptr<const entry<value_t>>);
-    ~value_pointer() override;
+    ~value_pointer() override = default;
     // Inherited via value.
     value_t value() const override;
     symbol::type_t type() const override;

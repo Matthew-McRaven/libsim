@@ -1,10 +1,10 @@
-// File: symboltable.cpp
+// File: table.tpp
 /*
-    The Pep/9 suite of applications (Pep9, Pep9CPU, Pep9Micro) are
-    simulators for the Pep/9 virtual machine, and allow users to
+    The Pep/10 suite of applications (Pep10, Pep10CPU, Pep10Term) are
+    simulators for the Pep/10 virtual machine, and allow users to
     create, simulate, and debug across various levels of abstraction.
 
-    Copyright (C) 2018 J. Stanley Warford & Matthew McRaven, Pepperdine University
+    Copyright (C) 2021 J. Stanley Warford & Matthew McRaven, Pepperdine University
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,170 +20,163 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "symbol/table.hpp"
+#include "visit.hpp"
 
-#include <fmt/core.h>
-#include <utility>
-#include <stdexcept>
-
-#include "symbol/entry.hpp"
-#include "symbol/value.hpp"
-
-template <typename symbol_value_t>
-symbol::table<symbol_value_t>::table() = default;
-
-template <typename symbol_value_t>
-typename symbol::table<symbol_value_t>::entry_ptr_t 
-    symbol::table<symbol_value_t>::reference(const std::string& name)
+template<typename value_t>
+symbol::BranchTable<value_t>::BranchTable(std::shared_ptr<BranchTable<value_t>> parent): parent_(parent)
 {
-    if(auto index = name_to_entry_.find(name); index == name_to_entry_.end()) {
-        // Must create symbol and put in table.
-        auto ret = std::make_shared<entry<symbol_value_t>>(*this, name);
-        name_to_entry_[name] = ret;
-        return ret;
-    }
-    else return index->second;
+	
 }
 
-template <typename symbol_value_t>
-typename symbol::table<symbol_value_t>::entry_ptr_t 
-    symbol::table<symbol_value_t>::define(const std::string& name)
+template<typename value_t>
+void symbol::BranchTable<value_t>::add_child(NodeType<value_t> child)
 {
-    auto entry = reference(name);
-    if(entry->state == definition_state::kUndefined) entry->state = definition_state::kSingle;
-    else if(entry->state == definition_state::kSingle) entry->state = definition_state::kMultiple;
-    return entry;
+	children_.push_back(child);
 }
 
-template <typename symbol_value_t>
-bool symbol::table<symbol_value_t>::del(const std::string& name)
+template<typename value_t>
+symbol::LeafTable<value_t>::LeafTable(std::shared_ptr<BranchTable<value_t>> parent): parent_(parent)
 {
-    // Symbol does not exist, so the delete succeded.
-    if(auto index = name_to_entry_.find(name); index == name_to_entry_.end()) return true;
-    auto entry = reference(name);
-    name_to_entry_.erase(entry->name);
-    if(entry.use_count() == 1) return true;
-    else {
-        entry->value = std::make_shared<symbol::value_deleted<symbol_value_t>>();
-        entry->state = symbol::definition_state::kUndefined;
-        return false;
-    }
+	
+
+}
+template<typename value_t>
+std::optional<std::shared_ptr<symbol::entry<value_t>>> symbol::LeafTable<value_t>::get(const std::string& name) const
+{
+	if(auto item = name_to_entry_.find(name); item != name_to_entry_.end()) return item->second;
+	else return std::nullopt;
 }
 
-template <typename symbol_value_t>
-void symbol::table<symbol_value_t>::set_binding(const std::string &name, symbol::binding_t binding)
+template<typename value_t>
+typename symbol::LeafTable<value_t>::entry_ptr_t symbol::LeafTable<value_t>::reference(const std::string& name)
 {
-    auto symbol = reference(name);
-    symbol->binding = binding;
+	// Create a local definition if one does not already exist
+	entry_ptr_t local_definition;
+	if(auto pair = name_to_entry_.find(name); pair == name_to_entry_.end()) {
+		local_definition = std::make_shared<symbol::entry<value_t>>(*this, name);
+		name_to_entry_[name] = local_definition;
+	} else {
+		local_definition = pair->second;
+	}
+	
+	// Check for the presence of other symbols with the same name
+	auto as_ptr =  this->shared_from_this();
+	auto symbols = symbol::select_by_name<value_t>(name, as_ptr);
+	int global_count = 0;
+	for(auto symbol : symbols) {
+		if(&symbol->parent == &*this) continue; // We will be examining the our symbols later.
+		global_count += (symbol->binding == symbol::binding_t::kGlobal) ? 1 : 0;
+	}
+
+	// If there's more than one global definition, we already know that the program is invalid.
+	if(global_count > 1) local_definition->state = symbol::definition_state::kExternalMultiple;
+	// If there's one definition, take on most of the properties of that definition
+	else if (global_count == 1) {
+		for(auto other : symbols) {
+			if(other->binding == symbol::binding_t::kGlobal) {
+				local_definition->value = std::make_shared<symbol::value_pointer<value_t>>(other);
+				// Mark the symbol as imported, so that we can tell the difference between our 
+				// global symbols and others' globals.
+				local_definition->binding = symbol::binding_t::kImported;
+				local_definition->state = other->state;
+			}
+		}
+		
+	}
+	return local_definition;
 }
 
-template <typename symbol_value_t>
-void symbol::table<symbol_value_t>::set_type(const std::string &name, symbol::type_t type)
+template<typename value_t>
+typename symbol::LeafTable<value_t>::entry_ptr_t symbol::LeafTable<value_t>::define(const std::string& name)
 {
-    auto symbol = reference(name);
-    symbol->type = type;
+	auto entry = reference(name);
+
+	// Check for the presence of other symbols with the same name
+	auto as_ptr =  this->shared_from_this();
+	auto same_name = symbol::select_by_name<value_t>(name, as_ptr);
+
+	switch(entry->binding)
+	{
+	case symbol::binding_t::kImported:
+		entry->state = definition_state::kExternalMultiple;
+		return entry;
+	case symbol::binding_t::kGlobal:
+		for(auto other : same_name) {
+			if(&other->parent == &*this) continue;
+			else if(other->binding == symbol::binding_t::kImported) {
+				other->value = std::make_shared<symbol::value_pointer<value_t>>(entry);
+				// Mark the symbol as imported, so that we can tell the difference between our 
+				// global symbols and others' globals.
+				other->binding = symbol::binding_t::kImported;
+				other->state = entry->state;
+			}
+		}
+	case symbol::binding_t::kLocal:
+		if(entry->state == definition_state::kUndefined) entry->state = definition_state::kSingle;
+		else if(entry->state == definition_state::kSingle) entry->state = definition_state::kMultiple;
+		return entry;
+	}
+
 }
 
-template <typename symbol_value_t>
-bool symbol::table<symbol_value_t>::exists(const std::string& name) const
+template<typename value_t>
+void symbol::LeafTable<value_t>::mark_global(const std::string& name)
 {
-    return name_to_entry_.find(name) != name_to_entry_.end();
+	auto symbol = reference(name);
+	symbol->binding = symbol::binding_t::kGlobal;
+
+	// Check for the presence of other symbols with the same name
+	auto as_ptr =  this->shared_from_this();
+	auto same_name = symbol::select_by_name<value_t>(name, as_ptr);
+
+	for(auto other : same_name) {
+		if(&other->parent == &*this) continue; // We will be examining the our symbols later.
+		if(other->binding == symbol::binding_t::kGlobal) {
+			other->state = symbol::definition_state::kExternalMultiple;
+			symbol->state = symbol::definition_state::kExternalMultiple;
+		} 
+		else if(other->binding == symbol::binding_t::kLocal) {
+			other->value = std::make_shared<symbol::value_pointer<value_t>>(symbol);
+			// Mark the symbol as imported, so that we can tell the difference between our 
+			// global symbols and others' globals.
+			other->binding = symbol::binding_t::kImported;
+			other->state = symbol->state;
+		}
+	}
 }
 
-template <typename offset_size_t>
-auto symbol::table<offset_size_t>::entries() const -> symbol::table<offset_size_t>::const_range
+template<typename value_t>
+bool symbol::LeafTable<value_t>::exists(const std::string& name) const
+{
+	return name_to_entry_.find(name) != name_to_entry_.end();
+}
+
+template <typename value_t>
+auto symbol::LeafTable<value_t>::entries() const -> symbol::LeafTable<value_t>::const_range
 {
     return name_to_entry_ | boost::adaptors::map_values;
 }
 
-template <typename offset_size_t>
-auto symbol::table<offset_size_t>::entries() -> symbol::table<offset_size_t>::range
+template <typename value_t>
+auto symbol::LeafTable<value_t>::entries() -> symbol::LeafTable<value_t>::range
 {
     return  name_to_entry_ | boost::adaptors::map_values;
 }
 
-template <typename offset_size_t>
-std::string symbol::table<offset_size_t>::listing() const
+template <typename value_t>
+std::shared_ptr<symbol::LeafTable<value_t>> symbol::insert_leaf(
+	std::shared_ptr<symbol::BranchTable<value_t>> parent)
 {
-
-    static const std::string line = "--------------------------------------\n";
-    static const std::string symTableStr = "Symbol table\n";
-    static const std::string headerStr = "Symbol    Value        Symbol    Value\n";
-    std::string build;
-    /*auto list = getSymbolEntries();
-    //std::sort(list.begin(),list.end(), SymbolAlphabeticComparator);
-
-    // Don't generate an empty symbol table.
-    if(list.isEmpty()) {
-        return "";
-    }*/
-    throw std::logic_error("Not yet implemented");
-    // TODO: finish implementation.
-    /*for(auto it = list.begin(); it != list.end(); ++it) {
-        if(it + 1 ==list.end()) {
-            QString hexString = QString("%1").arg((*it)->getValue(), 4, 16, QLatin1Char('0')).toUpper();
-            build.append(QString("%1%2\n").arg((*it)->getName(), -10).arg(hexString, -13));
-        }
-        else {
-            QString hexString = QString("%1").arg((*it)->getValue(), 4, 16, QLatin1Char('0')).toUpper();
-            build.append(QString("%1%2").arg((*it)->getName(), -10).arg(hexString, -13));
-            ++it;
-            hexString = QString("%1").arg((*it)->getValue(), 4, 16, QLatin1Char('0')).toUpper();
-            build.append(QString("%1%2\n").arg((*it)->getName(), -10).arg(hexString, -13));
-        }
-    }
-    return symTableStr % line % headerStr %line % build % line;*/
-    return "";
+	auto ret = std::make_shared<symbol::LeafTable<value_t>>(parent);
+	parent->add_child(ret);
+	return ret;
 }
 
-
-
-template <typename symbol_value_t>
-auto symbol::externals(typename symbol::table<symbol_value_t>::const_range rng) -> decltype(rng)
+template <typename value_t>
+std::shared_ptr<symbol::BranchTable<value_t>> symbol::insert_branch(
+	std::shared_ptr<symbol::BranchTable<value_t>> parent)
 {
-    static const auto filter = [](const auto& it){return it->binding == symbol::binding_t::kGlobal;};
-    return rng | boost::adaptors::filtered(filter);
-}
-
-template <typename symbol_value_t>
-size_t symbol::count_multiply_defined_symbols(typename symbol::table<symbol_value_t>::const_range rng)
-{
-    auto it = rng.begin();
-    uint32_t count = 0;
-    while(it != rng.end()) {
-        count += it->isMultiplyDefined() ? 1 : 0;
-        it++;
-    }
-    return count;
-}
-
-template <typename symbol_value_t>
-size_t symbol::count_undefined_symbols(typename symbol::table<symbol_value_t>::const_range rng)
-{
-    auto it = rng.cbegin();
-    uint32_t count = 0;
-    while(it != rng.end()) {
-        count += it->isUndefined() ? 1 : 0;
-        it++;
-    }
-    return count;
-}
-
-template <typename symbol_value_t>
-void symbol::set_offset(typename symbol::table<symbol_value_t>::range rng, symbol_value_t offset, symbol_value_t threshhold)
-{
-    auto it = rng.begin();
-    while(it != rng.end()) {
-        if((*it)->value->type() == symbol::type_t::kLocation && (*it)->value->value() >= threshhold) {
-            std::static_pointer_cast<symbol::value_location<symbol_value_t>>((*it)->value)->set_offset(offset);
-        }
-        ++it;
-    }
-}
-
-template <typename symbol_value_t>
-void symbol::clear_offset(typename symbol::table<symbol_value_t>::range rng)
-{
-    // Clearing offsets is the same thing as setting all offsets to 0.
-    set_offset(rng, 0, 0);
+	auto ret = std::make_shared<symbol::BranchTable<value_t>>(parent);
+	parent->add_child(ret);
+	return ret;
 }

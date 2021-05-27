@@ -28,7 +28,7 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	elf_section->set_data((const char*)as_byte_vec.data(), as_byte_vec.size());
 
 	// Write symbol table.
-	auto symbols = image->symbol_table->entries();
+	/*auto symbols = symbol::entries(image->symbol_table);
     auto str_tab = writer.sections.add( ".strtab" );
     str_tab->set_type( SHT_STRTAB );
 	// Create string table writer
@@ -46,10 +46,10 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	for(auto symbol : symbols) {
 		auto binding = STB_LOCAL;
 		if(symbol->binding == symbol::binding_t::kGlobal) binding = STB_GLOBAL;
-		else if(symbol->binding == symbol::binding_t::kWeak) binding = STB_WEAK;
+		else if(symbol->binding == symbol::binding_t::kImported) binding = STB_WEAK;
 		// TODO: Handle types, section pointer correctly.
 		sym_ac.add_symbol( str_ac, symbol->name.data(), symbol->value->value(), 0, binding, STT_NOTYPE, 0, SHN_ABS);
-	}
+	}*/
 	// Do not generate relocation entries, since Pep/9 and 10 programs are not relocatable.
 	if(false) writer.set_entry( 0xfefe );
 	writer.save(stream);
