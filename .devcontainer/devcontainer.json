@@ -10,9 +10,6 @@
 		"ms-vscode.cmake-tools",
 		"matepek.vscode-catch2-test-adapter"
 	],
-	"forwardPorts": [
-		3000
-	],
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
