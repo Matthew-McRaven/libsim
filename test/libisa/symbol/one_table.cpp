@@ -2,7 +2,7 @@
 
 #include "symbol/value.hpp"
 #include "symbol/table.hpp"
-TEST_CASE( "Validate functionality of symbol table." ) {
+TEST_CASE( "Validate functionality for 1 symbol table." ) {
 	
 	SECTION("Add symbol via reference(std::string).") {
 		auto st = std::make_shared<symbol::LeafTable<uint16_t> >();
@@ -96,7 +96,14 @@ TEST_CASE( "Validate functionality of symbol table." ) {
 		CHECK(x1->value->value() == 19);
 		CHECK(x2->value->value() == 29);
 	}
-
+		SECTION("Redundant mark as global") {
+		auto st  = std::make_shared<symbol::LeafTable<uint16_t>>();
+		auto x = st->reference("hello");
+		st->mark_global("hello");
+		st->mark_global("hello");
+		CHECK(x->binding == symbol::binding_t::kGlobal);
+		CHECK(x->state == symbol::definition_state::kUndefined);
+	}
 
 
 }

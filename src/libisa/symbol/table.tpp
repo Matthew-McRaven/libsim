@@ -61,7 +61,7 @@ typename symbol::LeafTable<value_t>::entry_ptr_t symbol::LeafTable<value_t>::ref
 	
 	// Check for the presence of other symbols with the same name
 	auto as_ptr =  this->shared_from_this();
-	auto symbols = symbol::select_by_name<value_t>({as_ptr}, name);
+	auto symbols = symbol::select_by_name<value_t>({as_ptr}, name, TraversalPolicy::kWholeTree);
 	int global_count = 0;
 	for(auto symbol : symbols) {
 		if(&symbol->parent == &*this) continue; // We will be examining the our symbols later.
@@ -93,7 +93,7 @@ typename symbol::LeafTable<value_t>::entry_ptr_t symbol::LeafTable<value_t>::def
 
 	// Check for the presence of other symbols with the same name
 	auto as_ptr =  this->shared_from_this();
-	auto same_name = symbol::select_by_name<value_t>(as_ptr, name);
+	auto same_name = symbol::select_by_name<value_t>(as_ptr, name, TraversalPolicy::kWholeTree);
 
 	switch(entry->binding)
 	{
@@ -101,6 +101,9 @@ typename symbol::LeafTable<value_t>::entry_ptr_t symbol::LeafTable<value_t>::def
 		entry->state = definition_state::kExternalMultiple;
 		return entry;
 	case symbol::binding_t::kGlobal:
+		if(entry->state == definition_state::kUndefined) entry->state = definition_state::kSingle;
+		else if(entry->state == definition_state::kSingle) entry->state = definition_state::kMultiple;
+		
 		for(auto other : same_name) {
 			if(&other->parent == &*this) continue;
 			else if(other->binding == symbol::binding_t::kImported) {
@@ -111,6 +114,7 @@ typename symbol::LeafTable<value_t>::entry_ptr_t symbol::LeafTable<value_t>::def
 				other->state = entry->state;
 			}
 		}
+		return entry;
 	case symbol::binding_t::kLocal:
 		if(entry->state == definition_state::kUndefined) entry->state = definition_state::kSingle;
 		else if(entry->state == definition_state::kSingle) entry->state = definition_state::kMultiple;
@@ -127,7 +131,8 @@ void symbol::LeafTable<value_t>::mark_global(const std::string& name)
 
 	// Check for the presence of other symbols with the same name
 	auto as_ptr =  this->shared_from_this();
-	auto same_name = symbol::select_by_name<value_t>({as_ptr}, name);
+	// Must gather all symbols from entire tree, otherwise some local references may not be updated.
+	auto same_name = symbol::select_by_name<value_t>({as_ptr}, name, TraversalPolicy::kWholeTree);
 
 	for(auto other : same_name) {
 		if(&other->parent == &*this) continue; // We will be examining the our symbols later.
