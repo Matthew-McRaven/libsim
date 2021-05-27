@@ -13,11 +13,11 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ALIGN 8\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->section;
-		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 1);
-		auto maybe_ascii = project->images[0]->section->body_ir->ir_lines[0];
+		auto x = project->images[0]->os;
+		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
+		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[0];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_align<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 	}
@@ -27,11 +27,11 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ALIGN 2 ;Hi guys\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->section;
-		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 1);
-		auto maybe_ascii = project->images[0]->section->body_ir->ir_lines[0];
+		auto x = project->images[0]->os;
+		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
+		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[0];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_align<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 		REQUIRE(as_ascii->comment);
@@ -43,11 +43,11 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = "s: .ALIGN 4 ;Hi guys\n"; // Self reference is actually okay here, but has no use.
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->section;
-		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 1);
-		auto maybe_ascii = project->images[0]->section->body_ir->ir_lines[0];
+		auto x = project->images[0]->os;
+		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
+		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[0];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_align<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 		REQUIRE(as_ascii->comment);
@@ -60,7 +60,7 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ALIGN 7\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 
@@ -69,7 +69,7 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ALIGN 0xbeef\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No negative dec in .ALIGN") {	
@@ -77,7 +77,7 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ALIGN -19\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No identifer in .ALIGN") {	
@@ -85,7 +85,7 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ALIGN HI\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No char in .ALIGN") {	
@@ -93,7 +93,7 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ALIGN 'HI'\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 
@@ -102,7 +102,7 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ALIGN \"HI\"\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 }

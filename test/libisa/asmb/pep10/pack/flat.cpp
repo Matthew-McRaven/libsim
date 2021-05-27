@@ -14,8 +14,8 @@ TEST_CASE( "Flatten simple programs to ELF binary.", "[masm::elf]"  ) {
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = "ASRA\nNOTX\n.END\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::PACK);
+		file->body = ".BURN 0xFF00\nASRA\nNOTX\n.END\n";
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
 		REQUIRE(res.first);
 	}
 
@@ -23,8 +23,8 @@ TEST_CASE( "Flatten simple programs to ELF binary.", "[masm::elf]"  ) {
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = "br main\nADDA 1,i\n.END\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::PACK);
+		file->body = ".BURN 0xFF00\nbr main\nADDA 1,i\n.END\n";
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
 		REQUIRE(res.first);
 	}
 
@@ -32,8 +32,8 @@ TEST_CASE( "Flatten simple programs to ELF binary.", "[masm::elf]"  ) {
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = ".WORD 1\n.BYTE 2\n.WORD 0xffff\n.END\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::PACK);
+		file->body = ".BURN 0xFF00\n.WORD 1\n.BYTE 2\n.WORD 0xffff\n.END\n";
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
 		REQUIRE(res.first);
 	}
 
@@ -41,8 +41,8 @@ TEST_CASE( "Flatten simple programs to ELF binary.", "[masm::elf]"  ) {
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = "a:.ASCII \"hi\"\nb:.ASCII \"world\"\nc:.BYTE 2\n.END\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::PACK);
+		file->body = ".BURN 0xFF00\na:.ASCII \"hi\"\nb:.ASCII \"world\"\nc:.BYTE 2\n.END\n";
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
 		REQUIRE(res.first);
 	}
 }

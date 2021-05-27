@@ -16,12 +16,12 @@ TEST_CASE( "Parse entire OS", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = "@HELLO0\n.END\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 
 		REQUIRE(res.first);
-		auto x = project->images[0]->section;
-		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 2);
-		auto maybe_macro = project->images[0]->section->body_ir->ir_lines[0];
+		auto x = project->images[0]->os;
+		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
+		auto maybe_macro = project->images[0]->os->body_ir->ir_lines[0];
 		auto as_macro = std::dynamic_pointer_cast<masm::ir::macro_invocation<uint16_t>>(maybe_macro);
 		REQUIRE(as_macro);
 		CHECK(as_macro->macro->body_ir->ir_lines.size() == 2);

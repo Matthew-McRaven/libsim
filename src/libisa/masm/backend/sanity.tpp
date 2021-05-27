@@ -23,6 +23,16 @@ bool whole_program_sanity_fixup(std::shared_ptr<masm::project::project<uint16_t>
 		);
 		success = false;
 	}
+	else if(end_count > 1) {
+		success = false;
+		for(auto &line : ir_lines) {
+			if(auto ptr = std::dynamic_pointer_cast<masm::ir::dot_end<uint16_t>>(line); ptr) {
+				project->message_resolver->log_message(section, line->source_line,
+					{masm::message_type::kError, ";ERROR: Duplicate .END directives."}
+				);
+			}
+		}
+	}
 	else if(burn_count > 0 && section->header.section_type == masm::elf::program_type::kUserProgram) {
 		success = false;
 		for(auto &line : ir_lines) {
@@ -41,7 +51,7 @@ bool whole_program_sanity_fixup(std::shared_ptr<masm::project::project<uint16_t>
 		);
 	}
 	//Check that OS has exactly 1 BURN.
-	else if(burn_count > 2 && section->header.section_type == masm::elf::program_type::kOperatingSystem) {
+	else if(burn_count > 1 && section->header.section_type == masm::elf::program_type::kOperatingSystem) {
 		success = false;
 		for(auto &line : ir_lines) {
 			if(auto ptr = std::dynamic_pointer_cast<masm::ir::dot_burn<uint16_t>>(line); ptr) {

@@ -18,7 +18,7 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	writer.set_type( ET_REL );
 	writer.set_machine( 0x8088 );
 	// Write code sections.
-	auto section = image->section;
+	/*auto section = image->section;
 	auto elf_section = writer.sections.add( section->header.name );
 	elf_section->set_type( SHT_PROGBITS );
 	elf_section->set_flags( SHF_ALLOC | SHF_EXECINSTR | SHF_WRITE);
@@ -28,7 +28,7 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	elf_section->set_data((const char*)as_byte_vec.data(), as_byte_vec.size());
 
 	// Write symbol table.
-	/*auto symbols = symbol::entries(image->symbol_table);
+	auto symbols = symbol::entries(image->symbol_table);
     auto str_tab = writer.sections.add( ".strtab" );
     str_tab->set_type( SHT_STRTAB );
 	// Create string table writer

@@ -13,11 +13,11 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = "s:asra\n.ASCII \"Hello\"\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->section;
-		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 2);
-		auto maybe_ascii = project->images[0]->section->body_ir->ir_lines[1];
+		auto x = project->images[0]->os;
+		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
+		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[1];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_ascii<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 	}
@@ -27,11 +27,11 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ASCII \"s\" ;Hi guys\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->section;
-		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 1);
-		auto maybe_ascii = project->images[0]->section->body_ir->ir_lines[0];
+		auto x = project->images[0]->os;
+		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
+		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[0];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_ascii<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 		REQUIRE(as_ascii->comment);
@@ -43,11 +43,11 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = "s: .ASCII \"sb\" ;Hi guys\n"; // Self reference is actually okay here, but has no use.
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->section;
-		REQUIRE(project->images[0]->section->body_ir->ir_lines.size() == 1);
-		auto maybe_ascii = project->images[0]->section->body_ir->ir_lines[0];
+		auto x = project->images[0]->os;
+		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
+		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[0];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_ascii<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 		REQUIRE(as_ascii->comment);
@@ -60,7 +60,7 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ASCII 22\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 
@@ -69,7 +69,7 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ASCII 0xbeef\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No signed dec in .ASCII") {	
@@ -77,7 +77,7 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ASCII -19\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No identifer in .ASCII") {	
@@ -85,7 +85,7 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ASCII HI\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 	SECTION("No char in .ASCII") {	
@@ -93,7 +93,7 @@ TEST_CASE( "Parse dot ascii", "[asmb::pep10::parser]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
 		file->body = ".ASCII 'HI'\n";
-		auto res = driver->assemble_project(project, file, masm::project::toolchain_stage::SYMANTIC);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE_FALSE(res.first);
 	}
 }

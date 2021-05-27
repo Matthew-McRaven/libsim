@@ -50,13 +50,15 @@ std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver(
 	transform_t tx_sanity1 = [=](project_t& proj, std::list<driver_t::work_t>& work) {
 		bool success = true;
 		driver_t::work_iterable_t result_work;
-		std::map<driver_t::section_t, bool> parsed_tls;
+		using tls_t = std::shared_ptr<masm::elf::code_section<uint16_t>>;
+		std::map<std::pair<tls_t,tls_t>, bool> parsed_tls;
 		std::transform(work.begin(), work.end(), std::back_inserter(result_work),[&](auto& value){
 				auto containing_image = std::get<driver_t::section_t>(value)->containing_image.lock();
-				std::shared_ptr<masm::elf::code_section<uint16_t>> tls = containing_image->section;
-				if(parsed_tls.find(tls) != parsed_tls.end()) {
-					bool val = parsed_tls[tls] = whole_program_sanity_fixup<uint16_t>(proj, tls);
-					success &= val;
+				std::pair<tls_t, tls_t> tls = {containing_image->os, containing_image->user};
+				if(parsed_tls.find(tls) == parsed_tls.end()) {
+					bool val = whole_program_sanity_fixup<uint16_t>(proj, tls.first);
+					if(tls.second) val &= whole_program_sanity_fixup<uint16_t>(proj, tls.second);
+					success &= parsed_tls[tls] = val;
 				}
 				return driver_t::work_iterable_t::value_type{stage_t::WHOLE_PROGRAM_SANITY, value};
 			});

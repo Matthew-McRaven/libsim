@@ -7,7 +7,7 @@ namespace masm::elf {
 	{
 		std::shared_ptr<symbol::BranchTable<address_size_t> > symbol_table 
 			= std::make_shared<symbol::BranchTable<address_size_t>>();
-		std::shared_ptr<masm::elf::top_level_section<address_size_t>> section;
+		std::shared_ptr<masm::elf::top_level_section<address_size_t>> os, user;
 
 	};
 } // End namespace masm::elf

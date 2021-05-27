@@ -33,7 +33,9 @@ namespace masm
 		 * If a transformation, the section will be run through the transformer and re-queued on the work queue with the section's new stage.
 		 * Execution continues until all sections in the project reach the `target_stage.` 
 		 */
-		std::pair<bool, std::string> assemble_project(project_t& project, std::shared_ptr<masm::project::source_file> os, stage_t target_stage);
+		std::pair<bool, std::string> assemble_os(project_t& project, std::shared_ptr<masm::project::source_file> os, stage_t target_stage);
+		std::pair<bool, std::string> assemble_joint(project_t& project, std::shared_ptr<masm::project::source_file> os, 
+			std::shared_ptr<masm::project::source_file> user, stage_t target_stage);
 		bool register_transform(transform_t, stage_t);
 	private:
 		std::map<stage_t, transform_t> transforms_;
