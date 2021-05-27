@@ -184,8 +184,10 @@ bool isa::pep10::is_opcode_unary(instruction_mnemonic mnemon)
 	case addressing_class::U_none:
 	case addressing_class::R_none:
 		return true;
+	default:
+		throw std::invalid_argument("Invalid opcode.");
 	}
-	throw std::invalid_argument("Invalid opcode.");
+	
 }
 
 bool isa::pep10::is_opcode_unary(uint8_t opcode)

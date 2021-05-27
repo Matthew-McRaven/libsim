@@ -24,7 +24,7 @@ std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver(
 		driver_t::work_iterable_t result_work;
 		for(auto value : work) {
 			auto [local_success, local_children] = preproc->preprocess(proj, std::get<driver_t::section_t>(value));
-			for(auto child : local_children) {
+			for(const auto& child : local_children) {
 				result_work.emplace_back(driver_t::work_iterable_t::value_type{stage_t::RAW, 
 					std::static_pointer_cast<masm::elf::code_section<uint16_t>>(child)});
 			}

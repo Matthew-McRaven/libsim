@@ -1,10 +1,10 @@
-// File: symbolvalue.cpp
+// File: value.tpp
 /*
-    The Pep/9 suite of applications (Pep9, Pep9CPU, Pep9Micro) are
-    simulators for the Pep/9 virtual machine, and allow users to
+    The Pep/10 suite of applications (Pep10, Pep10CPU, Pep10Term) are
+    simulators for the Pep/10 virtual machine, and allow users to
     create, simulate, and debug across various levels of abstraction.
 
-    Copyright (C) 2018 J. Stanley Warford & Matthew McRaven, Pepperdine University
+    Copyright (C) 2021 J. Stanley Warford & Matthew McRaven, Pepperdine University
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

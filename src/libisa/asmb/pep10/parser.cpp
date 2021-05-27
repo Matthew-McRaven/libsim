@@ -47,6 +47,7 @@ std::optional<isa::pep10::addressing_mode> asmb::pep10::parse_addr_mode(std::str
 	else if(addr_mode == "sf") return isa::pep10::addressing_mode::SF;
 	else if(addr_mode == "sx") return isa::pep10::addressing_mode::SX;
 	else if(addr_mode == "sfx") return isa::pep10::addressing_mode::SFX;
+	else return isa::pep10::addressing_mode::INVALID;
 }
 
 bool asmb::pep10::allowed_addressing_mode(isa::pep10::instruction_mnemonic mn, isa::pep10::addressing_mode am)
@@ -69,6 +70,8 @@ bool asmb::pep10::allowed_addressing_mode(isa::pep10::instruction_mnemonic mn, i
 		return am == addressing_mode::I;
 	case isa::pep10::addressing_class::RAAA_noi:
 		return am != addressing_mode::I;
+	default:
+		throw std::logic_error("Invalid addressing mode.");
 	}
 }
 

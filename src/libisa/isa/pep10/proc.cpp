@@ -568,6 +568,8 @@ uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t
 		case addressing_mode::SFX:
 			addr = read_word(addr + read_reg(Registers::SP), false);
 			return read_byte(addr + read_reg(Registers::X), false);
+		default:
+			throw std::invalid_argument("Not a valid addressing mode");
 		}
 	}
 	else {
@@ -618,8 +620,9 @@ uint16_t isa_processor::decode_store_operand(const instruction_definition<uint8_
 	case addressing_mode::SFX:
 		addr = read_word(addr + read_reg(Registers::SP), false);
 		return addr + read_reg(Registers::X);
+	default:
+		throw std::invalid_argument("Not a valid addressing mode");
 	}
-	throw std::invalid_argument("Not a valid addressing mode");
 }
 
 uint16_t isa_processor::read_reg(Registers reg) const
