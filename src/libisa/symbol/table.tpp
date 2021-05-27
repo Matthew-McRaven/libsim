@@ -61,7 +61,7 @@ typename symbol::LeafTable<value_t>::entry_ptr_t symbol::LeafTable<value_t>::ref
 	
 	// Check for the presence of other symbols with the same name
 	auto as_ptr =  this->shared_from_this();
-	auto symbols = symbol::select_by_name<value_t>(name, as_ptr);
+	auto symbols = symbol::select_by_name<value_t>({as_ptr}, name);
 	int global_count = 0;
 	for(auto symbol : symbols) {
 		if(&symbol->parent == &*this) continue; // We will be examining the our symbols later.
@@ -93,7 +93,7 @@ typename symbol::LeafTable<value_t>::entry_ptr_t symbol::LeafTable<value_t>::def
 
 	// Check for the presence of other symbols with the same name
 	auto as_ptr =  this->shared_from_this();
-	auto same_name = symbol::select_by_name<value_t>(name, as_ptr);
+	auto same_name = symbol::select_by_name<value_t>(as_ptr, name);
 
 	switch(entry->binding)
 	{
@@ -127,7 +127,7 @@ void symbol::LeafTable<value_t>::mark_global(const std::string& name)
 
 	// Check for the presence of other symbols with the same name
 	auto as_ptr =  this->shared_from_this();
-	auto same_name = symbol::select_by_name<value_t>(name, as_ptr);
+	auto same_name = symbol::select_by_name<value_t>({as_ptr}, name);
 
 	for(auto other : same_name) {
 		if(&other->parent == &*this) continue; // We will be examining the our symbols later.
@@ -179,4 +179,20 @@ std::shared_ptr<symbol::BranchTable<value_t>> symbol::insert_branch(
 	auto ret = std::make_shared<symbol::BranchTable<value_t>>(parent);
 	parent->add_child(ret);
 	return ret;
+}
+
+template <typename value_t>
+symbol::NodeType<value_t> symbol::parent(symbol::NodeType<value_t> table)
+{
+	if(std::holds_alternative<std::shared_ptr<BranchTable<value_t>>>(table)) {
+		auto ptr = std::get<std::shared_ptr<BranchTable<value_t>>>(table);
+		if(auto parent = ptr->parent_.lock(); parent) return parent;
+		else return ptr;
+	}
+	else if(std::holds_alternative<std::shared_ptr<LeafTable<value_t>>>(table)) {
+		auto ptr = std::get<std::shared_ptr<LeafTable<value_t>>>(table);
+		if(auto parent = ptr->parent_.lock(); parent) return parent;
+		else return ptr;
+	}
+	else assert(0 && "Something went wrong with the variant type conversion");
 }

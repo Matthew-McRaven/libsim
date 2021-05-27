@@ -47,17 +47,21 @@ symbol::SelectByNameVisitor<value_t>::SelectByNameVisitor(std::string name): tar
 {}
 
 template<typename value_t>
-void symbol::SelectByNameVisitor<value_t>::operator() (std::shared_ptr<symbol::BranchTable<value_t>> table)
+std::list<std::shared_ptr<symbol::entry<value_t>>> symbol::SelectByNameVisitor<value_t>::operator() (std::shared_ptr<symbol::BranchTable<value_t>> table)
 {
+	auto ret = std::list<std::shared_ptr<symbol::entry<value_t>>>();
 	for(auto& child : table->children()) {
-		std::visit(*this, NodeType<value_t>(child));
+		auto child_vals = std::visit(*this, NodeType<value_t>(child));
+		ret.splice(ret.end(), child_vals);
 	}
+	return ret;
 }
 
 template<typename value_t>
-void symbol::SelectByNameVisitor<value_t>::operator() (std::shared_ptr<symbol::LeafTable<value_t>> table)
+std::list<std::shared_ptr<symbol::entry<value_t>>> symbol::SelectByNameVisitor<value_t>::operator() (std::shared_ptr<symbol::LeafTable<value_t>> table)
 {
-	if(auto maybe_symbol = table->get(target); maybe_symbol) return_val.push_back(maybe_symbol.value());
+	if(auto maybe_symbol = table->get(target); maybe_symbol) return{maybe_symbol.value()};
+	return {};
 }
 
 /*
@@ -80,6 +84,38 @@ bool symbol::ExistenceVisitor<value_t>::operator() (std::shared_ptr<symbol::Leaf
 {
 	return table->exists(target);
 }
+/*
+ * AdjustOffsetVisitor
+ */
+template<typename value_t>
+symbol::AdjustOffsetVisitor<value_t>::AdjustOffsetVisitor(value_t offset): offset_(offset), threshhold_(0)
+{
+
+}
+template<typename value_t>
+symbol::AdjustOffsetVisitor<value_t>::AdjustOffsetVisitor(value_t offset, value_t threshhold): offset_(offset), threshhold_(threshhold)
+{
+	
+}
+	
+template<typename value_t>
+void symbol::AdjustOffsetVisitor<value_t>::operator() (std::shared_ptr<BranchTable<value_t>> table)
+{
+	for(auto& child : table->children()) std::visit(*this, NodeType<value_t>(child));
+}
+
+template<typename value_t>
+void symbol::AdjustOffsetVisitor<value_t>::operator() (std::shared_ptr<LeafTable<value_t>> table)
+{
+	auto rng = table->entries();
+	auto it = rng.begin();
+	while(it != rng.end()) {
+		if((*it)->value->type() == symbol::type_t::kLocation && (*it)->value->value() >= threshhold_) {
+			std::static_pointer_cast<symbol::value_location<value_t>>((*it)->value)->set_offset(offset_);
+		}
+		++it;
+	}
+}
 
 /*
  * Helper methods
@@ -92,19 +128,29 @@ symbol::NodeType<uint16_t> symbol::root_table(NodeType<value_t> table)
 }
 
 template<typename value_t>
-std::list<std::shared_ptr<symbol::entry<value_t>>>  symbol::select_by_name(const std::string& name, 
-	NodeType<value_t> table)
+std::list<std::shared_ptr<symbol::entry<value_t>>>  symbol::select_by_name(NodeType<value_t> table,
+	const std::string& name, TraversalPolicy policy)
 {
-	auto root = root_table(table);
 	auto vis = symbol::SelectByNameVisitor<value_t>(name);
-	std::visit(vis, root);
-	return std::move(vis.return_val);
-	return {};
+	if(policy == TraversalPolicy::kSiblings) table = symbol::parent(table);
+	else if(policy == TraversalPolicy::kWholeTree) table = symbol::root_table(table);
+	return std::visit(vis, table);
 }
 
 template<typename value_t>
-bool symbol::exists(const std::string& name, NodeType<value_t> table)
+bool symbol::exists(NodeType<value_t> table, const std::string& name, TraversalPolicy policy)
 {
 	auto vis = symbol::ExistenceVisitor<value_t>(name);
+	if(policy == TraversalPolicy::kSiblings) table = symbol::parent(table);
+	else if(policy == TraversalPolicy::kWholeTree) table = symbol::root_table(table);
+	return std::visit(vis, table);
+}
+
+template<typename value_t>
+void symbol::adjust_offset(NodeType<value_t> table, value_t offset, value_t threshhold, TraversalPolicy policy)
+{
+	auto vis = symbol::AdjustOffsetVisitor<value_t>(offset, threshhold);
+	if(policy == TraversalPolicy::kSiblings) table = symbol::parent(table);
+	else if(policy == TraversalPolicy::kWholeTree) table = symbol::root_table(table);
 	return std::visit(vis, table);
 }

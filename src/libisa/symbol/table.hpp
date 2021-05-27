@@ -105,5 +105,10 @@ std::shared_ptr<LeafTable<value_t>> insert_leaf(std::shared_ptr<BranchTable<valu
 template <typename value_t>
 std::shared_ptr<BranchTable<value_t>> insert_branch(std::shared_ptr<BranchTable<value_t>> parent);
 
+//!< Return the parent of table if it exists, otherwise return table.
+template <typename value_t>
+NodeType<value_t> parent(NodeType<value_t> table);
+
+
 } //end namespace symbol
 #include "table.tpp"

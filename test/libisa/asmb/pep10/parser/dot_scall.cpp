@@ -24,7 +24,7 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 
 		// Check for externalized symbol definition.
 		//REQUIRE(project->images[0]->symbol_table->exists("s"));
-		REQUIRE(symbol::exists<uint16_t>("s", {project->images[0]->symbol_table}));
+		REQUIRE(symbol::exists<uint16_t>({project->images[0]->symbol_table}, "s"));
 		REQUIRE(project->macro_registry->contains("s"));
 	}
 
@@ -45,7 +45,7 @@ TEST_CASE( "Parse dot SCALL", "[asmb::pep10::parser]"  ) {
 
 		// Check for externalized symbol definition.
 		//REQUIRE(project->images[0]->symbol_table->exists("s"));
-		REQUIRE(symbol::exists<uint16_t>("s", {project->images[0]->symbol_table}));
+		REQUIRE(symbol::exists<uint16_t>({project->images[0]->symbol_table}, "s"));
 		REQUIRE(project->macro_registry->contains("s"));
 	}
 
