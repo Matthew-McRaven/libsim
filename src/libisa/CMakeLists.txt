@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 # Run clang tidy iff it is installed and on the path.
 find_program(CLANG_TIDY "clang-tidy")
-if(CLANG_TIDY)
+# Emscripten seems to screw with clang-tidy's ability to work.
+if(CLANG_TIDY AND  (NOT EMSCRIPTEN))
 	set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,clang-analyzer-*)
 endif()
 
