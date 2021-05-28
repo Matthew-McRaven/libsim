@@ -21,8 +21,8 @@ namespace detail
 
     struct macro
     {
-        std::string name;
-        int arg_count;
+        std::string name = {};
+        int arg_count = {0};
     };
     template <typename Iterator>
     struct macro_parser : qi::grammar<Iterator, macro(), ascii::space_type>

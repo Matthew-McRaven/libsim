@@ -181,12 +181,12 @@ void masm::elf::dump_pep10_file()
     section* stackdb_sym_sec = writer.sections.add( "stackdb.symbols" );
     stackdb_sym_sec->set_type( SHT_STRTAB );
     string_section_accessor strs( stackdb_sym_sec );
-	auto sym_index = strs.add_string( "hello_symbol" );
+	auto sym_index = strs.add_string( "hello_symbol" ); // NOLINT: Reminder that add_string returns a value.
 
 	section* stackdb_types_sec = writer.sections.add( "stackdb.types" );
     stackdb_types_sec->set_type( SHT_STRTAB );
 	string_section_accessor strt( stackdb_types_sec );
-	auto type_index = strt.add_string( "#2d" );
+	auto type_index = strt.add_string( "#2d" ); // NOLINT: Reminder that add_string returns a value.
 
 	section* stackdb_text_sec = writer.sections.add( "stackdb.text" );
     stackdb_text_sec->set_type( SHT_PROGBITS );

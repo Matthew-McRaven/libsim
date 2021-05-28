@@ -116,7 +116,8 @@ auto asmb::pep10::parser::parse(
 
 		// Check if we comment or empty line. If so, we can skip a lot of processing.
 		if(auto [match_comment, _1, text_comment] = masm::frontend::match(start, last, comment, true); match_comment) {
-			auto [match_empty, _2, _3] = masm::frontend::match(start, last, empty, true); // Require that line end in empty token.
+			// Require that line end in empty token.
+			auto [match_empty, _2, _3] = masm::frontend::match(start, last, empty, true); // NOLINT: Matches have nothing useful.
 			// TODO: Process comment-only line.
 			local_line = std::make_shared<masm::ir::comment_line<uint16_t>>();
 			local_line->comment = text_comment;
@@ -276,12 +277,10 @@ auto asmb::pep10::parser::parse(
 			// Unexpected symbol declaration.
 			if(local_symbol != nullptr) {
 				project->message_resolver->log_message(section, index, {masm::message_type::kError, ";ERROR: Unexpected symbol declaration."});
-				success = false;
 			}
 			// Unexpected end of line.
 			else if(auto [match_empty, _1, _2 ] = masm::frontend::match(start, last, empty, true); match_empty) {
 				project->message_resolver->log_message(section, index, {masm::message_type::kError, ";ERROR: Unexpected EOL."});
-				success = false;
 			}
 			project->message_resolver->log_message(section, index, {masm::message_type::kError, ";ERROR: General parsing error."});
 			success = false;

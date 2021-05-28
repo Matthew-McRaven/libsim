@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
-#set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,clang-analyzer-*,cppcoreguidelines-*)
+# Run clang tidy iff it is installed and on the path.
+find_program(CLANG_TIDY "clang-tidy")
+if(CLANG_TIDY)
+	set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,clang-analyzer-*)
+endif()
+
 # set the project name
 project(RTL-lib VERSION 1.0)
 
