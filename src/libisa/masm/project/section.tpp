@@ -51,6 +51,8 @@ std::shared_ptr<masm::elf::macro_subsection<address_size_t> > masm::elf::top_lev
 	child_macro->header.name = macro_name;
 	child_macro->header.index = index;
 	child_macro->containing_image = this->containing_image;
+	// Macros share the same symbol table as their parents.
+	child_macro->symbol_table = this->symbol_table;
 	child_macro->body_raw = masm::elf::code::raw();
 	child_macro->body_raw.value().text = macro_text;
 	child_macro->line_number = line_number;
