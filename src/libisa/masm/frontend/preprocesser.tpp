@@ -90,7 +90,21 @@ auto masm::frontend::preprocessor<address_size_t,tokenizer_t >::preprocess(
 		decltype(masm::frontend::match(first,last,{},{})) match_args;
 		do {
 			match_args = masm::frontend::match(first, last, token_macro_args, true);
-			if(std::get<0>(match_args)) macro_args.emplace_back(std::get<2>(match_args));
+			if(std::get<0>(match_args)){
+				// Single and double quotes are stripped by tokenizer. Must re-add for parsing to y
+				switch(std::get<1>(match_args)) {
+				case masm::frontend::token_type::kCharConstant:
+					macro_args.emplace_back("'"+std::get<2>(match_args)+"'");
+					break;
+				case masm::frontend::token_type::kStrConstant:
+					macro_args.emplace_back('"'+std::get<2>(match_args)+'"');
+					break;
+				default:
+					macro_args.emplace_back(std::get<2>(match_args));	
+					break;
+				}
+				
+			}
 			auto [had_comma, _2, _3] = masm::frontend::match(first, last, {masm::frontend::token_type::kComma}, true);
 			// If no comma was present, then we can assume we are at the end of a macro list.
 			if(!had_comma) break;
