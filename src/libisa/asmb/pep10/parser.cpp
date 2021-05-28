@@ -598,7 +598,7 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 		return {false, err_msg, nullptr};
 	}
 	else {
-		registry->register_nonunary_system_call(text_arg, "@{0} 2\nLDWT {0},i SCALL $1, $2\n.END\n");
+		registry->register_nonunary_system_call(text_arg, "@{0} 2\nLDWT {0},i\nSCALL $1, $2\n.END\n");
 		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
 		ret_val->argument = as_ref;
 		return {true, "", ret_val};
@@ -621,7 +621,7 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 		return {false, err_msg, nullptr};
 	}
 	else {
-		registry->register_unary_system_call(text_arg, "@{0} 0\nLDWT {0},i USCALL\n.END\n");
+		registry->register_unary_system_call(text_arg, "@{0} 0\nLDWT {0},i\nUSCALL\n.END\n");
 		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
 		ret_val->argument = as_ref;
 		return {true, "", ret_val};
