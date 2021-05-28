@@ -13,22 +13,19 @@ TEST_CASE( "Parse entire OS", "[asmb::pep10::parser]"  ) {
 	SECTION("0-arity macro.") {	
 		auto project = masm::project::init_project<uint16_t>();
 		auto ex = registry::instance();
-		for(const auto& macro : ex.macros()){}
-		CHECK(project->macro_registry->register_macro("HELLO2", "@HELLO2 2\nASRA\nASRA\n", masm::MacroType::CoreMacro));
-		CHECK(project->macro_registry->register_macro("HELLO0", "@HELLO0 0\nASRA\nASRA\n", masm::MacroType::CoreMacro));
+		for(const auto& macro : ex.macros()){
+			CHECK(project->macro_registry->register_macro(macro.name, macro.text, masm::MacroType::CoreMacro));
+		}
+		auto fig_os = ex.find("pep10", 9, 0).value();
+		auto text_os = fig_os.elements.at(element_type::kPep);
 		auto file = std::make_shared<masm::project::source_file>();
-		file->name = "main";
-		file->body = "@HELLO0\n.END\n";
-		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
+		file->name = "os";
+		file->body = text_os;
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
 
 		REQUIRE(res.first);
 		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_macro = project->images[0]->os->body_ir->ir_lines[0];
-		auto as_macro = std::dynamic_pointer_cast<masm::ir::macro_invocation<uint16_t>>(maybe_macro);
-		REQUIRE(as_macro);
-		CHECK(as_macro->macro->body_ir->ir_lines.size() == 2);
-		CHECK(!as_macro->comment);
+		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 647);
 	}
 
 }
