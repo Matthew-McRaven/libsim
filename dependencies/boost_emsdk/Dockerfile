@@ -21,7 +21,7 @@ RUN python3.9 -m pip install pytest
 WORKDIR /
 
 # Download boost code.
-RUN git clone --jobs 10 --recursive --branch boost-1.75.0  https://github.com/boostorg/boost && git clone https://github.com/emscripten-core/emsdk.git /emsdk
+RUN git clone --jobs 10 --recursive --branch boost-${boost_version}  https://github.com/boostorg/boost && git clone https://github.com/emscripten-core/emsdk.git /emsdk
 
 # Install EMSDK
 RUN cd /emsdk && git pull && ./emsdk install sdk-upstream-master-64bit && ./emsdk activate sdk-upstream-master-64bit
