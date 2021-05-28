@@ -15,7 +15,6 @@ TEST_CASE( "Check whole program sanity", "[asmb::pep10::sanity]"  ) {
 		file->name = "os";
 		file->body = "ASRA\nNOTX\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::WHOLE_PROGRAM_SANITY);
-		std::cout << res.second;
 		REQUIRE(!res.first);
 	}
 
@@ -25,7 +24,6 @@ TEST_CASE( "Check whole program sanity", "[asmb::pep10::sanity]"  ) {
 		file->name = "os";
 		file->body = ".END\nASRA\nNOTX\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::WHOLE_PROGRAM_SANITY);
-		std::cout << res.second;
 		REQUIRE(!res.first);
 	}
 
@@ -35,7 +33,6 @@ TEST_CASE( "Check whole program sanity", "[asmb::pep10::sanity]"  ) {
 		file->name = "os";
 		file->body = "ASRA\n.BURN 0xFFFF\n.END\n";
 		auto res = driver->assemble_joint(project, file, file, masm::project::toolchain_stage::WHOLE_PROGRAM_SANITY);
-		std::cout << res.second;
 		REQUIRE(!res.first);
 	}
 
@@ -45,7 +42,6 @@ TEST_CASE( "Check whole program sanity", "[asmb::pep10::sanity]"  ) {
 		file->name = "os";
 		file->body = "ASRA\n.END\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::WHOLE_PROGRAM_SANITY);
-		std::cout << res.second;
 		REQUIRE(!res.first);
 	}
 
@@ -55,7 +51,6 @@ TEST_CASE( "Check whole program sanity", "[asmb::pep10::sanity]"  ) {
 		file->name = "os";
 		file->body = ".BURN 0xFFFF\nASRA\n.BURN 0xFFFF\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::WHOLE_PROGRAM_SANITY);
-		std::cout << res.second;
 		REQUIRE(!res.first);
 	}
 
