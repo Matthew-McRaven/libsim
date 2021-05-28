@@ -29,7 +29,7 @@ auto masm::frontend::tokenizer<address_size_t, tokenizer_t>::tokenize(
 		// We perform macro substitution as early as possible, so as to avoid additional complexity in later stages.
 		// By performing replacement now, the preprocessor doesn't need to re-process lines with $macro substitutions.
 		if(perform_macro_substitution) {
-			for(auto [index, substitution] : section_as_macro->macro_args | boost::adaptors::indexed(0)) {
+			for(auto [index, substitution] : section_as_macro->macro_args | boost::adaptors::indexed(1)) {
 				line = std::regex_replace(line, std::regex(fmt::format("\\${}", index)), substitution);
 			}
 		}
