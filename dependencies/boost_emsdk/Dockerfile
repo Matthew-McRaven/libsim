@@ -2,10 +2,16 @@
 
 # [Choice] Debian / Ubuntu version: debian-10, debian-9, ubuntu-20.04, ubuntu-18.04
 ARG VARIANT="ubuntu-20.04"
-ARG boost_version="1.76.0"
+
+
 FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-${VARIANT}
 
-# [Optional] Uncomment this section to install additional packages.
+# Must occur after the "FROM" directive
+ARG BOOST_VERSION="1.76.0"
+
+# Required to move an ARG to an environment variable.
+RUN echo $BOOST_VERSION
+# Install additional packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
      && apt-get -y install --no-install-recommends g++-10 make zip cmake git libsqlite3-dev zlib1g-dev \
 	 libreadline-gplv2-dev libncursesw5-dev libssl-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev \
@@ -21,7 +27,7 @@ RUN python3.9 -m pip install pytest
 WORKDIR /
 
 # Download boost code.
-RUN git clone --jobs 10 --recursive --branch boost-${boost_version}  https://github.com/boostorg/boost && git clone https://github.com/emscripten-core/emsdk.git /emsdk
+RUN git clone --jobs 10 --recursive --branch boost-${BOOST_VERSION}  https://github.com/boostorg/boost && git clone https://github.com/emscripten-core/emsdk.git /emsdk
 
 # Install EMSDK
 RUN cd /emsdk && git pull && ./emsdk install sdk-upstream-master-64bit && ./emsdk activate sdk-upstream-master-64bit
