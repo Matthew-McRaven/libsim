@@ -9,4 +9,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # add the executable
 add_executable(RTL-Sample main.cpp)
 # Allow version header to be included
-target_link_libraries(RTL-Sample RTL-Lib)
+target_link_libraries(RTL-Sample RTL-Lib builtins)
