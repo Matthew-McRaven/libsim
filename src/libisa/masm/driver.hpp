@@ -38,6 +38,7 @@ namespace masm
 			std::shared_ptr<masm::project::source_file> user, stage_t target_stage);
 		bool register_transform(transform_t, stage_t);
 	private:
+		std::pair<bool, std::string> do_loop(project_t&, stage_t target_stage);
 		std::map<stage_t, transform_t> transforms_;
 		std::map<stage_t, std::list<work_t> > work_queue_;
 	};
