@@ -2,6 +2,7 @@
 
 #include "asmb/pep10/ir.hpp"
 #include "asmb/pep10/create_driver.hpp"
+#include "ex_registry.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/macro.hpp"
 
@@ -11,6 +12,8 @@ TEST_CASE( "Parse entire OS", "[asmb::pep10::parser]"  ) {
 
 	SECTION("0-arity macro.") {	
 		auto project = masm::project::init_project<uint16_t>();
+		auto ex = registry::instance();
+		for(const auto& macro : ex.macros()){}
 		CHECK(project->macro_registry->register_macro("HELLO2", "@HELLO2 2\nASRA\nASRA\n", masm::MacroType::CoreMacro));
 		CHECK(project->macro_registry->register_macro("HELLO0", "@HELLO0 0\nASRA\nASRA\n", masm::MacroType::CoreMacro));
 		auto file = std::make_shared<masm::project::source_file>();

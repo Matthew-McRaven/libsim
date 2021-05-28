@@ -41,6 +41,9 @@ int isa_processor::step()
 
 		nonunary_dispatch(is, os);
 	}
+
+	// TODO: Determine return value
+	return 0;
 }
 
 void isa_processor::init()
@@ -598,6 +601,8 @@ uint16_t isa_processor::decode_store_operand(const instruction_definition<uint8_
 	default:
 		throw std::invalid_argument("Not a valid addressing mode");
 	}
+	// Not reachable, but necessary to silence compiler warning
+	throw std::invalid_argument("Unreachable");
 }
 
 uint16_t isa_processor::read_reg(Registers reg) const

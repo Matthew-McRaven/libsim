@@ -41,21 +41,23 @@ int isa_processor::step()
 
 		nonunary_dispatch(is, os);
 	}
+	// TODO: determine return value
+	return 0;
 }
 
 void isa_processor::init()
 {
-	throw std::invalid_argument("Not a valid addressing mode");
+	throw std::invalid_argument("Unimplemented");
 }
 
 void isa_processor::debug(bool)
 {
-	throw std::invalid_argument("Not a valid addressing mode");
+	throw std::invalid_argument("Unimplemented");
 }
 
 void isa_processor::clear()
 {
-	throw std::invalid_argument("Not a valid addressing mode");
+	throw std::invalid_argument("Unimplemented");
 }
 
 void isa_processor::unary_dispatch(uint8_t is)
@@ -243,6 +245,8 @@ void isa_processor::unary_dispatch(uint8_t is)
 		vector_value = addr_from_vector(memory_vectors::TRAP);
 		write_reg(Registers::PC, read_word(vector_value, false));    
 		break;
+	default:
+		throw std::logic_error("Invalid unary instruction");
 
 	}
 }
@@ -530,6 +534,8 @@ void isa_processor::nonunary_dispatch(uint8_t is, uint16_t os)
 	case instruction_mnemonic::SUBSP:
 		write_reg(Registers::SP, sp-decoded_operand);
 		break;
+	default:
+		throw std::logic_error("Invalid non-unary instruction");
 	
 	}
 }
@@ -571,6 +577,7 @@ uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t
 		default:
 			throw std::invalid_argument("Not a valid addressing mode");
 		}
+		throw std::logic_error("Unreachable");
 	}
 	else {
 		switch (mode)
@@ -595,9 +602,12 @@ uint16_t isa_processor::decode_load_operand(const instruction_definition<uint8_t
 		case addressing_mode::SFX:
 			addr = read_word(addr + read_reg(Registers::SP), false);
 			return read_word(addr + read_reg(Registers::X), false);
+		default:
+			throw std::invalid_argument("Not a valid addressing mode");
 		}
+		throw std::logic_error("Unreachable");
 	}
-	throw std::invalid_argument("Not a valid addressing mode");
+	
 }
 
 uint16_t isa_processor::decode_store_operand(const instruction_definition<uint8_t>& instr, addressing_mode mode, uint16_t addr) const
@@ -623,6 +633,8 @@ uint16_t isa_processor::decode_store_operand(const instruction_definition<uint8_
 	default:
 		throw std::invalid_argument("Not a valid addressing mode");
 	}
+	// Not reachable, but necessary to silence compiler warning
+	throw std::invalid_argument("Unreachable");
 }
 
 uint16_t isa_processor::read_reg(Registers reg) const
