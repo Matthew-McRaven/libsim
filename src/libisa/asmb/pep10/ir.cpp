@@ -70,6 +70,7 @@ uint16_t asmb::pep10::unary_instruction::object_code_bytes() const
 
 void asmb::pep10::unary_instruction::append_object_code(std::vector<uint8_t>& bytes) const
 {
+    if(!this->emits_object_code) return;
 	bytes.emplace_back(isa::pep10::opcode(mnemonic));
 }
 
@@ -143,6 +144,7 @@ uint16_t asmb::pep10::nonunary_instruction::object_code_bytes() const
 
 void asmb::pep10::nonunary_instruction::append_object_code(std::vector<uint8_t>& bytes) const
 {
+    if(!this->emits_object_code) return;
 	bytes.emplace_back(isa::pep10::opcode(mnemonic, addressing_mode));
     // Convert argument from 16 bits to 2x8 bits.
     uint16_t arg = argument->value();
