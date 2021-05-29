@@ -37,7 +37,7 @@
 namespace symbol
 {
 
-// Find the root of the symbol tree.
+//! Find the root of the symbol tree.
 template<typename value_t>
 struct RootVisitor
 {
@@ -45,7 +45,7 @@ struct RootVisitor
 	NodeType<value_t> operator() (std::shared_ptr<LeafTable<value_t>> table);
 };
 
-// Gather all symbols sharing the same name into a list.
+//! Gather all symbols sharing the same name into a list.
 template<typename value_t>
 class SelectByNameVisitor
 {
@@ -58,7 +58,7 @@ private:
 };
 
 
-// Check for the existence of a symbol by name
+//! Check for the existence of a symbol by name
 template<typename value_t>
 class ExistenceVisitor
 {
@@ -71,7 +71,7 @@ private:
 	std::string target;
 };
 
-// Modify the value of all symbol::value_locations. Useful for relocation.
+//! Modify the value of all symbol::value_locations. Useful for relocation.
 template<typename value_t>
 class AdjustOffsetVisitor
 {
