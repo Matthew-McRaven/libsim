@@ -29,6 +29,18 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 		auto as_byte_vec = masm::elf::to_bytes(as_code_section);
 		elf_section->set_data((const char*)as_byte_vec.data(), as_byte_vec.size());
 
+		addr_size_t base_address = 0;
+		// Base address is the first byte that actually generates object code.
+		for(const auto& line : as_code_section->body_ir->ir_lines)
+		{
+			if(!line->emits_object_code) continue;
+			else {
+				elf_section->set_address(line->base_address());
+				break;
+			}
+		}
+		
+
 		// Write symbol table.
 		auto symbols = section->symbol_table->entries();
 		auto str_tab = writer.sections.add(prefix+".strtab");
@@ -57,6 +69,6 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	// Do not generate relocation entries, since Pep/9 and 10 programs are not relocatable.
 	if(false) writer.set_entry( 0 );
 	writer.save(stream);
-
+	writer.save("hello.elf");
 	return {true, std::move(stream)};
 }
