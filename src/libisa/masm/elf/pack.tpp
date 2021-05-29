@@ -35,11 +35,11 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 		{
 			if(!line->emits_object_code) continue;
 			else {
-				elf_section->set_address(line->base_address());
+				base_address = line->base_address();
 				break;
 			}
 		}
-		
+		elf_section->set_address(base_address);
 
 		// Write symbol table.
 		auto symbols = section->symbol_table->entries();
