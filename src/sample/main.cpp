@@ -3,7 +3,6 @@
 #include<iostream>
 #include "version.hpp"
 
-#include "masm/elf/serialize.hpp"
 #include "asmb/pep10/highlight.hpp"
 
 #include "asmb/pep10/ir.hpp"

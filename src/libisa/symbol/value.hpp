@@ -194,8 +194,7 @@ public:
 /*!
  * \brief Represent a value that take on the value of another symbol.
  * 
- * \deprecated This "pointer" value was necessary to implement .EXPORT statements in the original PEP10 operating 
- * system. However, with the new linker + ELF format, crossing symbol tables is no longer necessary.
+ * Used to reference symbols' values that are taken from other tables.
  * 
  * This value cannot be relocated, since it acts like a numeric constant rather than a location.
  * 
@@ -212,7 +211,7 @@ public:
     value_t value() const override;
     symbol::type_t type() const override;
 
-    //! Symbol whose value is to be taken on.
+    //! Symbol whose value is to be taken on. Does not need to belong to the same table.
     std::shared_ptr<const entry<value_t>> symbol_pointer;
 
 };

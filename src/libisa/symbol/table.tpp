@@ -145,6 +145,7 @@ void symbol::LeafTable<value_t>::mark_global(const std::string& name)
 			// Mark the symbol as imported, so that we can tell the difference between our 
 			// global symbols and others' globals.
 			other->binding = symbol::binding_t::kImported;
+			// Follow the other symbols definition state to prevent the other copy from being undefined.
 			other->state = symbol->state;
 		}
 	}
