@@ -39,7 +39,7 @@ TEST_CASE( "Allocate address to simple programs", "[masm::ir::assign_addr]"  ) {
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "os";
-		file->body = ".BURN 0x0005\nbr main\nADDA 1,i\n.END\n";
+		file->body = ".BURN 0x0005\nbr main\nmain:ADDA 1,i\n.END\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::ADDRESS_ASSIGN);
 		std::cout << res.second;
 		REQUIRE(res.first);
