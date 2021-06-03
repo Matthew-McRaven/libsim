@@ -75,7 +75,9 @@ std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver(
 
 		driver_t::work_iterable_t result_work;
 		std::transform(images.begin(), images.end(), std::back_inserter(result_work),[&](auto image){
-			masm::backend::assign_image(proj, image);
+			// Clang bug prevented success from being mutated directly ??
+			auto help = masm::backend::assign_image(proj, image);
+			success &= help;
 			return driver_t::work_iterable_t::value_type{stage_t::ADDRESS_ASSIGN, image};
 		});
 		return driver_t::result_t{success, result_work};
