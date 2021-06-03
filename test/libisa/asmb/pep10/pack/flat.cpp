@@ -23,7 +23,7 @@ TEST_CASE( "Flatten simple programs to ELF binary.", "[masm::elf]"  ) {
 		auto project = masm::project::init_project<uint16_t>();
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "main";
-		file->body = ".BURN 0xFF00\nbr main\nADDA 1,i\n.END\n";
+		file->body = ".BURN 0xFF00\nbr main\nmain:ADDA 1,i\n.END\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
 		REQUIRE(res.first);
 	}
