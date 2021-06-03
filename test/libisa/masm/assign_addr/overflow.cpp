@@ -5,7 +5,7 @@
 #include "masm/ir/directives.hpp"
 #include "masm/ir/empty.hpp"
 
-TEST_CASE( "Test for multiple / undefined symbols", "[masm::ir::assign_addr]"  ) {
+TEST_CASE( "Address overflow.", "[masm::backend::assign_addr]"  ) {
 	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
 
