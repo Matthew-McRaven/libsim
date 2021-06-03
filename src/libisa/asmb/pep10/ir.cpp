@@ -152,3 +152,11 @@ void asmb::pep10::nonunary_instruction::append_object_code(std::vector<uint8_t>&
     bytes.emplace_back(hi);
     bytes.emplace_back(lo);
 }
+
+std::optional<std::shared_ptr<const symbol::entry<uint16_t> > > asmb::pep10::nonunary_instruction::symbolic_operand() const
+{
+    if(auto as_symbolic = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument)) {
+		return as_symbolic->symbol_value();
+	}
+    return std::nullopt;
+}

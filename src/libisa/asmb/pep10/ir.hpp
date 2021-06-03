@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "isa/pep10/defs.hpp"
 #include "masm/ir/base.hpp"
 #include "masm/ir/args.hpp"
@@ -50,6 +52,7 @@ public:
     std::string generate_source_string() const override;
     uint16_t object_code_bytes() const override;
     void append_object_code(std::vector<uint8_t>& code) const override;
+    std::optional<std::shared_ptr<const symbol::entry<uint16_t>>> symbolic_operand() const override;
 
     bool is_code() const override { return true;}
 

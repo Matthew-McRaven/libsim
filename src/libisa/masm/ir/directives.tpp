@@ -6,7 +6,7 @@
 #include "symbol/table.hpp"
 
 /*
- * .BLOCK
+ * .ADDRSS
  */
 template <typename address_size_t>
 masm::ir::dot_address<address_size_t>::dot_address(const masm::ir::dot_address<address_size_t>& other)
@@ -754,6 +754,15 @@ void masm::ir::dot_word<address_size_t>::append_object_code(std::vector<uint8_t>
 	if(!this->emits_object_code) return;
 	bytes.emplace_back((argument->value() >> 8 ) & 0xff);
 	bytes.emplace_back(argument->value() & 0xff);
+}
+
+template <typename address_size_t>
+std::optional<std::shared_ptr<const symbol::entry<address_size_t> > > masm::ir::dot_word<address_size_t>::symbolic_operand() const
+{
+    if(auto as_symbolic = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<address_size_t>>(argument)) {
+		return as_symbolic->symbol_value();
+	}
+    return std::nullopt;
 }
 
 template <typename address_size_t>
