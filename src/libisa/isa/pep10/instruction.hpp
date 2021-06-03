@@ -30,6 +30,7 @@ struct addr_map
 struct isa_definition {
 	const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t>> > isa ;
 	const std::array<addr_map, 256> riproll;
+	// TODO: Make this constructor private since we have a singleton.
 	isa_definition();
 	// Returns a static copy of a pep/10 isa definition.
 	// Required for static initialization in a static library.
@@ -37,9 +38,14 @@ struct isa_definition {
 };
 
 std::string as_string(instruction_mnemonic);
+std::string as_string(addressing_mode);
 bool is_opcode_unary(instruction_mnemonic);
 bool is_opcode_unary(uint8_t);
 bool is_store(instruction_mnemonic);
 bool is_store(uint8_t);
+// Convert unary instruction definition to its opcode.
+uint8_t opcode(instruction_mnemonic);
+// Convert nonunary instruction definition to its opcode.
+uint8_t opcode(instruction_mnemonic, addressing_mode);
 
 };

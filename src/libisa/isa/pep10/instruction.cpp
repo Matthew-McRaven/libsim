@@ -140,6 +140,8 @@ std::array<isa::pep10::addr_map, 256> init_mmap() {
 				else if (it-lb.second->bit_pattern == 7) mode = addressing_mode::SFX;
 				else throw std::invalid_argument("Invalid AAA addressing mode.");
 				break;
+			default:
+				break;
 			}
 			riproll[it].inst = lb.second;
 			riproll[it].addr = mode;
@@ -162,10 +164,10 @@ const isa_definition&  isa_definition::get_definition()
 }
 
 std::string isa::pep10::as_string(instruction_mnemonic mnemon) {
-	if (mnemon == instruction_mnemonic::UNIMPL) {
-		throw std::invalid_argument("Not a real mnemonic");
-	}
 	return std::string(magic_enum::enum_name(mnemon));
+}
+std::string isa::pep10::as_string(addressing_mode addr) {
+	return std::string(magic_enum::enum_name(addr));
 }
 
 bool isa::pep10::is_opcode_unary(instruction_mnemonic mnemon)
@@ -178,12 +180,14 @@ bool isa::pep10::is_opcode_unary(instruction_mnemonic mnemon)
 	case addressing_class::AAA_i:
 	case addressing_class::RAAA_all:
 	case addressing_class::RAAA_noi:
-		return true;
+		return false;
 	case addressing_class::U_none:
 	case addressing_class::R_none:
-		return false;
+		return true;
+	default:
+		throw std::invalid_argument("Invalid opcode.");
 	}
-	throw std::invalid_argument("Invalid opcode.");
+	
 }
 
 bool isa::pep10::is_opcode_unary(uint8_t opcode)
@@ -201,4 +205,51 @@ bool isa::pep10::is_store(uint8_t opcode)
 {
 	auto [inst, addr] = definition.riproll[opcode];
 	return is_store(inst->mnemonic);
+}
+
+// Convert unary instruction definition to its opcode.
+uint8_t isa::pep10::opcode(instruction_mnemonic mn)
+{
+	return (uint8_t) mn;
+}
+
+// Convert nonunary instruction definition to its opcode.
+uint8_t isa::pep10::opcode(instruction_mnemonic mn, addressing_mode addr)
+{
+	auto base = (uint8_t) mn;
+	uint8_t offset = 0;
+	auto addr_class = definition.isa.at(mn)->iformat;
+	if(addr_class == addressing_class::A_ix
+		&& addr == addressing_mode::X) offset = 1;
+	else {
+		switch(addr) {
+		case addressing_mode::I:
+			offset = 0;
+			break;
+		case addressing_mode::D:
+			offset = 1;
+			break;
+		case addressing_mode::N:
+			offset = 2;
+			break;
+		case addressing_mode::S:
+			offset = 3;
+			break;
+		case addressing_mode::SF:
+			offset = 4;
+			break;
+		case addressing_mode::X:
+			offset = 5;
+			break;
+		case addressing_mode::SX:
+			offset = 6;
+			break;
+		case addressing_mode::SFX:
+			offset = 7;
+			break;
+		default:
+			throw std::invalid_argument("Invalid addressing mode");
+		}
+	}
+	return base+offset;
 }

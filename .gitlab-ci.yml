@@ -6,17 +6,16 @@ stages:
 - test
 
 variables:
-  BUILD_VERSION: v0.3.2
+  BUILD_VERSION: v0.4.1
 
-Build Python and Boost:
+Build Boost and Emscripten:
   stage: build dependencies
   needs: []
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - cd ./dependencies
-    - (docker pull registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION} && echo success) || (docker build -t registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION . ) 
-    - docker push registry.gitlab.com/pep10/libsim/pyboost:$BUILD_VERSION
-
+    - cd ./dependencies/boost_emsdk
+    - (docker pull registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION} && echo success) || (docker build -t registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION} . ) 
+    - docker push registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
 
 Build Catch:
   stage: build dependencies
@@ -30,12 +29,33 @@ Build Magic Enum:
   script:
     - echo "Done"
 
-Build C++ bindings:
+Generate documentation:
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  stage: build library
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
+  needs: [Build Boost and Emscripten]
+  script:
+    - source /emsdk/emsdk_env.sh
+    - npm install moxygen -g
+    - mkdir -p build/docs 
+    - (cd docs && doxygen)
+    - mkdir -p build/docs/md && cd build/docs/md
+    - moxygen ../xml
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - build/docs/html/
+      - build/docs/latex/
+      - build/docs/xml/
+      - build/docs/md/
+
+Test C++ bindings:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
-  image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
-  needs: [Build Python and Boost]
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
+  needs: [Build Boost and Emscripten]
   script:
     - source /emsdk/emsdk_env.sh
     - export CXX=$(which clang++)
@@ -44,12 +64,12 @@ Build C++ bindings:
     - cmake ../
     - make -j20 && make test
 
-Build emscripten bindings:
+Test emscripten bindings:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
-  image: registry.gitlab.com/pep10/libsim/pyboost:${BUILD_VERSION}
-  needs: [Build Python and Boost]
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
+  needs: [Build Boost and Emscripten]
   script:
     - source /emsdk/emsdk_env.sh
     - mkdir build && cd build

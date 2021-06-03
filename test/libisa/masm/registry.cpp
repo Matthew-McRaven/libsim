@@ -10,10 +10,7 @@ TEST_CASE( "Valid Macro Definitions" ) {
 		CHECK(registry.contains("HELLOWORLD"));
 		auto macro = registry.macro("HELLOWORLD");
 		CHECK(macro->arg_count == 2);
-		// TODO: Does capitalization matters?
-		CHECK_FALSE(registry.contains("helloworld"));
-	}
-	SECTION("overwrite existing macro") {
+		CHECK(registry.contains("helloworld"));
 	}
 }
 
@@ -23,7 +20,6 @@ TEST_CASE( "Invalid Macro Definitions" ) {
 	SECTION("Too many args") {
 		CHECK_FALSE(registry.register_macro("HELLOWORLD", "@HELLOWORLD 2 3\n", masm::MacroType::CoreMacro));
 		CHECK_FALSE(registry.contains("HELLOWORLD"));
-		// TODO: Does capitalization matters?
 		CHECK_FALSE(registry.contains("helloworld"));
 		registry.clear_macros(masm::MacroType::CoreMacro);
 	}
@@ -31,7 +27,6 @@ TEST_CASE( "Invalid Macro Definitions" ) {
 	SECTION("Exclude leading spaces") {
 		CHECK_FALSE(registry.register_macro("HELLOWORLD", "  @HELLOWORLD 2\n", masm::MacroType::CoreMacro));
 		CHECK_FALSE(registry.contains("HELLOWORLD"));
-		// TODO: Does capitalization matters?
 		CHECK_FALSE(registry.contains("helloworld"));
 		registry.clear_macros(masm::MacroType::CoreMacro);
 	}
@@ -46,7 +41,6 @@ TEST_CASE( "Invalid Macro Definitions" ) {
 	SECTION("Name mismatch") {
 		CHECK_FALSE(registry.register_macro("goodbyeworld", "@HELLOWORLD 2\n", masm::MacroType::CoreMacro));
 		CHECK_FALSE(registry.contains("HELLOWORLD"));
-		// TODO: Does capitalization matters?
 		CHECK_FALSE(registry.contains("goodbyeworld"));
 		registry.clear_macros(masm::MacroType::CoreMacro);
 	}
@@ -54,7 +48,6 @@ TEST_CASE( "Invalid Macro Definitions" ) {
 	SECTION("Missing arg count") {
 		CHECK_FALSE(registry.register_macro("HELLOWORLD", "@HELLOWORLD\n", masm::MacroType::CoreMacro));
 		CHECK_FALSE(registry.contains("HELLOWORLD"));
-		// TODO: Does capitalization matters?
 		CHECK_FALSE(registry.contains("helloworld"));
 		registry.clear_macros(masm::MacroType::CoreMacro);
 	}
@@ -62,7 +55,6 @@ TEST_CASE( "Invalid Macro Definitions" ) {
 	SECTION("Missing @") {
 		CHECK_FALSE(registry.register_macro("HELLOWORLD", "HELLOWORLD 2\n", masm::MacroType::CoreMacro));
 		CHECK_FALSE(registry.contains("HELLOWORLD"));
-		// TODO: Does capitalization matters?
 		CHECK_FALSE(registry.contains("helloworld"));
 		registry.clear_macros(masm::MacroType::CoreMacro);
 	}

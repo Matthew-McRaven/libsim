@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
+# Run clang tidy iff it is installed and on the path.
+find_program(CLANG_TIDY "clang-tidy")
+# Emscripten seems to screw with clang-tidy's ability to work.
+if(CLANG_TIDY AND  (NOT EMSCRIPTEN))
+	set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,clang-analyzer-*)
+endif()
+
 # set the project name
 project(RTL-lib VERSION 1.0)
 
@@ -7,18 +14,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS "**/*.cpp")
 # add the executable
-add_library(RTL-Lib STATIC 
-	isa/pep10/proc.cpp 
-	isa/pep10/instruction.cpp
-	isa/pep9/proc.cpp
-	isa/pep9/instruction.cpp
-	masm/registry.cpp
-	masm/macroparser.cpp
-	masm/conversion.cpp
-	masm/elf/serialize.cpp
-	masm/frontend/sectionize.cpp
-)
+add_library(RTL-Lib STATIC ${sources})
 
 target_include_directories(RTL-Lib PUBLIC ${Boost_INCLUDE_DIR} )
 target_link_libraries( RTL-Lib PUBLIC ${Boost_LIBRARIES} )

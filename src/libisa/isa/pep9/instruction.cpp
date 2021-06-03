@@ -144,6 +144,8 @@ std::array<addr_map, 256> pep9_init_mmap() {
 			else if (it-lb.second->bit_pattern == 7) mode = addressing_mode::SFX;
 			else throw std::invalid_argument("Invalid AAA addressing mode.");
 			break;
+		default:
+			throw std::invalid_argument("Not a valid instruction format.");
 		}
 		riproll[it].inst = lb.second;
 		riproll[it].addr = mode;
@@ -184,8 +186,10 @@ bool isa::pep9::is_opcode_unary(instruction_mnemonic mnemon)
 	case addressing_class::U_none:
 	case addressing_class::R_none:
 		return false;
+	default:
+		throw std::invalid_argument("Invalid opcode.");
 	}
-	throw std::invalid_argument("Invalid opcode.");
+	
 }
 
 bool isa::pep9::is_opcode_unary(uint8_t opcode)

@@ -21,8 +21,8 @@ namespace detail
 
     struct macro
     {
-        std::string name;
-        int arg_count;
+        std::string name = {};
+        int arg_count = {0};
     };
     template <typename Iterator>
     struct macro_parser : qi::grammar<Iterator, macro(), ascii::space_type>
@@ -80,8 +80,8 @@ std::tuple<bool, std::string, uint8_t> masm::analyze_macro_definition(std::strin
     std::string first_line = macro_text.substr(0, macro_text.find("\n"));
     detail::macro macro;
     using boost::spirit::ascii::space;
-    typedef std::string::const_iterator iterator_type;
-    typedef detail::macro_parser<iterator_type> macro_parser;
+    using iterator_type =  std::string::const_iterator;
+    using macro_parser = detail::macro_parser<iterator_type>;
     macro_parser g;
     auto cbegin = first_line.cbegin();
     bool r = boost::spirit::qi::phrase_parse(cbegin, first_line.cend(), g, 

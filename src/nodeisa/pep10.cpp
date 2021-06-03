@@ -1,5 +1,7 @@
 #include "pep10.hpp"
 
+#include "asmb/pep10/highlight.hpp"
+
 #include <iostream>
 #include <emscripten.h>
 
@@ -61,4 +63,11 @@ EMSCRIPTEN_BINDINGS(pep10) {
     .constructor()
     .property("isa", &pep10::wrapped_isa_definition::get_isa)
     .property("map", &pep10::wrapped_isa_definition::get_map);
+
+  auto highlight_enum = emscripten::enum_<asmb::highlight_type>("highlight_enum");
+  for(auto [enu, str] : magic_enum::enum_entries<asmb::highlight_type>()) {
+    highlight_enum.value(str.data(), enu);
+  };
+  emscripten::register_map<asmb::highlight_type, std::string>("HighlightRulesMap");
+  emscripten::function("highlight_rules", &asmb::pep10::construct_rules);
 }

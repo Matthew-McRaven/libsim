@@ -73,11 +73,17 @@ bool masm::macro_registry::register_macro(const std::string& macro_name, const s
     if(macro_name != name) {
         return false;
     }
+
     std::shared_ptr<Macro> new_macro = std::make_shared<Macro>();
     new_macro->macro_name = macro_name;
     new_macro->macro_text = macro_text;
     new_macro->arg_count = arg_count;
     new_macro->type = type;
+
+	// Erase the macro definition from the text, since we have the meta-information to recreate it.
+	// Keeping this line complicates the preprocessor.
+	new_macro->macro_text.erase(0, macro_text.find("\n")+1);
+
     _registry[macro_name] = new_macro ;
     return true;
 }

@@ -1,10 +1,10 @@
-// File: symbolvalue.cpp
+// File: value.tpp
 /*
-    The Pep/9 suite of applications (Pep9, Pep9CPU, Pep9Micro) are
-    simulators for the Pep/9 virtual machine, and allow users to
+    The Pep/10 suite of applications (Pep10, Pep10CPU, Pep10Term) are
+    simulators for the Pep/10 virtual machine, and allow users to
     create, simulate, and debug across various levels of abstraction.
 
-    Copyright (C) 2018 J. Stanley Warford & Matthew McRaven, Pepperdine University
+    Copyright (C) 2021 J. Stanley Warford & Matthew McRaven, Pepperdine University
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,160 +20,130 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "symbol/value.hpp"
-#include "symbol/entry.hpp"
+#include "value.hpp"
+#include "entry.hpp"
 
 template <typename value_t>
-symbol::AbstractSymbolValue<value_t>::AbstractSymbolValue()
+symbol::value_empty<value_t>::value_empty(): abstract_value<value_t>()
 {
 }
 
 template <typename value_t>
-symbol::AbstractSymbolValue<value_t>::~AbstractSymbolValue()
-{
-
-}
-
-template <typename value_t>
-symbol::SymbolValueEmpty<value_t>::SymbolValueEmpty(): AbstractSymbolValue<value_t>()
-{
-}
-
-template <typename value_t>
-symbol::SymbolValueEmpty<value_t>::~SymbolValueEmpty()
-{
-}
-
-template <typename value_t>
-value_t symbol::SymbolValueEmpty<value_t>::getValue() const
+value_t symbol::value_empty<value_t>::value() const
 {
     return value_t();
 }
 
 template <typename value_t>
-symbol::SymbolType symbol::SymbolValueEmpty<value_t>::getSymbolType() const
+symbol::type_t symbol::value_empty<value_t>::type() const
 {
-    return SymbolType::EMPTY;
-}
-
-template <typename value_t>
-symbol::SymbolValueNumeric<value_t>::SymbolValueNumeric(value_t value): value(value)
-{
-
+    return type_t::kEmpty;
 }
 
 
-template <typename value_t>
-symbol::SymbolValueNumeric<value_t>::~SymbolValueNumeric()
-{
 
-}
 
 template <typename value_t>
-void symbol::SymbolValueNumeric<value_t>::setValue(value_t value)
+symbol::type_t symbol::value_deleted<value_t>::type() const
 {
-    this->value = value;
+    return type_t::kDeleted;
 }
 
 
-template <typename value_t>
-value_t symbol::SymbolValueNumeric<value_t>::getValue() const
-{
-    return value;
-}
+
 
 template <typename value_t>
-symbol::SymbolType symbol::SymbolValueNumeric<value_t>::getSymbolType() const
+symbol::value_const<value_t>::value_const(value_t value): abstract_value<value_t>(), value_(value)
 {
-    return SymbolType::NUMERIC_CONSTANT;
-}
-
-template <typename value_t>
-symbol::SymbolValueLocation<value_t>::SymbolValueLocation(value_t base, value_t offset):
-    AbstractSymbolValue<value_t>(), base(base), offset(offset)
-{
-}
-
-template <typename value_t>
-symbol::SymbolValueLocation<value_t>::~SymbolValueLocation()
-{
-}
-
-template <typename value_t>
-void symbol::SymbolValueLocation<value_t>::setBase(value_t value)
-{
-    this->base = value;
-}
-
-template <typename value_t>
-void symbol::SymbolValueLocation<value_t>::setOffset(value_t value)
-{
-    this->offset = value;
-}
-
-template <typename value_t>
-value_t symbol::SymbolValueLocation<value_t>::getValue() const
-{
-    return base + offset;
 
 }
 
 template <typename value_t>
-symbol::SymbolType symbol::SymbolValueLocation<value_t>::getSymbolType() const
+value_t symbol::value_const<value_t>::value() const
 {
-    return SymbolType::ADDRESS;
+    return value_;
 }
 
 template <typename value_t>
-bool symbol::SymbolValueLocation<value_t>::canRelocate() const
+void symbol::value_const<value_t>::set_value(value_t value)
+{
+    value_ = value;
+}
+
+template <typename value_t>
+symbol::type_t symbol::value_const<value_t>::type() const
+{
+    return type_t::kConstant;
+}
+
+
+
+template <typename value_t>
+symbol::value_location<value_t>::value_location(value_t base, value_t offset):
+    abstract_value<value_t>(), base_(base), offset_(offset)
+{
+}
+
+template <typename value_t>
+void symbol::value_location<value_t>::set_offset(value_t value)
+{
+    this->offset_ = value;
+}
+
+template <typename value_t>
+void symbol::value_location<value_t>::add_to_offset(value_t value)
+{
+    this->offset_ += value;
+}
+
+template <typename value_t>
+value_t symbol::value_location<value_t>::value() const
+{
+    return base_ + offset_;
+
+}
+
+template <typename value_t>
+symbol::type_t symbol::value_location<value_t>::type() const
+{
+    return type_t::kLocation;
+}
+
+template <typename value_t>
+bool symbol::value_location<value_t>::relocatable() const
 {
     return true;
 }
 
 template <typename value_t>
-value_t symbol::SymbolValueLocation<value_t>::getOffset() const
+value_t symbol::value_location<value_t>::offset() const
 {
     return offset;
 }
 
 template <typename value_t>
-value_t symbol::SymbolValueLocation<value_t>::getBase() const
+value_t symbol::value_location<value_t>::base() const
 {
     return base;
 }
 
+
+
 template <typename value_t>
-symbol::SymbolValueExternal<value_t>::SymbolValueExternal(std::shared_ptr<const SymbolEntry<value_t> >symbol): 
-    symbol(std::move(symbol))
+symbol::value_pointer<value_t>::value_pointer(std::shared_ptr<const entry<value_t> > symbol): 
+    abstract_value<value_t>(), symbol_pointer(std::move(symbol))
 {
 
 }
 
 template <typename value_t>
-symbol::SymbolValueExternal<value_t>::~SymbolValueExternal() = default;
-
-template <typename value_t>
-value_t symbol::SymbolValueExternal<value_t>::getValue() const
+value_t symbol::value_pointer<value_t>::value() const
 {
-    return symbol->getValue();
+    return symbol_pointer->value->value();
 }
 
 template <typename value_t>
-symbol::SymbolType symbol::SymbolValueExternal<value_t>::getSymbolType() const
+symbol::type_t symbol::value_pointer<value_t>::type() const
 {
-    return SymbolType::EXTERNAL;
-}
-
-template <typename value_t>
-bool symbol::SymbolValueExternal<value_t>::canRelocate() const
-{
-    // We should not allow relocation of a symbol defined in
-    // another translation unit.
-    return false;
-}
-
-template <typename value_t>
-std::shared_ptr<const symbol::SymbolEntry<value_t> >symbol:: SymbolValueExternal<value_t>::getSymbolValue()
-{
-    return symbol;
+    return type_t::kPtrToSym;
 }

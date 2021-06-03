@@ -23,8 +23,9 @@ public:
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
     address_size_t object_code_bytes() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
-    std::optional<std::shared_ptr<const symbol::SymbolEntry<address_size_t>>> symbolic_operand() const override;
+    std::optional<std::shared_ptr<const symbol::entry<address_size_t>>> symbolic_operand() const override;
 
 
     friend void swap(dot_address& first, dot_address& second)
@@ -33,7 +34,6 @@ public:
         swap(static_cast<linear_line<address_size_t>&>(first), static_cast<linear_line<address_size_t>&>(second));
         swap(first.argument, second.argument);
     }
-public:
     std::shared_ptr<masm::ir::symbol_ref_argument<address_size_t> >argument = {nullptr};
 };
 
@@ -43,9 +43,10 @@ template <typename address_size_t>
 class dot_align: public masm::ir::linear_line<address_size_t>
 {
 public:
-    enum class AlignDirection
+    enum class align_direction
     {
-        kTop, kBottom
+        kNext, // The next byte should be aligned properly
+        kPrevious // The previous byte should be aligned properly
     };
     dot_align();
     virtual ~dot_align() override = default;
@@ -56,8 +57,11 @@ public:
     // linear_line interface
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
-    address_size_t object_code_bytes() const override;;
+    address_size_t object_code_bytes() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
+    void set_begin_address(address_size_t addr) override;
+    void set_end_address(address_size_t addr) override;
     address_size_t num_bytes_generated() const;
 
 
@@ -66,11 +70,11 @@ public:
         using std::swap;
         swap(static_cast<linear_line<address_size_t>&>(first), static_cast<linear_line<address_size_t>&>(second));
         swap(first.argument, second.argument);
-        swap(first.numBytesGenerated, second.numBytesGenerated);
+        swap(first.direction, second.direction);
     }
 
     std::shared_ptr<masm::ir::lir_argument<address_size_t>> argument = {nullptr};
-    AlignDirection direction;
+    align_direction direction = {align_direction::kNext};
 };
 
 template <typename address_size_t>
@@ -87,6 +91,7 @@ public:
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
     address_size_t object_code_bytes() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     friend void swap(dot_ascii& first, dot_ascii& second)
     {
@@ -113,6 +118,7 @@ public:
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
     address_size_t object_code_bytes() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     bool tracks_trace_tags() const override;
 
@@ -135,10 +141,12 @@ public:
     dot_burn(const dot_burn& other);
     dot_burn& operator=(dot_burn other);
     std::shared_ptr<linear_line<address_size_t> > clone() const override;;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     // linear_line interface
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
+
 
     friend void swap(dot_burn& first, dot_burn& second)
     {
@@ -163,6 +171,7 @@ public:
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
     address_size_t object_code_bytes() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     bool tracks_trace_tags() const override;
 
@@ -189,7 +198,8 @@ public:
 
     // linear_line interface
     std::string generate_listing_string() const override;
-    std::string generate_source_string() const override;;
+    std::string generate_source_string() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     friend void swap(dot_end& first, dot_end& second)
     {
@@ -212,6 +222,7 @@ public:
     // linear_line interface
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
 
     bool tracks_trace_tags() const override;
 
@@ -239,6 +250,9 @@ public:
     std::string generate_listing_string() const override;
     std::string generate_source_string() const override;
     address_size_t object_code_bytes() const override;
+    void append_object_code(std::vector<uint8_t>& code) const override;
+
+    std::optional<std::shared_ptr<const symbol::entry<address_size_t>>> symbolic_operand() const override;
 
     bool tracks_trace_tags() const override;
 

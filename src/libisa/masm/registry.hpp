@@ -5,6 +5,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <boost/algorithm/string.hpp>
 
 #include "macro.hpp"
 
@@ -37,9 +38,15 @@ public:
 
     bool register_macro(const std::string& macro_name, const std::string& macro_text, const MacroType type);
 private:
+    struct case_insensitive
+    {
+        bool operator() (const std::string& lhs, const std::string& rhs) const {
+            return boost::algorithm::lexicographical_compare(lhs, rhs, boost::is_iless());
+        }
+    };
     auto filter_macros(MacroType type) -> std::vector<std::shared_ptr<const Macro>>;
     
-    std::map<std::string, std::shared_ptr<Macro>> _registry;
+    std::map<std::string, std::shared_ptr<Macro>, case_insensitive> _registry;
 
 };
 }; // End namespace masm.

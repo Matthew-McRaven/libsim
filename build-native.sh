@@ -4,9 +4,8 @@ cd build
 
 (
 	source /emsdk/emsdk_env.sh
-	CXX=$(which clang++)
 	mkdir -p native
 	cd native
-	cmake ../..
-	make -j30 && make test
+	cmake ../.. -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_BUILD_TYPE=Debug
+	make -j$(nproc) && make test
 )

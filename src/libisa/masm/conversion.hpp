@@ -76,7 +76,6 @@ bool unqouted_string_to_integral(const std::string &str, int byte_length, value_
 	size_t index = 0;
 	uint8_t temp = 0;
 
-
 	bool okay = true;
 	auto start = str.begin();
 
@@ -84,6 +83,9 @@ bool unqouted_string_to_integral(const std::string &str, int byte_length, value_
 		start += 2;
     }
 
+	// Initialize value, otherwise shifting will produce garbage.
+	value = 0;
+	
 	while(okay && start != str.end()) {
 		okay &= parse_byte_character(start, str.end(), temp);
 		value = value << 8 | temp;

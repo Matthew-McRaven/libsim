@@ -1,10 +1,10 @@
-// File: symbolentry.cpp
+// File: entry.tpp
 /*
-    The Pep/9 suite of applications (Pep9, Pep9CPU, Pep9Micro) are
-    simulators for the Pep/9 virtual machine, and allow users to
+    The Pep/10 suite of applications (Pep10, Pep10CPU, Pep10Term) are
+    simulators for the Pep/10 virtual machine, and allow users to
     create, simulate, and debug across various levels of abstraction.
 
-    Copyright (C) 2018 J. Stanley Warford & Matthew McRaven, Pepperdine University
+    Copyright (C) 2021 J. Stanley Warford & Matthew McRaven, Pepperdine University
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,116 +20,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "symbol/entry.hpp"
-#include "symbol/value.hpp"
+#include "value.hpp"
 
-template<typename symbol_value_t>
-symbol::SymbolEntry<symbol_value_t>::SymbolEntry(symbol::SymbolTable<symbol_value_t>* parent, 
-    typename symbol::SymbolTable<symbol_value_t>::SymbolID symbolID, std::string name): 
-    symbolID(symbolID), name(name),
-    symbolValue(std::make_shared<SymbolValueEmpty<symbol_value_t>>()), definedState(DefStates::UNDEFINED), parent(parent)
+
+template<typename value_t>
+symbol::entry<value_t>::entry(symbol::LeafTable<value_t>& parent, std::string name): 
+    parent(parent),
+    state(definition_state::kUndefined), name(name), binding(binding_t::kLocal),
+    value(std::make_shared<symbol::value_empty<value_t>>())
 {
-}
-
-template<typename symbol_value_t>
-symbol::SymbolEntry<symbol_value_t>::SymbolEntry(symbol::SymbolTable<symbol_value_t>* parent, 
-    typename symbol::SymbolTable<symbol_value_t>::SymbolID symbolID,
-    std::string name, typename symbol::SymbolTable<symbol_value_t>::AbstractSymbolValuePtr value): 
-    symbolID(symbolID), name(name), symbolValue(nullptr), parent(parent)
-{
-    setValue(value);
-}
-
-template<typename symbol_value_t>
-symbol::SymbolEntry<symbol_value_t>::~SymbolEntry()
-{
-
-}
-
-template<typename symbol_value_t>
-const symbol::SymbolTable<symbol_value_t>* symbol::SymbolEntry<symbol_value_t>::getParentTable() const
-{
-    return parent;
-}
-
-template<typename symbol_value_t>
-void symbol::SymbolEntry<symbol_value_t>::setValue(typename symbol::SymbolTable<symbol_value_t>::AbstractSymbolValuePtr value)
-{
-    // A SymbolEntry will not transfer from SINGLE to MULTIPLE on its own.
-    // This is because a symbol table / assembler might need to update the value
-    // of the symbol in place to achieve code relocation, and so the responsibility
-    // to make that decision is delegated to owning objects.
-	symbolValue = value;
-    // If given an empty value, then the symbol is undefined
-    if (dynamic_cast<SymbolValueEmpty<symbol_value_t>*>(value.get())) {
-        definedState = DefStates::UNDEFINED;
-	}
-    //If the symbol is multiply defined, it remains multiply defined
-    else if(definedState == DefStates::MULTIPLE) {
-        definedState = DefStates::MULTIPLE;
-    }
-    else {
-        definedState = DefStates::SINGLE;
-	}
-}
-
-template<typename symbol_value_t>
-std::string symbol::SymbolEntry<symbol_value_t>::getName() const
-{
-	return name;
-}
-
-template<typename symbol_value_t>
-bool symbol::SymbolEntry<symbol_value_t>::isDefined() const
-{
-    return definedState == DefStates::SINGLE;
-}
-
-template<typename symbol_value_t>
-bool symbol::SymbolEntry<symbol_value_t>::isUndefined() const
-{
-    return definedState == DefStates::UNDEFINED;
-}
-
-template<typename symbol_value_t>
-bool symbol::SymbolEntry<symbol_value_t>::isMultiplyDefined() const
-{
-	return definedState == DefStates::MULTIPLE;
-}
-
-template<typename symbol_value_t>
-void symbol::SymbolEntry<symbol_value_t>::setMultiplyDefined()
-{
-    definedState = DefStates::MULTIPLE;
-}
-
-template<typename symbol_value_t>
-void symbol::SymbolEntry<symbol_value_t>::setDefinedState(DefStates state)
-{
-    this->definedState = state;
-}
-
-template<typename symbol_value_t>
-typename symbol::SymbolTable<symbol_value_t>::SymbolID symbol::SymbolEntry<symbol_value_t>::getSymbolID() const
-{
-	return symbolID;
-}
-
-template<typename symbol_value_t>
-symbol_value_t symbol::SymbolEntry<symbol_value_t>::getValue() const
-{
-	return symbolValue->getValue();
-}
-
-template<typename symbol_value_t>
-typename symbol::SymbolTable<symbol_value_t>::AbstractSymbolValuePtr symbol::SymbolEntry<symbol_value_t>::getRawValue()
-{
-    return symbolValue;
-}
-
-template<typename symbol_value_t>
-bool SymbolAlphabeticComparator(std::shared_ptr<const symbol::SymbolEntry<symbol_value_t>> &lhs, 
-    std::shared_ptr<const symbol::SymbolEntry<symbol_value_t> > &rhs)
-{
-    return lhs->getName() < rhs->getName();
+    
 }
