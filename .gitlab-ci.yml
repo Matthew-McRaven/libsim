@@ -89,6 +89,6 @@ Deploy to Pages:
   dependencies:
     - Generate documentation
   script:
-    - pip mv build/docs/html/ public
+    - mv build/docs/html/ public
   only:
     - master
