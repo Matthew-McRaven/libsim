@@ -27,15 +27,8 @@ int main() {
 		auto project = masm::project::init_project<uint16_t>();
 		for(const auto& macro : ex.macros()) project->macro_registry->register_macro(macro.name, macro.text, masm::MacroType::CoreMacro);
 		auto file_user = std::make_shared<masm::project::source_file>();
-		if(figure.fig_num == 22) {
-			int y =8;
-		}
 		file_user->name = "user";
 		file_user->body = figure.elements.at(element_type::kPep);
 		auto res = driver->assemble_joint(project, file_os, file_user, masm::project::toolchain_stage::PACK);
-		if(!res.first) {
-			int i = 5;
-			(void) i; // A convenient place to put a breakpoint.
-		}
 	}
 }
