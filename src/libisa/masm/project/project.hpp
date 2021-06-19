@@ -44,6 +44,7 @@ struct project
 	std::shared_ptr<masm::macro_registry> macro_registry;
 	std::shared_ptr<message_handler<address_size_t> > message_resolver;
 	std::shared_ptr<masm::elf::image<address_size_t>> image;
+	std::stringstream as_elf;
 };
 
 }

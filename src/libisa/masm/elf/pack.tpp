@@ -71,4 +71,5 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	writer.save(stream);
 	writer.save("hello.elf");
 	return {true, std::move(stream)};
+	project->as_elf = std::move(stream);
 }
