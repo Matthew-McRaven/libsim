@@ -16,7 +16,7 @@ TEST_CASE( "Check that reported byte length matches actual byte length.", "[asmb
 		for(const auto& macro : ex.macros()){
 			CHECK(project->macro_registry->register_macro(macro.name, macro.text, masm::MacroType::CoreMacro));
 		}
-		auto fig_os = ex.find("pep10", 9, 0).value();
+		auto fig_os = ex.find("pep10", 9, "00").value();
 		auto text_os = fig_os.elements.at(element_type::kPep);
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "os";

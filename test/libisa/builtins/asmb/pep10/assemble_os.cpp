@@ -16,12 +16,12 @@ TEST_CASE( "Parse entire OS", "[asmb::pep10::parser]"  ) {
 		for(const auto& macro : ex.macros()){
 			CHECK(project->macro_registry->register_macro(macro.name, macro.text, masm::MacroType::CoreMacro));
 		}
-		auto fig_os = ex.find("pep10", 9, 0).value();
+		auto fig_os = ex.find("pep10", 9, "00").value();
 		auto text_os = fig_os.elements.at(element_type::kPep);
-		auto file = std::make_shared<masm::project::source_file>();
-		file->name = "os";
-		file->body = text_os;
-		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
+		auto file_os = std::make_shared<masm::project::source_file>();
+		file_os->name = "os";
+		file_os->body = text_os;
+		auto res = driver->assemble_os(project, file_os, masm::project::toolchain_stage::PACK);
 
 		REQUIRE(res.first);
 		auto x = project->image->os;

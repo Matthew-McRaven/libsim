@@ -10,7 +10,7 @@ TEST_CASE( "Parse & pack all sample programs", "[asmb::pep10::parser]"  ) {
 	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
 	auto ex = registry::instance();
-	auto fig_os = ex.find("pep10", 9, 0).value();
+	auto fig_os = ex.find("pep10", 9, "00").value();
 	auto text_os = fig_os.elements.at(element_type::kPep);
 	auto file_os = std::make_shared<masm::project::source_file>();
 	file_os->name = "os";
@@ -25,7 +25,8 @@ TEST_CASE( "Parse & pack all sample programs", "[asmb::pep10::parser]"  ) {
 			file_user->name = "user";
 			file_user->body = figure.elements.at(element_type::kPep);
 			auto res = driver->assemble_joint(project, file_os, file_user, masm::project::toolchain_stage::PACK);
-			REQUIRE(res.first);
+			CHECK(res.first);
+			if(!res.first) std::cout << fmt::format("Figure {}.{}", figure.chapter, figure.fig) << std::endl;
 		}
 	}
 
