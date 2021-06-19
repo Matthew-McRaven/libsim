@@ -23,4 +23,6 @@ namespace asmb::pep10::driver {
 	using result_t = driver_t::result_t;
 	using transform_t = driver_t::transform_t;
 	std::shared_ptr<driver_t> make_driver();
+	
+	std::tuple<bool, std::shared_ptr<masm::project::project<uint16_t>>> assemble(std::string user_text, std::string os_text);
 };

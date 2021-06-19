@@ -97,3 +97,18 @@ std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver(
 	driver->register_transform(tx_elf, stage_t::ADDRESS_ASSIGN);
 	return driver;
 }
+
+std::tuple<bool, std::shared_ptr<masm::project::project<uint16_t>>> asmb::pep10::driver::assemble(std::string user_text, std::string os_text)
+{
+	using namespace asmb::pep10::driver;
+	auto driver = make_driver();
+	auto project = masm::project::init_project<uint16_t>();
+	auto os = std::make_shared<masm::project::source_file>();
+	os->name = "os";
+	os->body = os_text;
+	auto user = std::make_shared<masm::project::source_file>();
+	user->name = "user";
+	user->body = user_text;
+	auto res = driver->assemble_joint(project, os, user, masm::project::toolchain_stage::PACK);
+	return {res.first, project};
+}
