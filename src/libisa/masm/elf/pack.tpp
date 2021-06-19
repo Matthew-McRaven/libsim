@@ -5,9 +5,8 @@
 #include "masm/project/section.hpp"
 #include "symbol/types.hpp"
 template <typename addr_size_t>
-auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >& project, 
-	std::shared_ptr<masm::elf::image<addr_size_t> >& image
-) -> std::pair<bool, std::istream&&>
+bool masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >& project, 
+	std::shared_ptr<masm::elf::image<addr_size_t> >& image)
 {
 	std::stringstream stream;
 	using namespace ELFIO;
@@ -70,6 +69,8 @@ auto masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	if(false) writer.set_entry( 0 );
 	writer.save(stream);
 	writer.save("hello.elf");
-	return {true, std::move(stream)};
+	// Saving the file iterates to the end of the stream.
+	stream.seekg(0, std::ios::beg);
 	project->as_elf = std::move(stream);
+	return true;
 }

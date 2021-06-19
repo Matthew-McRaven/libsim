@@ -1,6 +1,8 @@
 #include "create_driver.hpp"
 
 #include "masm/backend/sanity.hpp"
+#include "masm/project/project.hpp"
+
 std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver()
 {
 	using namespace asmb::pep10::driver;
@@ -88,7 +90,7 @@ std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver(
 		bool success = true;
 		driver_t::work_iterable_t result_work;
 		std::transform(work.begin(), work.end(), std::back_inserter(result_work),[&](auto value){
-			auto [local_success, stream] = masm::elf::pack_image(proj, std::get<driver_t::image_t>(value));
+			auto local_success = masm::elf::pack_image(proj, std::get<driver_t::image_t>(value));
 			success &= local_success;
 			return driver_t::work_iterable_t::value_type{stage_t::PACK, value};
 		});
