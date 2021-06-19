@@ -53,6 +53,6 @@ std::shared_ptr<masm::elf::image<address_size_t>> masm::frontend::text_to_image(
 	}
 	image->os = sec_os;
 	image->user = sec_user;
-	project->images[project->images.size()] = image;
+	project->image = image;
 	return image;
 }

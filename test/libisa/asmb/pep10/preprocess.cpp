@@ -112,7 +112,7 @@ TEST_CASE( "Recognize existing macros", "[asmb::pep10::preprocessor]"  ) {
 		auto res = driver.assemble_os(project, file, masm::project::toolchain_stage::PREPROCESS);
 		CHECK_FALSE(res.first);
 		CHECK(!res.second.empty());
-		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->images[0]->os);
+		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->image->os);
 		auto errors = project->message_resolver->errors_for_section(section);
 		REQUIRE(errors.size() == 1);
 		CHECK(std::get<1>(*errors.begin()).message == fmt::format(masm::frontend::detail::error_does_not_exist, "HELLO1"));
@@ -127,7 +127,7 @@ TEST_CASE( "Recognize existing macros", "[asmb::pep10::preprocessor]"  ) {
 		auto res = driver.assemble_os(project, file, masm::project::toolchain_stage::PREPROCESS);
 		CHECK_FALSE(res.first);
 		CHECK(!res.second.empty());
-		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->images[0]->os);
+		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->image->os);
 		auto errors = project->message_resolver->errors_for_section(section);
 		REQUIRE(errors.size() == 1);
 		CHECK(std::get<1>(*errors.begin()).message == fmt::format(masm::frontend::detail::error_bad_arg_count, 2, 1));
@@ -142,7 +142,7 @@ TEST_CASE( "Recognize existing macros", "[asmb::pep10::preprocessor]"  ) {
 		auto res = driver.assemble_os(project, file, masm::project::toolchain_stage::PREPROCESS);
 		CHECK_FALSE(res.first);
 		CHECK(!res.second.empty());
-		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->images[0]->os);
+		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->image->os);
 		auto errors = project->message_resolver->errors_for_section(section);
 		REQUIRE(errors.size() == 1);
 		CHECK(std::get<1>(*errors.begin()).message == fmt::format(masm::frontend::detail::error_bad_arg_count, 0, 1));
@@ -156,7 +156,7 @@ TEST_CASE( "Recognize existing macros", "[asmb::pep10::preprocessor]"  ) {
 		file->body = "LWDA 20,d\n@HELLOA\n.END\n";
 		auto res = driver.assemble_os(project, file, masm::project::toolchain_stage::PREPROCESS);
 		CHECK_FALSE(res.first);
-		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->images[0]->os);
+		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->image->os);
 		auto errors = project->message_resolver->errors_for_section(section, true);
 		REQUIRE(errors.size() == 1);
 		CHECK(std::get<1>(*errors.begin()).message == masm::frontend::detail::error_circular_include);	
@@ -171,7 +171,7 @@ TEST_CASE( "Recognize existing macros", "[asmb::pep10::preprocessor]"  ) {
 		file->body = "LWDA 20,d\n@HELLOA\n.END\n";
 		auto res = driver.assemble_os(project, file, masm::project::toolchain_stage::PREPROCESS);
 		CHECK_FALSE(res.first);
-		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->images[0]->os);
+		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->image->os);
 		auto errors = project->message_resolver->errors_for_section(section, true);
 		REQUIRE(errors.size() == 1);
 		CHECK(std::get<1>(*errors.begin()).message == masm::frontend::detail::error_circular_include);	
@@ -188,7 +188,7 @@ TEST_CASE( "Recognize existing macros", "[asmb::pep10::preprocessor]"  ) {
 		file->body = "LWDA 20,d\n@HELLOA\n.END\n";
 		auto res = driver.assemble_os(project, file, masm::project::toolchain_stage::PREPROCESS);
 		CHECK_FALSE(res.first);
-		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->images[0]->os);
+		auto section = std::static_pointer_cast<masm::elf::code_section<uint16_t> >(project->image->os);
 		auto errors = project->message_resolver->errors_for_section(section, true);
 		REQUIRE(errors.size() == 1);
 		CHECK(std::get<1>(*errors.begin()).message == masm::frontend::detail::error_circular_include);	

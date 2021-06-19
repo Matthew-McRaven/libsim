@@ -33,9 +33,9 @@ TEST_CASE( "Parse dot burn", "[asmb::pep10::parser]"  ) {
 		file->body = ".BURN 0x21\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_burn = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_burn = project->image->os->body_ir->ir_lines[0];
 		auto as_burn = std::dynamic_pointer_cast<masm::ir::dot_burn<uint16_t> >(maybe_burn);
 		REQUIRE(as_burn->argument->value() == 33);
 	}

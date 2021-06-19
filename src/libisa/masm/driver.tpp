@@ -11,10 +11,8 @@ std::pair<bool, std::string> masm::driver<address_size_t, stage_t>::assemble_os(
 	masm::frontend::text_to_image(project, os, nullptr);
 	
 	work_queue_[stage_t::RAW] = {};
-	for(auto &[index, image] : project->images) {
-		work_t val = {std::static_pointer_cast<masm::elf::code_section<address_size_t>>(image->os)};
-		work_queue_[stage_t::RAW].emplace_back(val);
-	}
+	work_t val = {std::static_pointer_cast<masm::elf::code_section<address_size_t>>(project->image->os)};
+	work_queue_[stage_t::RAW].emplace_back(val);
 	return do_loop(project, target_stage);
 }
 
@@ -26,18 +24,14 @@ std::pair<bool, std::string> masm::driver<address_size_t, stage_t>::assemble_joi
 	assert(user);
 	masm::frontend::text_to_image(project, os, user);
 	work_queue_[stage_t::RAW] = {};
-	for(auto &[index, image] : project->images) {
-		work_t val = {std::static_pointer_cast<masm::elf::code_section<address_size_t>>(image->os)};
-		work_queue_[stage_t::RAW].emplace_back(val);
-	}
+	work_t val = {std::static_pointer_cast<masm::elf::code_section<address_size_t>>(project->image->os)};
+	work_queue_[stage_t::RAW].emplace_back(val);
 	// Must get the operating system to SYMANTIC stage in order for system call macros to be register.
 	do_loop(project, stage_t::SYMANTIC);
 	// Now that system call macros are registered, we are free to assemble the user program.
 	work_queue_[stage_t::RAW] = {};
-	for(auto &[index, image] : project->images) {
-		work_t val = {std::static_pointer_cast<masm::elf::code_section<address_size_t>>(image->user)};
-		work_queue_[stage_t::RAW].emplace_back(val);
-	}
+	val = {std::static_pointer_cast<masm::elf::code_section<address_size_t>>(project->image->user)};
+	work_queue_[stage_t::RAW].emplace_back(val);
 
 	return do_loop(project, target_stage);
 }

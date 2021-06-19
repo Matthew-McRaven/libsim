@@ -16,15 +16,15 @@ TEST_CASE( "Parse dot USCALL", "[asmb::pep10::parser]"  ) {
 		file->body = "s:asra\n.USCALL s\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_USCALL = project->images[0]->os->body_ir->ir_lines[1];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_USCALL = project->image->os->body_ir->ir_lines[1];
 		auto as_USCALL = std::dynamic_pointer_cast<asmb::pep10::dot_uscall<uint16_t> >(maybe_USCALL);
 		REQUIRE(as_USCALL);
 
 		// Check for externalized symbol definition.
-		//REQUIRE(project->images[0]->symbol_table->exists("s"));
-		REQUIRE(symbol::exists<uint16_t>({project->images[0]->symbol_table}, "s"));
+		//REQUIRE(project->image->symbol_table->exists("s"));
+		REQUIRE(symbol::exists<uint16_t>({project->image->symbol_table}, "s"));
 		REQUIRE(project->macro_registry->contains("s"));
 	}
 
@@ -35,17 +35,17 @@ TEST_CASE( "Parse dot USCALL", "[asmb::pep10::parser]"  ) {
 		file->body = ".USCALL s ;Hi guys\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_USCALL = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_USCALL = project->image->os->body_ir->ir_lines[0];
 		auto as_USCALL = std::dynamic_pointer_cast<asmb::pep10::dot_uscall<uint16_t> >(maybe_USCALL);
 		REQUIRE(as_USCALL);
 		REQUIRE(as_USCALL->comment);
 		CHECK(as_USCALL->comment.value() == "Hi guys");
 
 		// Check for externalized symbol definition.
-		//REQUIRE(project->images[0]->symbol_table->exists("s"));
-		REQUIRE(symbol::exists<uint16_t>({project->images[0]->symbol_table}, "s"));
+		//REQUIRE(project->image->symbol_table->exists("s"));
+		REQUIRE(symbol::exists<uint16_t>({project->image->symbol_table}, "s"));
 		REQUIRE(project->macro_registry->contains("s"));
 	}
 

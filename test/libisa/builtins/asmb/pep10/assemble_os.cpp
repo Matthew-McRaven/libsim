@@ -24,8 +24,8 @@ TEST_CASE( "Parse entire OS", "[asmb::pep10::parser]"  ) {
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
 
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 642);
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 642);
 	}
 
 }

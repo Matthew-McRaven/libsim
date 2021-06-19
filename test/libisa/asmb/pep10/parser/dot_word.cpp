@@ -15,9 +15,9 @@ TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
 		file->body = ".WORD 33\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_word = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_word = project->image->os->body_ir->ir_lines[0];
 		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == 33);
 	}
@@ -29,9 +29,9 @@ TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
 		file->body = ".WORD -33\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_word = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_word = project->image->os->body_ir->ir_lines[0];
 		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == static_cast<uint16_t>(-33));
 	}
@@ -43,9 +43,9 @@ TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
 		file->body = "s:.EQUATE 33\n.WORD s\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_word = project->images[0]->os->body_ir->ir_lines[1];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_word = project->image->os->body_ir->ir_lines[1];
 		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
 		// TODO: Check back after finishing equate.
 		REQUIRE(as_word->argument->value() == 33);
@@ -58,9 +58,9 @@ TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
 		file->body = ".WORD 0x21\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_word = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_word = project->image->os->body_ir->ir_lines[0];
 		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == 33);
 	}
@@ -72,9 +72,9 @@ TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
 		file->body = ".WORD '!'\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_word = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_word = project->image->os->body_ir->ir_lines[0];
 		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == 33);
 	}
@@ -86,9 +86,9 @@ TEST_CASE( "Parse dot word", "[asmb::pep10::parser]"  ) {
 		file->body = ".WORD \"!\"\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_word = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_word = project->image->os->body_ir->ir_lines[0];
 		auto as_word = std::dynamic_pointer_cast<masm::ir::dot_word<uint16_t> >(maybe_word);
 		REQUIRE(as_word->argument->value() == 33);
 	}

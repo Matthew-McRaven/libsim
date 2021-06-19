@@ -24,7 +24,7 @@ TEST_CASE( "Check that reported byte length matches actual byte length.", "[asmb
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::PACK);
 
 		REQUIRE(res.first);
-		for(const auto& line : project->images[0]->os->body_ir->ir_lines)
+		for(const auto& line : project->image->os->body_ir->ir_lines)
 		{
 			std::vector<uint8_t> bytes;
 			line->append_object_code(bytes);

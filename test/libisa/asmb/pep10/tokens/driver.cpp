@@ -40,7 +40,7 @@ TEST_CASE( "Driver w/ tokenizer", "[asmb::pep10::tokenizer]"  ) {
 
 		auto res = driver.assemble_os(project, file, masm::project::toolchain_stage::TOKEN);
 		CHECK(res.first);
-		auto tokens = project->images[0]->os->body_token;
+		auto tokens = project->image->os->body_token;
 		CHECK(tokens);
 		CHECK(tokens.value().tokens[0].size() == 5);
 		CHECK(tokens.value().tokens[0][0].first == masm::frontend::token_type::kIdentifier);

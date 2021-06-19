@@ -19,9 +19,9 @@ TEST_CASE( "Parse macro instructions", "[asmb::pep10::parser]"  ) {
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_macro = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_macro = project->image->os->body_ir->ir_lines[0];
 		auto as_macro = std::dynamic_pointer_cast<masm::ir::macro_invocation<uint16_t>>(maybe_macro);
 		REQUIRE(as_macro);
 		CHECK(as_macro->macro->body_ir->ir_lines.size() == 2);
@@ -38,9 +38,9 @@ TEST_CASE( "Parse macro instructions", "[asmb::pep10::parser]"  ) {
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_macro = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_macro = project->image->os->body_ir->ir_lines[0];
 		auto as_macro = std::dynamic_pointer_cast<masm::ir::macro_invocation<uint16_t>>(maybe_macro);
 		REQUIRE(as_macro);
 		CHECK(as_macro->macro->body_ir->ir_lines.size() == 2);
@@ -57,9 +57,9 @@ TEST_CASE( "Parse macro instructions", "[asmb::pep10::parser]"  ) {
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_macro = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_macro = project->image->os->body_ir->ir_lines[0];
 		auto as_macro = std::dynamic_pointer_cast<masm::ir::macro_invocation<uint16_t>>(maybe_macro);
 		REQUIRE(as_macro);
 		CHECK(as_macro->macro->body_ir->ir_lines.size() == 2);
@@ -76,9 +76,9 @@ TEST_CASE( "Parse macro instructions", "[asmb::pep10::parser]"  ) {
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_macro = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_macro = project->image->os->body_ir->ir_lines[0];
 		auto as_macro = std::dynamic_pointer_cast<masm::ir::macro_invocation<uint16_t>>(maybe_macro);
 		REQUIRE(as_macro);
 		CHECK(as_macro->macro->body_ir->ir_lines.size() == 2);
@@ -95,9 +95,9 @@ TEST_CASE( "Parse macro instructions", "[asmb::pep10::parser]"  ) {
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_macro = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_macro = project->image->os->body_ir->ir_lines[0];
 		auto as_macro = std::dynamic_pointer_cast<masm::ir::macro_invocation<uint16_t>>(maybe_macro);
 		REQUIRE(as_macro);
 		CHECK(as_macro->symbol_entry);

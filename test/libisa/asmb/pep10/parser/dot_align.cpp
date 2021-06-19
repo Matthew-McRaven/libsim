@@ -15,9 +15,9 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		file->body = ".ALIGN 8\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_ascii = project->image->os->body_ir->ir_lines[0];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_align<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 	}
@@ -29,9 +29,9 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		file->body = ".ALIGN 2 ;Hi guys\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_ascii = project->image->os->body_ir->ir_lines[0];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_align<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 		REQUIRE(as_ascii->comment);
@@ -45,9 +45,9 @@ TEST_CASE( "Parse dot align", "[asmb::pep10::parser]"  ) {
 		file->body = "s: .ALIGN 4 ;Hi guys\n"; // Self reference is actually okay here, but has no use.
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_ascii = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_ascii = project->image->os->body_ir->ir_lines[0];
 		auto as_ascii = std::dynamic_pointer_cast<masm::ir::dot_align<uint16_t> >(maybe_ascii);
 		REQUIRE(as_ascii);
 		REQUIRE(as_ascii->comment);

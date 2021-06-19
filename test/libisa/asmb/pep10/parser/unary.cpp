@@ -15,9 +15,9 @@ TEST_CASE( "Parse unary instructions", "[asmb::pep10::parser]"  ) {
 		file->body = "ASRA\n.END\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_unary = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_unary = project->image->os->body_ir->ir_lines[0];
 		auto as_unary = std::dynamic_pointer_cast<asmb::pep10::unary_instruction>(maybe_unary);
 		REQUIRE(as_unary);
 		CHECK(as_unary->mnemonic == isa::pep10::instruction_mnemonic::ASRA);
@@ -31,8 +31,8 @@ TEST_CASE( "Parse unary instructions", "[asmb::pep10::parser]"  ) {
 		file->body = "maybe: ASRA\n.END\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_unary = project->images[0]->os->body_ir->ir_lines[0];
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_unary = project->image->os->body_ir->ir_lines[0];
 		auto as_unary = std::dynamic_pointer_cast<asmb::pep10::unary_instruction>(maybe_unary);
 		REQUIRE(as_unary);
 		CHECK(as_unary->mnemonic == isa::pep10::instruction_mnemonic::ASRA);
@@ -48,8 +48,8 @@ TEST_CASE( "Parse unary instructions", "[asmb::pep10::parser]"  ) {
 		file->body = "maybe: ASRA;A comment\n.END\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_unary = project->images[0]->os->body_ir->ir_lines[0];
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_unary = project->image->os->body_ir->ir_lines[0];
 		auto as_unary = std::dynamic_pointer_cast<asmb::pep10::unary_instruction>(maybe_unary);
 		REQUIRE(as_unary);
 		CHECK(as_unary->mnemonic == isa::pep10::instruction_mnemonic::ASRA);
@@ -66,8 +66,8 @@ TEST_CASE( "Parse unary instructions", "[asmb::pep10::parser]"  ) {
 		file->body = "ASRA ;Hello\n.END\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_unary = project->images[0]->os->body_ir->ir_lines[0];
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_unary = project->image->os->body_ir->ir_lines[0];
 		auto as_unary = std::dynamic_pointer_cast<asmb::pep10::unary_instruction>(maybe_unary);
 		REQUIRE(as_unary);
 		CHECK(as_unary->mnemonic == isa::pep10::instruction_mnemonic::ASRA);

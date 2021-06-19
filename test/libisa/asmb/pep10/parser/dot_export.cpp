@@ -16,18 +16,18 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		file->body = "s:asra\n.EXPORT s\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_export = project->images[0]->os->body_ir->ir_lines[1];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_export = project->image->os->body_ir->ir_lines[1];
 		auto as_export = std::dynamic_pointer_cast<asmb::pep10::dot_export<uint16_t> >(maybe_export);
 		REQUIRE(as_export);
 
 		// Check for externalized symbol definition.
-		REQUIRE(symbol::exists<uint16_t>({project->images[0]->symbol_table}, "s"));
+		REQUIRE(symbol::exists<uint16_t>({project->image->symbol_table}, "s"));
 		// TODO: Check that "s" is marked as global
 		// TODO: Check that there is only one external symbol.
 		// TODO: Check that the list of external symbols starts with a symbol named "s".
-		//auto externs = symbol::externals<uint16_t>(project->images[0]->symbol_table->entries());
+		//auto externs = symbol::externals<uint16_t>(project->image->symbol_table->entries());
 		//REQUIRE(boost::size(externs) == 1);
 		//CHECK((*externs.begin())->name == "s");
 	}
@@ -39,16 +39,16 @@ TEST_CASE( "Parse dot export", "[asmb::pep10::parser]"  ) {
 		file->body = ".EXPORT s ;Hi guys\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 1);
-		auto maybe_export = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 1);
+		auto maybe_export = project->image->os->body_ir->ir_lines[0];
 		auto as_export = std::dynamic_pointer_cast<asmb::pep10::dot_export<uint16_t> >(maybe_export);
 		REQUIRE(as_export);
 		REQUIRE(as_export->comment);
 		CHECK(as_export->comment.value() == "Hi guys");
 
 		// Check for externalized symbol definition.
-		REQUIRE(symbol::exists<uint16_t>({project->images[0]->symbol_table}, "s"));
+		REQUIRE(symbol::exists<uint16_t>({project->image->symbol_table}, "s"));
 		// TODO: Check that "s" is marked as global
 	}
 

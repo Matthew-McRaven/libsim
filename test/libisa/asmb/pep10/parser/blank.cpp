@@ -16,9 +16,9 @@ TEST_CASE( "Parse blank line", "[asmb::pep10::parser]"  ) {
 		file->body = "\n\n";
 		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::SYMANTIC);
 		REQUIRE(res.first);
-		auto x = project->images[0]->os;
-		REQUIRE(project->images[0]->os->body_ir->ir_lines.size() == 2);
-		auto maybe_empty = project->images[0]->os->body_ir->ir_lines[0];
+		auto x = project->image->os;
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 2);
+		auto maybe_empty = project->image->os->body_ir->ir_lines[0];
 		auto as_empty = std::dynamic_pointer_cast<masm::ir::blank_line<uint16_t> >(maybe_empty);
 		REQUIRE(as_empty);
 	}

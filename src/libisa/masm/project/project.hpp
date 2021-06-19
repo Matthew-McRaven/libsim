@@ -43,7 +43,7 @@ struct project
 {
 	std::shared_ptr<masm::macro_registry> macro_registry;
 	std::shared_ptr<message_handler<address_size_t> > message_resolver;
-	std::map<uint32_t, std::shared_ptr<masm::elf::image<address_size_t> > > images;
+	std::shared_ptr<masm::elf::image<address_size_t>> image;
 };
 
 }
