@@ -396,10 +396,6 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 		return {false, fmt::format(";ERROR: Illegal addressing mode \"{}\"", isa::pep10::as_string(addr.value())), nullptr};
 	}
 	// TODO: Explicitly enumerate allowed range in error.
-	// The only time our operands must be 1 byte is if it is an immediate being loaded.
-	else if(requires_byte_operand(mn) && addr == isa::pep10::addressing_mode::I && !operand_value->fits_in(1)) {
-		return {false, ";ERROR: Operand must fit in 1 byte.", nullptr};
-	}
 	else if(!operand_value->fits_in(2)) return {false, ";ERROR: Operand must fit in 2 bytes.", nullptr};
 	else {
 		ret_val->argument = operand_value;
