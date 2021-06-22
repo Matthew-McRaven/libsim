@@ -19,7 +19,7 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "**/*.cpp")
 add_library(RTL-Lib STATIC ${sources})
 
 target_include_directories(RTL-Lib PUBLIC ${Boost_INCLUDE_DIR} )
-target_link_libraries( RTL-Lib PUBLIC ${Boost_LIBRARIES} )
+target_link_libraries( RTL-Lib PUBLIC ${Boost_LIBRARIES} builtins)
 
 # Allow version header to be included
 target_include_directories(RTL-Lib PUBLIC "${PROJECT_BINARY_DIR}/")

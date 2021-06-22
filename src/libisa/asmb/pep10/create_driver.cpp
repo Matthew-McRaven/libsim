@@ -1,5 +1,6 @@
 #include "create_driver.hpp"
 
+#include "ex_registry.hpp"
 #include "masm/backend/sanity.hpp"
 #include "masm/project/project.hpp"
 
@@ -105,6 +106,8 @@ std::tuple<bool, std::shared_ptr<masm::project::project<uint16_t>>> asmb::pep10:
 	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
 	auto project = masm::project::init_project<uint16_t>();
+	auto ex = registry::instance();
+	for(const auto& macro : ex.macros()) project->macro_registry->register_macro(macro.name, macro.text, masm::MacroType::CoreMacro);
 	auto os = std::make_shared<masm::project::source_file>();
 	os->name = "os";
 	os->body = os_text;
