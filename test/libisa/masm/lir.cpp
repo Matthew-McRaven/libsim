@@ -147,8 +147,8 @@ TEST_CASE( "Linear IR code lines, 16-bit," ) {
 		line.set_begin_address(0x11);
 		line.argument = std::make_shared<masm::ir::hex_argument<uint16_t> >(0xcafe);
 
-		CHECK(line.generate_source_string() == "         .BYTE   0xCAFE      ");
-		CHECK(line.generate_listing_string() == "0x0011 CAFE           .BYTE   0xCAFE      ");
+		CHECK(line.generate_source_string() == "         .WORD   0xCAFE      ");
+		CHECK(line.generate_listing_string() == "0x0011 CAFE           .WORD   0xCAFE      ");
 		CHECK(line.object_code_bytes() == 2);
 		CHECK(line.contains_memory_address());
 		CHECK(line.tracks_trace_tags());
