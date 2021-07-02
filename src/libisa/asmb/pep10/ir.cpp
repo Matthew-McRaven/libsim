@@ -58,7 +58,7 @@ std::string asmb::pep10::unary_instruction::generate_source_string() const
         symbol_string,
         mnemonic_string,
         "",
-        comment
+        this->get_formatted_comment()
     );
 
 }
@@ -128,12 +128,11 @@ std::string asmb::pep10::nonunary_instruction::generate_source_string() const
     auto operand_string = argument->string() + ",";
     operand_string.append(magic_enum::enum_name(this->addressing_mode));
     
-    std::string comment = this->comment.value_or("");
     return fmt::format("{:<9}{:<8}{:<12}{}",
         symbol_string,
         mnemonic_string,
         operand_string,
-        comment
+        this->get_formatted_comment()
     );
 
 }

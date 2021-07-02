@@ -44,12 +44,11 @@ std::string asmb::pep10::dot_export<address_size_t>::generate_source_string() co
 {
     auto dot_string = ".EXPORT";
     auto operand_string = argument->string();
-	std::string comment = this->comment.value_or("");
     return fmt::format("{:<9}{:<8}{:<12}{}",
 		"",
 		dot_string,
 		operand_string,
-		comment
+		this->get_formatted_comment()
 	);
 
 }
@@ -107,12 +106,11 @@ std::string asmb::pep10::dot_scall<address_size_t>::generate_source_string() con
 {
     auto dot_string = ".SCALL";
     auto operand_string = argument->string();
-	std::string comment = this->comment.value_or("");
     return fmt::format("{:<9}{:<8}{:<12}{}",
 		"",
 		dot_string,
 		operand_string,
-		comment
+		this->get_formatted_comment()
 	);
 
 }
@@ -169,12 +167,11 @@ std::string asmb::pep10::dot_uscall<address_size_t>::generate_source_string() co
 {
     auto dot_string = ".USCALL";
     auto operand_string = argument->string();
-	std::string comment = this->comment.value_or("");
     return fmt::format("{:<9}{:<8}{:<12}{}",
 		"",
 		dot_string,
 		operand_string,
-		comment
+		this->get_formatted_comment()
 	);
 
 }
