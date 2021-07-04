@@ -165,10 +165,10 @@ auto asmb::pep10::parser::parse(
 		}
 		// TODO: Fix case sensitivity on dot commands.
 		else if(auto [match_dot, _2, text_dot] = masm::frontend::match(start, last, dot, true); match_dot) {
-			if(text_dot == "ASCII") std::tie(local_success, local_message, local_line) = parse_ASCII(start, last);
-			else if(text_dot == "ALIGN") std::tie(local_success, local_message, local_line) = parse_ALIGN(start, last);
-			else if(text_dot == "BLOCK") std::tie(local_success, local_message, local_line) = parse_BLOCK(start, last);
-			else if(text_dot == "BURN") {
+			if(boost::iequals(text_dot, "ASCII")) std::tie(local_success, local_message, local_line) = parse_ASCII(start, last);
+			else if(boost::iequals(text_dot, "ALIGN")) std::tie(local_success, local_message, local_line) = parse_ALIGN(start, last);
+			else if(boost::iequals(text_dot, "BLOCK")) std::tie(local_success, local_message, local_line) = parse_BLOCK(start, last);
+			else if(boost::iequals(text_dot, "BURN")) {
 				std::tie(local_success, local_message, local_line) = parse_BURN(start, last);
 				if(local_success) burn_count++;
 				if(local_success && local_symbol) {
@@ -176,8 +176,8 @@ auto asmb::pep10::parser::parse(
 					local_message = ";ERROR: .BURN does not support symbol declaration.";
 				}
 			}
-			else if(text_dot == "BYTE") std::tie(local_success, local_message, local_line) = parse_BYTE(start, last);
-			else if(text_dot == "END") {
+			else if(boost::iequals(text_dot, "BYTE")) std::tie(local_success, local_message, local_line) = parse_BYTE(start, last);
+			else if(boost::iequals(text_dot, "END")) {
 				std::tie(local_success, local_message, local_line) = parse_END(start, last);
 				if(local_success) end_count++;
 				if(local_success && local_symbol) {
@@ -185,7 +185,7 @@ auto asmb::pep10::parser::parse(
 					local_message = ";ERROR: .END does not support symbol declaration.";
 				}
 			}
-			else if(text_dot == "EQUATE") {
+			else if(boost::iequals(text_dot, "EQUATE")) {
 				std::tie(local_success, local_message, local_line) = parse_EQUATE(start, last);
 				if(!local_success) {} // Don't try fixup EQUATE lines that are clearly long.
 				else if(!local_symbol) { // EQUATE lines need a symbol declaration.
@@ -198,28 +198,28 @@ auto asmb::pep10::parser::parse(
 					local_symbol->value = sym_value;
 				}
 			}
-			else if(text_dot == "EXPORT") {
+			else if(boost::iequals(text_dot, "EXPORT")) {
 				std::tie(local_success, local_message, local_line) = parse_EXPORT(start, last, symbol_table);
 				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .EXPORT does not support symbol declaration.";
 				}
 			}
-			else if(text_dot == "SCALL") {
+			else if(boost::iequals(text_dot, "SCALL")) {
 				std::tie(local_success, local_message, local_line) = parse_SCALL(start, last, symbol_table, project->macro_registry);
 				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .SCALL does not support symbol declaration.";
 				}
 			}
-			else if(text_dot == "USCALL") {
+			else if(boost::iequals(text_dot, "USCALL")) {
 				std::tie(local_success, local_message, local_line) = parse_USCALL(start, last, symbol_table, project->macro_registry);
 				if(local_success && local_symbol) {
 					local_success = false;
 					local_message = ";ERROR: .USCALL does not support symbol declaration.";
 				}
 			}
-			else if(text_dot == "WORD") std::tie(local_success, local_message, local_line) = parse_WORD(start, last, symbol_table);
+			else if(boost::iequals(text_dot, "WORD")) std::tie(local_success, local_message, local_line) = parse_WORD(start, last, symbol_table);
 			else {
 				std::tie(local_success, local_message) = std::make_tuple(false, ";ERROR: Invalid dot command.");
 			}
