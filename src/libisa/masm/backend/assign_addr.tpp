@@ -31,7 +31,7 @@ auto masm::backend::assign_image(std::shared_ptr<masm::project::project<addr_siz
 			success &= assign_section_forward(project, image, as_code, start_address);
 		}
 		addr_size_t listing_line = 0;
-		success &= assign_section_line_numbers(project, image, section, listing_line);
+		success &= assign_section_line_numbers(project, image, as_code, listing_line);
 	}
 	
 	return success;
