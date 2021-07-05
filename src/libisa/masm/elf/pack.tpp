@@ -8,19 +8,18 @@ template <typename addr_size_t>
 bool masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >& project, 
 	std::shared_ptr<masm::elf::image<addr_size_t> >& image)
 {
-	std::stringstream stream;
 	using namespace ELFIO;
-	elfio writer;
+	auto writer = std::make_shared<elfio>();
 	
-	writer.create( ELFCLASS32, ELFDATA2LSB );
-	writer.set_os_abi( ELFOSABI_LINUX );
-	writer.set_type( ET_REL );
-	writer.set_machine( 0x8088 );
+	writer->create( ELFCLASS32, ELFDATA2LSB );
+	writer->set_os_abi( ELFOSABI_LINUX );
+	writer->set_type( ET_REL );
+	writer->set_machine( 0x8088 );
 	using sec_pair = std::pair<std::string, decltype(image->os)>;
 	std::list<sec_pair> sections = {{"os", image->os},{"user", image->user}};
 	for(auto& [prefix, section] : sections) {
 		if(!section) continue;
-		auto elf_section = writer.sections.add(prefix+".text");
+		auto elf_section = writer->sections.add(prefix+".text");
 		elf_section->set_type(SHT_PROGBITS);
 		elf_section->set_flags(SHF_ALLOC | SHF_EXECINSTR | SHF_WRITE);
 		elf_section->set_addr_align(0x1);
@@ -42,20 +41,20 @@ bool masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 
 		// Write symbol table.
 		auto symbols = section->symbol_table->entries();
-		auto str_tab = writer.sections.add(prefix+".strtab");
+		auto str_tab = writer->sections.add(prefix+".strtab");
 		str_tab->set_type(SHT_STRTAB);
 		// Create string table writer
 		string_section_accessor str_ac(str_tab);
 
 		// Create symbol table section
-		auto sym_tab = writer.sections.add(prefix+".symtab");
+		auto sym_tab = writer->sections.add(prefix+".symtab");
 		sym_tab->set_type(SHT_SYMTAB);
 		sym_tab->set_info(1+std::distance(cbegin(symbols), cend(symbols)));
 		sym_tab->set_addr_align(0x2);
-		sym_tab->set_entry_size(writer.get_default_entry_size( SHT_SYMTAB ));
+		sym_tab->set_entry_size(writer->get_default_entry_size( SHT_SYMTAB ));
 		sym_tab->set_link(str_tab->get_index());
 		// Create symbol table writer
-		symbol_section_accessor sym_ac(writer, sym_tab);
+		symbol_section_accessor sym_ac(*writer, sym_tab);
 		for(auto symbol : symbols) {
 			auto binding = STB_LOCAL;
 			if(symbol->binding == symbol::binding_t::kGlobal) binding = STB_GLOBAL;
@@ -66,11 +65,9 @@ bool masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	}
 
 	// Do not generate relocation entries, since Pep/9 and 10 programs are not relocatable.
-	if(false) writer.set_entry( 0 );
-	writer.save(stream);
-	writer.save("hello.elf");
-	// Saving the file iterates to the end of the stream.
-	stream.seekg(0, std::ios::beg);
-	project->as_elf = std::move(stream);
+	if(false) writer->set_entry( 0 );
+	writer->save("hello.elf");
+
+	project->as_elf = writer;
 	return true;
 }
