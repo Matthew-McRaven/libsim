@@ -40,7 +40,7 @@ namespace components::reg {
 			csrs.clear();
 		}
 	private:
-		components::storage::storage_block<uint8_t, reg_size_t> regs;
-		components::storage::storage_block<uint8_t, csr_size_t> csrs;
+		components::storage::Block<uint8_t, reg_size_t> regs;
+		components::storage::Block<uint8_t, csr_size_t> csrs;
 	};
 };

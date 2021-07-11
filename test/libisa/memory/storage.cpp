@@ -63,12 +63,12 @@ void helper(T& mem)
 }
 
 TEST_CASE( "Validate storage systems") {
-	using tp = components::storage::storage_base<uint8_t>;
+	using tp = components::storage::Base<uint8_t>;
 	// Use shared points to automatically clean up our allocations.
 	std::vector<std::shared_ptr<tp>> arr = {
-		std::shared_ptr<tp>(new components::storage::storage_block<uint8_t>(0)),
-		std::shared_ptr<tp>(new components::storage::storage_map<uint8_t>(0, 0)),
-		std::shared_ptr<tp>(new components::storage::storage_range<uint8_t>(0, 0))
+		std::shared_ptr<tp>(new components::storage::Block<uint8_t>(0)),
+		std::shared_ptr<tp>(new components::storage::Map<uint8_t>(0, 0)),
+		std::shared_ptr<tp>(new components::storage::Range<uint8_t>(0, 0))
 	}; 
 	for(auto& store : arr) {
 		helper(*store);
