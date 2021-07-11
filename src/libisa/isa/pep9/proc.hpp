@@ -9,6 +9,7 @@ class isa_processor {
 public:
 	isa_processor(isa::env_interface<uint16_t, uint16_t, bool> iface);
 	int step();
+	bool can_step_into() const;
 	void init();
 	void debug(bool);
 	void clear();
