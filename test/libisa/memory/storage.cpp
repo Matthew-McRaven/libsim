@@ -48,14 +48,18 @@ void helper(T& mem)
 				CHECK_NOTHROW(mem.write(it, it+8));
 			}
 			for(auto it=0; it<size; it++) {
-				CHECK_NOTHROW(mem.read(it) == it+8);
+				auto i = mem.read(it);
+				REQUIRE_FALSE(i.has_failure());
+				CHECK_NOTHROW(i.value() == it+8);
 			}
 		}
 
 		DYNAMIC_SECTION( "Check that all bytes can be cleared." ) {
 			mem.clear();
 			for(auto it=0; it<size; it++) {
-				CHECK_NOTHROW(mem.read(it) == 0);
+				auto i = mem.read(it);
+				REQUIRE_FALSE(i.has_failure());
+				CHECK_NOTHROW(i.value() == 0);
 			}
 		}
 		

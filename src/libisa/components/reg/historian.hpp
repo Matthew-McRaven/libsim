@@ -19,11 +19,13 @@ namespace components::reg {
 		using reg_size_t = decltype(((regbank_t*)nullptr)->read_reg(0));
 		using csr_size_t = decltype(((regbank_t*)nullptr)->read_csr(0));
 
-		auto read_reg(uint8_t num) const -> reg_size_t
+		outcome<reg_size_t> read_reg(uint8_t num) const
 		{
 			return regbank.read_reg(num);
 		} 
-		void write_reg(uint8_t num, reg_size_t val) {
+
+		outcome<void> write_reg(uint8_t num, reg_size_t val)
+		{
 			auto search =  delta_reg.find(num);
 			if(search != delta_reg.end()) {
 				search->second = {std::get<0>(search->second), val};
@@ -31,22 +33,27 @@ namespace components::reg {
 			else {
 				delta_reg[num] = {read_csr(num), val};
 			}
-			regbank.write_reg(num, val);
+			return regbank.write_reg(num, val);
 		}
-		void clear_regs(){
+
+		void clear_regs()
+		{
 			delta_reg.clear();
 			regbank.clear_regs();
 		}
+
 		std::map<uint8_t, std::tuple<reg_size_t, reg_size_t> > get_reg_delta() const
 		{
 			return delta_reg;
 		}
 
-		auto read_csr(uint8_t num) const -> csr_size_t
+		outcome<csr_size_t> read_csr(uint8_t num) const
 		{
 			return regbank.read_reg(num);
 		} 
-		void write_csr(uint8_t num, csr_size_t val) {
+
+		outcome<void> write_csr(uint8_t num, csr_size_t val) 
+		{
 			auto search =  delta_csr.find(num);
 			if(search != delta_csr.end()) {
 				search->second = {std::get<0>(search->second), val};
@@ -54,12 +61,15 @@ namespace components::reg {
 			else {
 				delta_csr[num] = {read_csr(num), val};
 			}
-			regbank.write_csr(num, val);
+			return regbank.write_csr(num, val);
 		}
-		void clear_csrs(){
+
+		void clear_csrs()
+		{
 			delta_csr.clear();
 			regbank.clear_csrs();
 		}
+
 		std::map<uint8_t, std::tuple<csr_size_t, csr_size_t> > get_csr_delta() const
 		{
 			return delta_csr;
