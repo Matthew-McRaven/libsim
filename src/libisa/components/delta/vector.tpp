@@ -32,5 +32,6 @@ template <typename offset_t, typename val_size_t>
 	requires (components::storage::UnsignedIntegral<offset_t> && components::storage::Integral<val_size_t>)
 void components::delta::Vector<offset_t, val_size_t>::add_delta(offset_t offset, val_size_t old_value, val_size_t new_value)
 {
-	_deltas.emplace_back({offset, old_value, new_value});
+	std::tuple<offset_t, val_size_t, val_size_t> delta = {offset, old_value, new_value};
+	_deltas.emplace_back(std::move(delta));
 }
