@@ -23,7 +23,7 @@ void helper(T& mem)
 
 		DYNAMIC_SECTION( "Check that we can read all in-bounds addresses" ) {
 			for(auto it=0; it<size; it++) {
-				CHECK_NOTHROW(mem.read(it));
+				CHECK_NOTHROW(mem.read(it).value());
 			}
 		}
 
@@ -33,13 +33,13 @@ void helper(T& mem)
 			// We can read the last address.
 			CHECK_NOTHROW(mem.read(size));
 			// But not one past that.
-			CHECK_THROWS(mem.read(size+1));
+			CHECK_THROWS(mem.read(size+1).value());
 		}
 		DYNAMIC_SECTION( "Crash on OOB write" ) {
 			// We can read the last address.
 			CHECK_NOTHROW(mem.write(size, 10));
 			// But not one past that.
-			CHECK_THROWS(mem.write(size+1, 10));
+			CHECK_THROWS(mem.write(size+1, 10).value());
 		}
 		#endif
 
