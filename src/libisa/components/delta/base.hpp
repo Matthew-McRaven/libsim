@@ -28,6 +28,7 @@ public:
 	virtual ~Base() = default;
 	virtual void apply_backward() = 0;
 	virtual void apply_forward() = 0;
+	virtual void clear() = 0;
 protected:
 	components::storage::Base<offset_t, true, val_size_t>& _storage;
 };

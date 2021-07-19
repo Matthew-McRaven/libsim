@@ -17,6 +17,7 @@ public:
 	~Vector() = default;
 	void apply_backward() override;
 	void apply_forward() override;
+	void clear() override;
 	void add_delta(offset_t offset, val_size_t old_value, val_size_t new_value);
 private:
 	// Store changes in a vector, sorted from smallest to largest offset.

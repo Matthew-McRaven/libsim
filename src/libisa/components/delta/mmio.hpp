@@ -24,6 +24,7 @@ public:
 	~Input() = default;
 	void apply_backward() override;
 	void apply_forward() override;
+	void clear() override;
 	void add_delta();
 private:
 	components::storage::Input<offset_t, true, val_size_t>& _storage;

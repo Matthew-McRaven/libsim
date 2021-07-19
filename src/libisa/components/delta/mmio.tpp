@@ -23,6 +23,13 @@ void components::delta::Input<offset_t, val_size_t>::apply_backward()
 
 template <typename offset_t, typename val_size_t>
 	requires (components::storage::UnsignedIntegral<offset_t> && components::storage::Integral<val_size_t>)
+void components::delta::Input<offset_t, val_size_t>::clear()
+{
+	_read_count = 0;
+}
+
+template <typename offset_t, typename val_size_t>
+	requires (components::storage::UnsignedIntegral<offset_t> && components::storage::Integral<val_size_t>)
 void components::delta::Input<offset_t, val_size_t>::add_delta()
 {
 	++_read_count;
