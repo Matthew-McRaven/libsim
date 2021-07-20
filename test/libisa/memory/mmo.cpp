@@ -7,6 +7,17 @@
 
 TEST_CASE( "Validate memory-mapped output storage") {
 	
+	SECTION("Test configuration of Input")
+	{
+		// Create memory-mapped output storage.
+		auto in = components::storage::Output<uint16_t, true>(0);
+		// Require that memory-mapped output can only span one byte
+		REQUIRE(in.max_offset() == 0);
+		// And that it signals an out-of-bounds access when the offset 1+.
+		REQUIRE(in.read(1).has_failure());
+		REQUIRE(in.deltas_enabled());
+	}
+
 	SECTION("Allocate / write")
 	{
 		// Create memory-mapped input storage.
@@ -22,7 +33,7 @@ TEST_CASE( "Validate memory-mapped output storage") {
 		CHECK(*_2 == 20);
 	}
 
-		SECTION("Allocate / write / unwrite")
+	SECTION("Allocate / write / unwrite")
 	{
 		// Create memory-mapped input storage.
 		auto in = components::storage::Output<uint16_t, true>(0);
