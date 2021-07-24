@@ -1,6 +1,6 @@
 #pragma once
 
-#include "isa/pep10/instruction.hpp"
+#include "isa/pep10/pep10.hpp"
 #include "masm/ir/base.hpp"
 #include "masm/project/project.hpp"
 #include "masm/project/section.hpp"

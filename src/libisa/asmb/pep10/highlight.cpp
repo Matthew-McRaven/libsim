@@ -9,7 +9,7 @@
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
-#include "isa/pep10/instruction.hpp"
+#include "isa/pep10/pep10.hpp"
 std::map<asmb::highlight_type, std::string> asmb::pep10::construct_rules()
 {
 	auto isa = isa::pep10::isa_definition::get_definition();

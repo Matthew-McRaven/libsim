@@ -10,7 +10,7 @@
 #include "masm/frontend/tokenizer.hpp"
 #include "asmb/pep10/ir.hpp"
 #include "asmb/pep10/directives.hpp"
-#include "isa/pep10/instruction.hpp"
+#include "isa/pep10/pep10.hpp"
 #include "masm/ir/empty.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/args.hpp"

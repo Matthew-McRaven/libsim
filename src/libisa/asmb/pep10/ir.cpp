@@ -2,7 +2,6 @@
 
 #include "symbol/entry.hpp"
 #include "symbol/table.hpp"
-#include "isa/pep10/instruction.hpp"
 /*
 * Unary Instruction
 */

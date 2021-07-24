@@ -1,14 +1,13 @@
-#include "isa3/pep10.hpp"
+#include "isa/pep10/pep10.hpp"
 
 #include <iostream>
 #include <algorithm>
 #include <map>
 
-using namespace isa::pep10;
-
 // TODO: Wrap all helper functions inside isa::pep9. This will prevent linker errors for duplicate symbols.e
-const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t> > > init_isa() {
-	std::vector<instruction_definition<uint8_t>> instr_list = {
+const std::map<isa::pep10::instruction_mnemonic, std::shared_ptr<isa::pep10::instruction_definition >> init_isa() {
+	using namespace isa::pep10;
+	std::vector<instruction_definition> instr_list = {
 		{0x00, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::RET, true, ""},
 		{0x01, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::SRET, true, ""},
 		{0x02, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::MOVSPA, true, ""},
@@ -77,19 +76,20 @@ const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint
 		{0xf0, addressing_class::AAA_all, {{ true, true, true, true}}, instruction_mnemonic::ADDSP, false, ""},
 		{0xf8, addressing_class::AAA_all, {{ true, true, true, true}}, instruction_mnemonic::SUBSP, false, ""}
 	};
-	auto ret = std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t> > >();
+	auto ret = std::map<instruction_mnemonic, std::shared_ptr<instruction_definition> >();
 	for(auto v : instr_list) {
-		ret[v.mnemonic] = std::make_shared<instruction_definition<uint8_t>>(v);
+		ret[v.mnemonic] = std::make_shared<instruction_definition>(v);
 	}
 	return ret;
 }
 static const auto isa_map = init_isa();
 
 std::array<isa::pep10::addr_map, 256> init_mmap() {
-	using instr = instruction_definition<uint8_t>;
+	using namespace isa::pep10;
+	using instr = instruction_definition;
 	std::array<isa::pep10::addr_map, 256> riproll = {};
 	for(int it=0; it<256; it++) {
-			using tp = const std::pair<const isa::pep10::instruction_mnemonic, std::shared_ptr<isa::pep10::instruction_definition<uint8_t> > >;
+			using tp = const std::pair<const isa::pep10::instruction_mnemonic, std::shared_ptr<isa::pep10::instruction_definition>>;
 			auto ub = std::upper_bound(isa_map.cbegin(), isa_map.cend(), it, [](int v, const tp &ref){return v < ref.second->bit_pattern ;});
 
 			// First element is >, so none are <=
@@ -151,15 +151,15 @@ std::array<isa::pep10::addr_map, 256> init_mmap() {
 	return riproll;
 }
 
-static const isa_definition definition = isa::pep10::isa_definition();
+static const isa::pep10::isa_definition definition = isa::pep10::isa_definition();
 
-isa_definition::isa_definition():
+isa::pep10::isa_definition::isa_definition():
 	isa(isa_map), riproll(init_mmap())
 {
 
 }
 
-const isa_definition&  isa_definition::get_definition()
+const isa::pep10::isa_definition&  isa::pep10::isa_definition::get_definition()
 {
 	return definition;
 }

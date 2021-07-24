@@ -1,4 +1,4 @@
-#include "isa/pep9/instruction.hpp"
+#include "isa/pep9/pep9.hpp"
 
 #include <iostream>
 #include <algorithm>
