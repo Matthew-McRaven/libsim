@@ -36,18 +36,18 @@ EMSCRIPTEN_BINDINGS(pep10) {
     csr.value(str.data(), enu);
   }
 
-  emscripten::value_object<isa::pep10::instruction_definition<uint8_t>>("InstructionDefinition")
-    .field("bit_pattern", &isa::pep10::instruction_definition<uint8_t>::bit_pattern)
-    .field("iformat", &isa::pep10::instruction_definition<uint8_t>::iformat)
-    .field("csr_modified", &isa::pep10::instruction_definition<uint8_t>::CSR_modified)
-    .field("mnemonic", &isa::pep10::instruction_definition<uint8_t>::mnemonic)
-    .field("is_unary", &isa::pep10::instruction_definition<uint8_t>::is_unary)
-    .field("comment", &isa::pep10::instruction_definition<uint8_t>::comment);
+  emscripten::value_object<isa::pep10::instruction_definition>("InstructionDefinition")
+    .field("bit_pattern", &isa::pep10::instruction_definition::bit_pattern)
+    .field("iformat", &isa::pep10::instruction_definition::iformat)
+    .field("csr_modified", &isa::pep10::instruction_definition::CSR_modified)
+    .field("mnemonic", &isa::pep10::instruction_definition::mnemonic)
+    .field("is_unary", &isa::pep10::instruction_definition::is_unary)
+    .field("comment", &isa::pep10::instruction_definition::comment);
 
-  emscripten::register_map<isa::pep10::instruction_mnemonic, std::shared_ptr<isa::pep10::instruction_definition<uint8_t> > >("ISAMap");
+  emscripten::register_map<isa::pep10::instruction_mnemonic, std::shared_ptr<isa::pep10::instruction_definition > >("ISAMap");
   emscripten::class_<isa::pep10::addr_map>("amap");
 
-  using instr_def_t = isa::pep10::instruction_definition<uint8_t>;
+  using instr_def_t = isa::pep10::instruction_definition;
   emscripten::class_<std::shared_ptr<instr_def_t>>("Smarty")
     // Must manually tell each property what it's type is, because it can't infer it from
     // the getter. Failing to specify property type will cause it to explode.
