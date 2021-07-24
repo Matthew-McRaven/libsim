@@ -1,7 +1,5 @@
 #pragma once
 
-#include <outcome.hpp>
-
 #include "components/delta/base.hpp"
 #include "components/storage/helper.hpp"
 

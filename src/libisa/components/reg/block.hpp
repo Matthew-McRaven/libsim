@@ -15,12 +15,12 @@ namespace components::reg {
 			regs(reg_count), csrs(csr_count)
 		{}
 
-		outcome<reg_size_t> read_reg(uint8_t num) const
+		result<reg_size_t> read_reg(uint8_t num) const
 		{
 			return regs.read(num);
 		}
 
-		outcome<void> write_reg(uint8_t num, reg_size_t val)
+		result<void> write_reg(uint8_t num, reg_size_t val)
 		{
 			return regs.write(num, val);
 		}
@@ -30,12 +30,12 @@ namespace components::reg {
 			regs.clear();
 		}
 
-		outcome<csr_size_t> read_csr(uint8_t num) const
+		result<csr_size_t> read_csr(uint8_t num) const
 		{
 			return csrs.read(num);
 		} 
 
-		outcome<void> write_csr(uint8_t num, csr_size_t val) 
+		result<void> write_csr(uint8_t num, csr_size_t val) 
 		{
 			return csrs.write(num, val);
 		} 
