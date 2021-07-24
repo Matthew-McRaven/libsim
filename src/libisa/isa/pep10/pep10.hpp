@@ -8,12 +8,83 @@
 #include <map>
 #include <memory>
 
-#include "isa/pep10/defs.hpp"
+#include "magic_enum.hpp"
 
 namespace isa::pep10 {
-template <typename instr_width>
+enum class instruction_mnemonic {
+
+	RET, SRET,
+	MOVSPA, MOVASP, MOVFLGA, MOVAFLG, MOVTA,
+	USCALL,
+	NOP,
+	
+	// FAULTS
+	UNIMPL,
+
+	NOTA, NOTX, NEGA, NEGX,
+	ASLA, ASLX, ASRA, ASRX,
+	ROLA, ROLX, RORA, RORX,
+	//STOP,
+	BR, BRLE, BRLT, BREQ, BRNE, BRGE, BRGT, BRV, BRC,
+	CALL, SCALL,
+	LDWT, LDWA, LDWX, LDBA, LDBX,
+	STWA, STWX, STBA, STBX,
+	CPWA, CPWX, CPBA, CPBX,
+	ADDA, ADDX, SUBA, SUBX,
+	ANDA, ANDX, ORA, ORX, XORA, XORX,
+	ADDSP, SUBSP,
+};
+
+enum class Register {
+	A = 0,
+	X = 1,
+	SP = 2,
+	PC = 3,
+	IS = 4,
+	OS = 5,
+	TR = 6,
+};
+
+enum class addressing_mode {
+	NONE = 0,
+	I = 1,
+	D = 2,
+	N = 4,
+	S = 8,
+	SF = 16,
+	X = 32,
+	SX = 64,
+	SFX = 128,
+	ALL = 255,
+	INVALID
+};
+
+enum class addressing_class {
+	Invalid,
+	U_none, //?
+	R_none, //?
+	A_ix, //?
+	AAA_all, //?
+	AAA_i, //?
+	RAAA_all, //?
+	RAAA_noi
+
+};
+enum class memory_vectors {
+	SYSTEM_STACK,
+	TRAP,
+};
+
+enum class CSR {
+	N,
+	Z,
+	V,
+	C,
+};
+
+
 struct instruction_definition {
-	instr_width bit_pattern = 0;
+	uint8_t bit_pattern = 0;
 	addressing_class iformat = addressing_class::Invalid;
 	std::array<bool, magic_enum::enum_count<CSR>()> CSR_modified = {false}; // Flag which CSR bits are changed by this instruction
 	instruction_mnemonic mnemonic = instruction_mnemonic::RET;
@@ -23,12 +94,12 @@ struct instruction_definition {
 };
 struct addr_map
 {
-	std::shared_ptr<instruction_definition<uint8_t>> inst;
+	std::shared_ptr<instruction_definition> inst;
 	addressing_mode addr;
 };
 
 struct isa_definition {
-	const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t>> > isa ;
+	const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition> > isa ;
 	const std::array<addr_map, 256> riproll;
 	// TODO: Make this constructor private since we have a singleton.
 	isa_definition();

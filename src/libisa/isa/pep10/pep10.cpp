@@ -1,10 +1,11 @@
-#include "isa/pep10/instruction.hpp"
+#include "isa3/pep10.hpp"
 
 #include <iostream>
 #include <algorithm>
 #include <map>
 
 using namespace isa::pep10;
+
 // TODO: Wrap all helper functions inside isa::pep9. This will prevent linker errors for duplicate symbols.e
 const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t> > > init_isa() {
 	std::vector<instruction_definition<uint8_t>> instr_list = {
