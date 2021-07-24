@@ -5,7 +5,7 @@
 
 #include "magic_enum.hpp"
 
-#include "isa/pep9/instruction.hpp"
+#include "isa/pep9/pep9.hpp"
 #include <iostream>
 
 #include "helper.hpp"
