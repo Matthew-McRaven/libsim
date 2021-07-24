@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "isa/pep9/instruction.hpp"
+#include "isa/pep9/pep9.hpp"
 
 using namespace isa::pep9;
 

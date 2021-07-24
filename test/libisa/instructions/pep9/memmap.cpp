@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "catch.hpp"
-#include "isa/pep9/instruction.hpp"
+#include "isa/pep9/pep9.hpp"
 using im = isa::pep9::instruction_mnemonic;
 
 namespace isa::pep9{

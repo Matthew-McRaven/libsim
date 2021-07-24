@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "isa/pep10/instruction.hpp"
+#include "isa/pep10/pep10.hpp"
 #include "masm/registry.hpp"
 
 TEST_CASE( "Valid Macro Definitions" ) {

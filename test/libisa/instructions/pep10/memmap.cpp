@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "catch.hpp"
-#include "isa/pep10/instruction.hpp"
+#include "isa/pep10/pep10.hpp"
 using im = isa::pep10::instruction_mnemonic;
 
 using namespace isa::pep10;
