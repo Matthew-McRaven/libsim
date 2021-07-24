@@ -1,0 +1,59 @@
+#pragma once
+
+#include <outcome.hpp>
+
+#include "outcome_helper.hpp"
+
+namespace components::machine
+{
+// Forward declare interface so that locker will work correctly.
+template <typename address_size_t, typename val_size_t, typename memory_vector_t>
+class MachineProcessorInterface;
+
+// Use RAII to begin/end a transaction.
+// This is super helpful since a there's too many paths through the processor caused by potential disappointment.
+template <typename address_size_t, typename val_size_t, typename memory_vector_t>
+struct TransactionLocker
+{
+	TransactionLocker(MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& processor): _processor(processor)
+	{
+		_processor.begin_transaction();
+	}
+	// Can't copy this object!
+	TransactionLocker(const TransactionLocker&) = delete;
+	TransactionLocker(TransactionLocker&&) = default;
+	TransactionLocker& operator=(TransactionLocker) = delete;
+	TransactionLocker& operator=(TransactionLocker&&) = default;
+
+	~TransactionLocker()
+	{
+		_processor.end_transaction();
+	}
+	private:
+	MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& _processor;
+};
+
+template <typename address_size_t, typename val_size_t, typename memory_vector_t>
+class MachineProcessorInterface
+{
+public:
+	virtual ~MachineProcessorInterface() = default;
+	virtual result<val_size_t> read_memory(address_size_t) const = 0;
+	virtual result<void> write_memory(address_size_t, val_size_t) = 0;
+	virtual void begin_instruction() = 0;
+	virtual void end_instruction() = 0;
+	// Don't allow explicit access to the transaction begin/end, as it's very easy to forget to release it.
+	TransactionLocker<address_size_t, val_size_t, memory_vector_t>&& acquire_transaction_lock();
+
+	// Needed to undo an in-progress instruction.
+	virtual void unwind_active_instruction() = 0;
+
+	// Needed to implement system calls.
+	virtual address_size_t addr_from_vector(memory_vector_t vector) const = 0;
+private:
+	// Needed for cache model to work.
+	virtual void begin_transaction() = 0;
+	virtual void end_transaction() = 0;
+	friend class TransactionLocker<address_size_t, val_size_t, memory_vector_t>;
+};
+} // namespace components::machine
