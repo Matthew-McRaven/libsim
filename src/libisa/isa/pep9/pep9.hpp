@@ -80,9 +80,8 @@ enum class CSR {
 	C,
 };
 
-template <typename instr_width>
 struct instruction_definition {
-	instr_width bit_pattern = 0;
+	uint8_t bit_pattern = 0;
 	addressing_class iformat = addressing_class::Invalid;
 	std::array<bool, magic_enum::enum_count<CSR>()> CSR_modified = {false}; // Flag which CSR bits are changed by this instruction
 	instruction_mnemonic mnemonic = instruction_mnemonic::STOP;
@@ -92,12 +91,12 @@ struct instruction_definition {
 
 struct addr_map
 {
-	std::shared_ptr<instruction_definition<uint8_t> > inst;
+	std::shared_ptr<instruction_definition> inst;
 	addressing_mode addr;
 };
 
 struct isa_definition {
-	const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t> > > isa ;
+	const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition>> isa ;
 	const std::array<addr_map, 256> riproll;
 	isa_definition();
 	// Returns a static copy of a pep/9 isa definition.
