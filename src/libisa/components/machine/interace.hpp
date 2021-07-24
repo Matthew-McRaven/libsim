@@ -22,14 +22,37 @@ struct TransactionLocker
 	// Can't copy this object!
 	TransactionLocker(const TransactionLocker&) = delete;
 	TransactionLocker(TransactionLocker&&) = default;
-	TransactionLocker& operator=(TransactionLocker) = delete;
+	TransactionLocker& operator=(const TransactionLocker&) = delete;
 	TransactionLocker& operator=(TransactionLocker&&) = default;
 
 	~TransactionLocker()
 	{
 		_processor.end_transaction();
 	}
-	private:
+private:
+	MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& _processor;
+};
+
+// Use RAII to begin/end a transaction.
+// This is super helpful since a there's too many paths through the processor caused by potential disappointment.
+template <typename address_size_t, typename val_size_t, typename memory_vector_t>
+struct InstructionLocker
+{
+	InstructionLocker(MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& processor): _processor(processor)
+	{
+		_processor.begin_instrruction();
+	}
+	// Can't copy this object!
+	InstructionLocker(const InstructionLocker&) = delete;
+	InstructionLocker(InstructionLocker&&) = default;
+	InstructionLocker& operator=(const InstructionLocker&) = delete;
+	InstructionLocker& operator=(InstructionLocker&&) = default;
+
+	~InstructionLocker()
+	{
+		_processor.end_instruction();
+	}
+private:
 	MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& _processor;
 };
 
@@ -40,10 +63,11 @@ public:
 	virtual ~MachineProcessorInterface() = default;
 	virtual result<val_size_t> read_memory(address_size_t) const = 0;
 	virtual result<void> write_memory(address_size_t, val_size_t) = 0;
-	virtual void begin_instruction() = 0;
-	virtual void end_instruction() = 0;
 	// Don't allow explicit access to the transaction begin/end, as it's very easy to forget to release it.
 	TransactionLocker<address_size_t, val_size_t, memory_vector_t>&& acquire_transaction_lock();
+
+	// Don't allow explicit access to the instruction begin/end, as it's very easy to forget to release it.
+	InstructionLocker<address_size_t, val_size_t, memory_vector_t>&& acquire_instruction_lock();
 
 	// Needed to undo an in-progress instruction.
 	virtual void unwind_active_instruction() = 0;
@@ -55,5 +79,9 @@ private:
 	virtual void begin_transaction() = 0;
 	virtual void end_transaction() = 0;
 	friend class TransactionLocker<address_size_t, val_size_t, memory_vector_t>;
+
+	virtual void begin_instruction() = 0;
+	virtual void end_instruction() = 0;
+	friend class InstructionLocker<address_size_t, val_size_t, memory_vector_t>;
 };
 } // namespace components::machine

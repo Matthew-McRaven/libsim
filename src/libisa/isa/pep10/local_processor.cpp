@@ -13,7 +13,7 @@ result<bool> isa::pep10::LocalProcessor::step()
 {
 	using ::isa::pep10::read_register;
 	using ::isa::pep10::write_register;
-	_owner.begin_instruction();
+	auto i_locker = _owner.acquire_instruction_lock();
 
 	// Load PC.
 	uint16_t pc = read_register(*this, Register::PC); 
