@@ -5,10 +5,10 @@
 
 using namespace isa::pep9;
 // TODO: Wrap all helper functions inside isa::pep9. This will prevent linker errors for duplicate symbols.
-const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t>> > pep9_init_isa() {
+const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition> > pep9_init_isa() {
 	using namespace isa::pep9;
 
-	std::vector<instruction_definition<uint8_t>> instr_list = {
+	std::vector<instruction_definition> instr_list = {
 		{0x00, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::STOP, true, ""},
 		{0x01, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::RET, true, ""},
 		{0x02, addressing_class::U_none,   {{false,false,false,false,}}, instruction_mnemonic::RETTR, true, ""},
@@ -77,9 +77,9 @@ const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint
 		{0xf0, addressing_class::RAAA_noi, {{false,false,false,false,}}, instruction_mnemonic::STBA, false, ""},
 		{0xf8, addressing_class::RAAA_noi, {{false,false,false,false,}}, instruction_mnemonic::STBX, false, ""},
 	};
-	auto ret = std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint8_t> > >();
+	auto ret = std::map<instruction_mnemonic, std::shared_ptr<instruction_definition> >();
 	for(auto v : instr_list) {
-		ret[v.mnemonic] = std::make_shared<instruction_definition<uint8_t>>(v);
+		ret[v.mnemonic] = std::make_shared<instruction_definition>(v);
 	}
 	return ret;
 }
@@ -87,10 +87,10 @@ const std::map<instruction_mnemonic, std::shared_ptr<instruction_definition<uint
 static const auto isa_map = pep9_init_isa();
 
 std::array<addr_map, 256> pep9_init_mmap() {
-	using instr = instruction_definition<uint8_t>;
+	using instr = instruction_definition;
 	std::array<addr_map, 256> riproll = {};
 	for(int it=0; it<256; it++) {
-			using tp = const std::pair<const isa::pep9::instruction_mnemonic, std::shared_ptr<isa::pep9::instruction_definition<uint8_t> > >;
+			using tp = const std::pair<const isa::pep9::instruction_mnemonic, std::shared_ptr<isa::pep9::instruction_definition> >;
 			auto ub = std::upper_bound(isa_map.cbegin(), isa_map.cend(), it, [](int v, const tp &ref){return v < ref.second->bit_pattern ;});
 
 
