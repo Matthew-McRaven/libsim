@@ -13,7 +13,7 @@ TEST_CASE("Simple static tests of Pep/10 computer", "[isa::pep10]")
 {
 	SECTION("Test R/W registers")
 	{
-		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0x1'0000);
+		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
 		machine->write_register(isa::pep10::Register::A, 0xDEAD);
 		machine->write_register(isa::pep10::Register::TR, 0xBEEF);
@@ -22,7 +22,7 @@ TEST_CASE("Simple static tests of Pep/10 computer", "[isa::pep10]")
 	}
 	SECTION("Test R/W NZVC")
 	{
-		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0x1'0000);
+		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
 		CHECK(machine->read_csr(isa::pep10::CSR::N) == false);
 		CHECK(machine->read_csr(isa::pep10::CSR::C) == false);
