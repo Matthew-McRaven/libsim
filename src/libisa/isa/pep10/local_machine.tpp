@@ -17,31 +17,39 @@ isa::pep10::LocalMachine<enable_history>::LocalMachine(
 template<bool enable_history>
 result<bool> isa::pep10::LocalMachine<enable_history>::step()
 {
-	throw std::logic_error("Not implemented");
+	
+	auto ret = _processor->step();
+	return ret;
+}
+
+template<bool enable_history>
+bool isa::pep10::LocalMachine<enable_history>::halted() const
+{
+	throw std::logic_error("Not implemented.");
 }
 
 template<bool enable_history>
 result<uint8_t> isa::pep10::LocalMachine<enable_history>::get_memory(uint16_t address) const
 {
-	throw std::logic_error("Not implemented");
+	return _memory->get(address);
 }
 
 template<bool enable_history>
 result<void> isa::pep10::LocalMachine<enable_history>::set_memory(uint16_t address, uint8_t value)
 {
-	throw std::logic_error("Not implemented");
+	return _memory->set(address, value);
 }
 
 template<bool enable_history>
 result<uint8_t> isa::pep10::LocalMachine<enable_history>::read_memory(uint16_t address) const
 {
-	throw std::logic_error("Not implemented");
+	return _memory->read(address);
 }
 
 template<bool enable_history>
 result<void> isa::pep10::LocalMachine<enable_history>::write_memory(uint16_t address, uint8_t value)
 {
-	throw std::logic_error("Not implemented");
+	return _memory->write(address, value);
 }
 
 template<bool enable_history>
@@ -83,23 +91,25 @@ uint16_t isa::pep10::LocalMachine<enable_history>::address_from_vector(isa::pep1
 template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::begin_transaction()
 {
-	throw std::logic_error("Not implemented");
+	// TODO: Inform memory of transaction start.
+	// Only necessary for cache model.
 }
 
 template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::end_transaction()
 {
-	throw std::logic_error("Not implemented");
+	// TODO: Inform memory of transaction end.
+	// Only necessary for cache model.
 }
 
 template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::begin_instruction()
 {
-	throw std::logic_error("Not implemented");
+	// TODO: Pre-fetch the next instruction, and add statstic to histogram.
 }
 
 template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::end_instruction()
 {
-	throw std::logic_error("Not implemented");
+	// TODO: Push all deltas onto the history stack.
 }
