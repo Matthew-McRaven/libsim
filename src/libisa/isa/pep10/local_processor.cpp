@@ -369,6 +369,7 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 	default:
 		throw std::invalid_argument("Illegal instruction in unary decoder.");
 	}
+	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }
 
 result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t os)
@@ -655,6 +656,7 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
 	default:
 		throw std::invalid_argument("Illegal instruction in nonunary decoder.");
 	}
+	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }
 
 result<uint8_t> isa::pep10::LocalProcessor::read_byte(uint16_t address) const
