@@ -64,7 +64,9 @@ result<bool> isa::pep10::LocalProcessor::step()
 		}
 	}
 	++_cycle_count;
-	return halted();
+	// TODO: Return if the machine is still running.
+	return true;
+	//return halted();
 }
 
 bool isa::pep10::LocalProcessor::can_step_into() const
