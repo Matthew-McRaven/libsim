@@ -1,9 +1,28 @@
 #include <functional>
+#include <memory>
 #include <stdint.h>
 
 #include <outcome.hpp>
 
 #include "outcome_helper.hpp"
+
+namespace step
+{
+enum class type
+{
+	kSingle,
+	kStepInto,
+	kStepOut,
+	kStepOver,
+	kStepUntilDone,
+};
+
+enum class direction
+{
+	kForward,
+	kBackward,
+};
+}
 
 namespace components::machine {
 
@@ -14,7 +33,6 @@ template <typename address_size_t,
 class ProcessorModel {
 public:
 	// C.67 Supprress copy/move in polymorphic base class.
-	ProcessorModel();
 	virtual ~ProcessorModel() = default;
 
 
@@ -45,4 +63,10 @@ public:
 	// Todo: How do I coallate deltas for the CPU register bank
 	virtual void* take_delta() = 0;
 };
+
+template <typename processor_t>
+result<bool> step(std::shared_ptr<processor_t> cpu,step::type step, step::direction direction);
+result<bool> step_while(std::function<bool(void)> condition);
 }
+
+#include "processor_model.tpp"
