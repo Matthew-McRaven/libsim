@@ -4,6 +4,7 @@
 
 #include "components/machine/processor_model.hpp"
 #include "components/machine/interace.hpp"
+#include "components/storage/block.hpp"
 #include "isa/pep10/pep10.hpp"
 namespace isa::pep10 {
 
@@ -42,6 +43,9 @@ public:
 	
 private:
 	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors>& _owner;
+	std::shared_ptr<components::storage::Block<uint8_t, true, uint16_t>> _registers {nullptr};
+	std::shared_ptr<components::storage::Block<uint8_t, true, bool>> _csrs {nullptr};
+	uint64_t _cycle_count {0};
 
 	result<void> unary_dispatch(uint8_t is);
 	result<void> nonunary_dispatch(uint8_t is, uint16_t os);

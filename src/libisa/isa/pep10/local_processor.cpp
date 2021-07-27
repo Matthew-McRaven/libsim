@@ -2,9 +2,17 @@
 
 #include <iostream>
 
+#include <magic_enum.hpp>
+
 isa::pep10::LocalProcessor::LocalProcessor(
-	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors>& owner
-): _owner(owner)
+	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors>& owner):
+	_owner(owner),
+	_registers(std::make_shared<components::storage::Block<uint8_t, true, uint16_t>>(
+		magic_enum::enum_count<isa::pep10::Register>()
+	)),
+	_csrs(std::make_shared<components::storage::Block<uint8_t, true, bool>>(
+		magic_enum::enum_count<isa::pep10::CSR>()
+	))
 {
 
 }
@@ -55,6 +63,7 @@ result<bool> isa::pep10::LocalProcessor::step()
 			return success.error().clone();
 		}
 	}
+	++_cycle_count;
 	return halted();
 }
 
@@ -76,60 +85,63 @@ uint16_t isa::pep10::LocalProcessor::call_depth() const
 
 void isa::pep10::LocalProcessor::init()
 {
-	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
+	_cycle_count = 0;
+	throw std::invalid_argument("Pep/10 ISA model is not yet implemented.");
 }
 
 void isa::pep10::LocalProcessor::debug(bool)
 {
-	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
+	throw std::invalid_argument("Pep/10 ISA model is not yet implemented.");
 }
 
 void isa::pep10::LocalProcessor::clear()
 {
-	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
+	throw std::invalid_argument("Pep/10 ISA model is not yet implemented.");
 }
 
 // Read / write registers
 uint16_t isa::pep10::LocalProcessor::read_register(uint8_t reg_number) const
 {
-	throw std::logic_error("Not implemented.");
+	return _registers->read(reg_number).value();
 }
 
 void isa::pep10::LocalProcessor::write_register(uint8_t reg_number, uint16_t value)
 {
-	throw std::logic_error("Not implemented.");
+	_registers->write(reg_number, value).value();
 }
 
 uint8_t isa::pep10::LocalProcessor::register_count() const
 {
-	throw std::logic_error("Not implemented.");
+	// Max offset is 0 indexed, whereas count is 1 indexed.
+	return _registers->max_offset()+1;
 }
 
 bool isa::pep10::LocalProcessor::read_csr(uint8_t csr_number) const
 {
-	throw std::logic_error("Not implemented.");
+	return _csrs->read(csr_number).value();
 }
 
 void isa::pep10::LocalProcessor::write_csr(uint8_t csr_number, bool value)
 {
-	throw std::logic_error("Not implemented.");
+	_csrs->write(csr_number, value).value();
 }
 
 uint8_t isa::pep10::LocalProcessor::csr_count() const
 {
-	throw std::logic_error("Not implemented.");
+	// Max offset is 0 indexed, whereas count is 1 indexed.
+	return _csrs->max_offset()+1;
 }
 
 
 // Statistics
 uint64_t isa::pep10::LocalProcessor::cycle_count() const
 {
-	throw std::logic_error("Not implemented.");
+	return _cycle_count;
 }
 
 uint64_t isa::pep10::LocalProcessor::instruction_count() const
 {
-	throw std::logic_error("Not implemented.");
+	return _cycle_count;
 }
 
 // Todo: How do I coallate deltas for the CPU register bank

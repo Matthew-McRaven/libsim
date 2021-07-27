@@ -45,6 +45,30 @@ result<void> isa::pep10::LocalMachine<enable_history>::write_memory(uint16_t add
 }
 
 template<bool enable_history>
+uint16_t isa::pep10::LocalMachine<enable_history>::read_register(isa::pep10::Register reg) const
+{
+	return isa::pep10::read_register(*_processor.get(), reg);
+}
+
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::write_register(isa::pep10::Register reg, uint16_t value)
+{
+	return isa::pep10::write_register(*_processor.get(), reg, value);
+}
+
+template<bool enable_history>
+bool isa::pep10::LocalMachine<enable_history>::read_csr(isa::pep10::CSR csr) const
+{
+	return isa::pep10::read_NZVC(*_processor.get(), csr);
+}
+
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::write_csr(isa::pep10::CSR csr, bool value)
+{
+	return isa::pep10::write_NZVC(*_processor.get(), csr, value);
+}
+
+template<bool enable_history>
 result<void> isa::pep10::LocalMachine<enable_history>::unwind_active_instruction()
 {
 	throw std::logic_error("Not implemented");

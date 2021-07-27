@@ -30,6 +30,12 @@ public:
 	result<void> set_memory(uint16_t address, uint8_t value) override;
 	result<uint8_t> read_memory(uint16_t address) const override;
 	result<void> write_memory(uint16_t address, uint8_t value) override;
+	// Don't use results here. Failing a register read/write is a fatal error that will crash the progam.
+	uint16_t read_register(isa::pep10::Register reg) const;
+	void write_register(isa::pep10::Register reg, uint16_t value);
+	bool read_csr(isa::pep10::CSR csr) const;
+	void write_csr(isa::pep10::CSR csr, bool value);
+
 	result<void> unwind_active_instruction() override;
 	uint16_t address_from_vector(isa::pep10::memory_vectors vector) const override;
 private:
