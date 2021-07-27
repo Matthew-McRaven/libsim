@@ -58,6 +58,22 @@ result<bool> isa::pep10::LocalProcessor::step()
 	return halted();
 }
 
+bool isa::pep10::LocalProcessor::can_step_into() const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+bool isa::pep10::LocalProcessor::halted() const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+uint16_t isa::pep10::LocalProcessor::call_depth() const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+
 void isa::pep10::LocalProcessor::init()
 {
 	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
@@ -71,6 +87,55 @@ void isa::pep10::LocalProcessor::debug(bool)
 void isa::pep10::LocalProcessor::clear()
 {
 	throw std::invalid_argument("Pep/9 ISA model is not yet implemented.");
+}
+
+// Read / write registers
+uint16_t isa::pep10::LocalProcessor::read_register(uint8_t reg_number) const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+void isa::pep10::LocalProcessor::write_register(uint8_t reg_number, uint16_t value)
+{
+	throw std::logic_error("Not implemented.");
+}
+
+uint8_t isa::pep10::LocalProcessor::register_count() const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+bool isa::pep10::LocalProcessor::read_csr(uint8_t csr_number) const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+void isa::pep10::LocalProcessor::write_csr(uint8_t csr_number, bool value)
+{
+	throw std::logic_error("Not implemented.");
+}
+
+uint8_t isa::pep10::LocalProcessor::csr_count() const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+
+// Statistics
+uint64_t isa::pep10::LocalProcessor::cycle_count() const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+uint64_t isa::pep10::LocalProcessor::instruction_count() const
+{
+	throw std::logic_error("Not implemented.");
+}
+
+// Todo: How do I coallate deltas for the CPU register bank
+void* isa::pep10::LocalProcessor::take_delta()
+{
+	throw std::logic_error("Not implemented.");
 }
 
 result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
@@ -258,7 +323,7 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 	case instruction_mnemonic::SCALL:
 	// TODO: Intentional fallthrough annotation.
 	case instruction_mnemonic::USCALL:
-		vector_value = _owner.addr_from_vector(memory_vectors::SYSTEM_STACK);
+		vector_value = _owner.address_from_vector(memory_vectors::SYSTEM_STACK);
 		outcome_word = std::move(read_word(vector_value));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
 
@@ -289,7 +354,7 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 		write_register(*this, Register::SP, temp_word - 10);
 
-		vector_value = _owner.addr_from_vector(memory_vectors::TRAP);
+		vector_value = _owner.address_from_vector(memory_vectors::TRAP);
 		outcome_word = std::move(read_word(vector_value));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
 		write_register(*this, Register::PC, outcome_word.value());    
@@ -604,7 +669,7 @@ result<uint16_t> isa::pep10::LocalProcessor::read_word(uint16_t address) const
 	return msb.value() << 8 | lsb.value();
 }
 
-result<void> isa::pep10::LocalProcessor::write_byte(uint16_t address, uint8_t value) const
+result<void> isa::pep10::LocalProcessor::write_byte(uint16_t address, uint8_t value)
 {
 	auto locker = _owner.acquire_transaction_lock();
 	return _owner.write_memory(address, value);

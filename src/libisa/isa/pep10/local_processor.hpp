@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 #include "components/machine/processor_model.hpp"
@@ -32,8 +34,11 @@ public:
 	uint8_t csr_count() const override;
 
 	// Statistics
-	virtual uint64_t cycle_count() const override;
-	virtual uint64_t instruction_count() const override;
+	uint64_t cycle_count() const override;
+	uint64_t instruction_count() const override;
+
+	// Todo: How do I coallate deltas for the CPU register bank
+	void* take_delta() override;
 	
 private:
 	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors>& _owner;
@@ -43,7 +48,7 @@ private:
 
 	result<uint8_t> read_byte(uint16_t address) const;
 	result<uint16_t> read_word(uint16_t address) const;
-	result<void> write_byte(uint16_t address, uint8_t value) const;
+	result<void> write_byte(uint16_t address, uint8_t value);
 	result<void> write_word(uint16_t address, uint16_t value);
 
 	result<uint16_t> decode_load_operand(const isa::pep10::instruction_definition& is, isa::pep10::addressing_mode mode, uint16_t addr);
