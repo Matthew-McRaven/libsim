@@ -13,13 +13,13 @@ TEST_CASE("Simple execution trace tests of Pep/10 computer", "[isa::pep10]")
 {
 	SECTION("Test step() via RET")
 	{
-		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0x1'0000);
+		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
 		machine->write_register(isa::pep10::Register::SP, 0x0004);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
 		CHECK(ret.value());
-		CHECK(machine->read_register(isa::pep10::Register::SP) == 0x0002);
+		CHECK(machine->read_register(isa::pep10::Register::SP) == 0x0006);
 	}
 
 }
