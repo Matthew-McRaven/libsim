@@ -81,7 +81,8 @@ uint16_t isa::pep10::LocalProcessor::call_depth() const
 void isa::pep10::LocalProcessor::init()
 {
 	_cycle_count = 0;
-	throw std::invalid_argument("Pep/10 ISA model is not yet implemented.");
+	_registers->clear(0);
+	_csrs->clear(false);
 }
 
 void isa::pep10::LocalProcessor::debug(bool)
