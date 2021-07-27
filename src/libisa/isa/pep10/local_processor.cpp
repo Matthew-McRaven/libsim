@@ -72,11 +72,6 @@ bool isa::pep10::LocalProcessor::can_step_into() const
 	throw std::logic_error("Not implemented.");
 }
 
-bool isa::pep10::LocalProcessor::halted() const
-{
-	throw std::logic_error("Not implemented.");
-}
-
 uint16_t isa::pep10::LocalProcessor::call_depth() const
 {
 	throw std::logic_error("Not implemented.");

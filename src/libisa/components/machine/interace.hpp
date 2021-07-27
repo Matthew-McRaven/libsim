@@ -61,7 +61,7 @@ class MachineProcessorInterface
 {
 public:
 	virtual ~MachineProcessorInterface() = default;
-
+	virtual bool halted() const = 0;
 	virtual result<memory_val_size_t> get_memory(address_size_t address) const = 0;
 	virtual result<void> set_memory(address_size_t address, memory_val_size_t value) = 0;
 	virtual result<memory_val_size_t> read_memory(address_size_t address) const = 0;

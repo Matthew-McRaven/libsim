@@ -39,7 +39,6 @@ public:
 	// Interface that must be implemented by deriving processor models
 	virtual result<bool> step() = 0;
 	virtual bool can_step_into() const = 0;
-	virtual bool halted() const = 0;
 	virtual uint16_t call_depth() const = 0;
 
 	// Set up / tear down

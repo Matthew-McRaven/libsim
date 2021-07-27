@@ -17,7 +17,6 @@ public:
 	// Interface that must be implemented by deriving processor models
 	result<bool> step() override;
 	bool can_step_into() const override;
-	bool halted() const override;
 	uint16_t call_depth() const override;
 
 	// Set up / tear down

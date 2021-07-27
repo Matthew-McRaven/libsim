@@ -26,6 +26,7 @@ public:
 	/*
 	 * Implement MachineProcessorInterface.
 	 */
+	bool halted() const override;
 	result<uint8_t> get_memory(uint16_t address) const override;
 	result<void> set_memory(uint16_t address, uint8_t value) override;
 	result<uint8_t> read_memory(uint16_t address) const override;
