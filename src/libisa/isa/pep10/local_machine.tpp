@@ -1,5 +1,7 @@
 #include <outcome.hpp>
 
+#include <boost/range/adaptor/indexed.hpp>
+
 #include "local_machine.hpp"
 
 using MPI = components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors>;
@@ -118,4 +120,16 @@ template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::end_instruction()
 {
 	// TODO: Push all deltas onto the history stack.
+}
+
+template<bool enable_history>
+result<void> isa::pep10::load_bytes(std::shared_ptr<isa::pep10::LocalMachine<enable_history>> machine, 
+	std::vector<uint8_t> bytes, uint16_t offset)
+{
+	for(auto [index, byte] : bytes | boost::adaptors::indexed(0))
+	{
+		auto res = machine->write_memory((offset+index)%machine->max_offset(), byte);
+		if(res.has_failure()) return res.error().clone();
+	}
+	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }

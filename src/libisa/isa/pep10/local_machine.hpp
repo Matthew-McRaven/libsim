@@ -54,5 +54,9 @@ private:
 	void end_instruction() override;
 };
 
+// Will "wrap-around" if bytes exceed maximum offset.
+template<bool enable_history>
+result<void> load_bytes(std::shared_ptr<LocalMachine<enable_history>> machine, std::vector<uint8_t> bytes, uint16_t offset);
+
 } // namespace isa::pep10
 #include "local_machine.tpp"
