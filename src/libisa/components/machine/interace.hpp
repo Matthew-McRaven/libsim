@@ -66,6 +66,8 @@ public:
 	virtual result<void> set_memory(address_size_t address, memory_val_size_t value) = 0;
 	virtual result<memory_val_size_t> read_memory(address_size_t address) const = 0;
 	virtual result<void> write_memory(address_size_t address, memory_val_size_t value) = 0;
+	virtual address_size_t max_offset() const = 0;
+
 	// Don't allow explicit access to the transaction begin/end, as it's very easy to forget to release it.
 	TransactionLocker<address_size_t, memory_val_size_t, memory_vector_t>&& acquire_transaction_lock();
 

@@ -31,6 +31,7 @@ public:
 	result<void> set_memory(uint16_t address, uint8_t value) override;
 	result<uint8_t> read_memory(uint16_t address) const override;
 	result<void> write_memory(uint16_t address, uint8_t value) override;
+	uint16_t max_offset() const override;
 	// Don't use results here. Failing a register read/write is a fatal error that will crash the progam.
 	uint16_t read_register(isa::pep10::Register reg) const;
 	void write_register(isa::pep10::Register reg, uint16_t value);

@@ -53,6 +53,12 @@ result<void> isa::pep10::LocalMachine<enable_history>::write_memory(uint16_t add
 }
 
 template<bool enable_history>
+uint16_t isa::pep10::LocalMachine<enable_history>::max_offset() const
+{
+	return _memory->max_offset();
+}
+
+template<bool enable_history>
 uint16_t isa::pep10::LocalMachine<enable_history>::read_register(isa::pep10::Register reg) const
 {
 	return isa::pep10::read_register(*_processor.get(), reg);
