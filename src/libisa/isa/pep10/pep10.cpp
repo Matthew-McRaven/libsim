@@ -211,13 +211,14 @@ bool isa::pep10::is_store(uint8_t opcode)
 // Convert unary instruction definition to its opcode.
 uint8_t isa::pep10::opcode(instruction_mnemonic mn)
 {
-	return (uint8_t) mn;
+	return definition.isa.at(mn)->bit_pattern;
 }
 
 // Convert nonunary instruction definition to its opcode.
 uint8_t isa::pep10::opcode(instruction_mnemonic mn, addressing_mode addr)
 {
-	auto base = (uint8_t) mn;
+	
+	auto base = definition.isa.at(mn)->bit_pattern;
 	uint8_t offset = 0;
 	auto addr_class = definition.isa.at(mn)->iformat;
 	if(addr_class == addressing_class::A_ix
