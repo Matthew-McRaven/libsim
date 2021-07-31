@@ -636,14 +636,14 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
 	case instruction_mnemonic::LDBA: 
 		write_register(*this, Register::A, decoded_operand);
 		// Is negative if high order bit is 1.
-        write_NZVC(*this, CSR::N, decoded_operand & 0x80);
+        write_NZVC(*this, CSR::N, 0);
          // Is zero if all bits are 0's.
         write_NZVC(*this, CSR::Z, decoded_operand == 0);
 		break;
 	case instruction_mnemonic::LDBX:
 		write_register(*this, Register::X, decoded_operand);
 		// Is negative if high order bit is 1.
-        write_NZVC(*this, CSR::N, decoded_operand & 0x80);
+        write_NZVC(*this, CSR::N, 0);
          // Is zero if all bits are 0's.
         write_NZVC(*this, CSR::Z, decoded_operand == 0);
 		break;
