@@ -109,6 +109,26 @@ uint16_t isa::pep10::LocalMachine<enable_history>::address_from_vector(isa::pep1
 }
 
 template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::clear_all(uint8_t mem_fill, uint16_t reg_fill, bool csr_fill)
+{
+	clear_memory(mem_fill);
+	clear_processor(reg_fill, csr_fill);
+}
+
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::clear_memory(uint8_t mem_fill)
+{
+	_memory->clear(mem_fill);
+}
+
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::clear_processor(uint16_t reg_fill, bool csr_fill)
+{
+	_processor->clear(reg_fill, csr_fill);
+}
+
+
+template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::begin_transaction()
 {
 	// TODO: Inform memory of transaction start.

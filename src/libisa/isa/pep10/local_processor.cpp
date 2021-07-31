@@ -84,7 +84,7 @@ void isa::pep10::LocalProcessor::init()
 {
 	_cycle_count = 0;
 	_registers->clear(0);
-	_csrs->clear(false);
+	_csrs->clear(0);
 }
 
 void isa::pep10::LocalProcessor::debug(bool)
@@ -92,9 +92,10 @@ void isa::pep10::LocalProcessor::debug(bool)
 	throw std::invalid_argument("Pep/10 ISA model is not yet implemented.");
 }
 
-void isa::pep10::LocalProcessor::clear()
+void isa::pep10::LocalProcessor::clear(uint16_t reg_fill, bool csr_fill)
 {
-	throw std::invalid_argument("Pep/10 ISA model is not yet implemented.");
+	_registers->clear(reg_fill);
+	_csrs->clear(csr_fill);
 }
 
 // Read / write registers
@@ -113,6 +114,7 @@ uint8_t isa::pep10::LocalProcessor::register_count() const
 	// Max offset is 0 indexed, whereas count is 1 indexed.
 	return _registers->max_offset()+1;
 }
+
 
 bool isa::pep10::LocalProcessor::read_csr(uint8_t csr_number) const
 {

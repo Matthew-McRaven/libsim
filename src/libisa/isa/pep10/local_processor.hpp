@@ -22,7 +22,7 @@ public:
 	// Set up / tear down
 	void init() override;
 	void debug(bool) override;
-	void clear() override;
+	void clear(uint16_t reg_fill, bool csr_fill) override;
 
 	// Read / write registers
 	uint16_t read_register(uint8_t reg_number) const override;

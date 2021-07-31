@@ -42,6 +42,9 @@ public:
 
 	result<void> unwind_active_instruction() override;
 	uint16_t address_from_vector(isa::pep10::memory_vectors vector) const override;
+	void clear_all(uint8_t mem_fill, uint16_t reg_fill, bool csr_fill);
+	void clear_memory(uint8_t mem_fill);
+	void clear_processor(uint16_t reg_fill, bool csr_fill);
 private:
 
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> _memory;
