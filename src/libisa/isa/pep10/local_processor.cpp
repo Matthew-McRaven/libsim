@@ -669,7 +669,9 @@ result<uint8_t> isa::pep10::LocalProcessor::read_byte(uint16_t address) const
 
 	auto locker = _owner.acquire_transaction_lock();
 	auto i = _owner.read_memory(address);
-	return i;
+	// Must perform conversion here, because the default move ctor of result produces garbage in some cases.
+	if(i.has_failure()) return i.error().clone();
+	return i.value();
 }
 
 result<uint16_t> isa::pep10::LocalProcessor::read_word(uint16_t address) const
