@@ -11,8 +11,7 @@
 
 TEST_CASE("Instruction: MOVTA", "[isa::pep10]")
 {
-	// Loop over all status bit combinations to ensure that the instruction does not modify status bits.
-	// Rely on the packed_csr features of the machine to handle translating uint8_t to status bit assignments.
+	// Loop over non-target status bit combinations to ensure that the instruction does not modify non-target bits.
 	for(uint8_t start_stat = 0; start_stat <= 0b1111; start_stat++)
 	{
 		// RTL: A ← T
@@ -20,7 +19,7 @@ TEST_CASE("Instruction: MOVTA", "[isa::pep10]")
 		{
 			auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 			auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-			// Object code for `MOVTA`
+			// Object code for instruction under test.
 			std::vector<uint8_t> program = {0x06};
 			// Set the starting status bits so that we can check that they are not mutated by this instruction.
 			machine->write_packed_csr(start_stat);

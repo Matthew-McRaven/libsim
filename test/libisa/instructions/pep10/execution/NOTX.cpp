@@ -14,18 +14,18 @@ TEST_CASE("Instruction: NOTX", "[isa::pep10]")
 {
 	auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 	auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
+	// Object code for instruction under test.
 	std::vector<uint8_t> program = {0x11};
+	// RTL: X ← ¬X ; N ← X < 0 , Z ← X = 0
 	SECTION("NOTX")
 	{
-		// Loop over all status bit combinations to ensure that the instruction does not modify status bits.
-		// Must manually unpack vc bits and assign them to
+		// Loop over non-target status bit combinations to ensure that the instruction does not modify non-target bits.
 		for(uint8_t vc = 0; vc <= 0b11; vc++)
 		{
 			for(uint16_t X=0; static_cast<uint32_t>(X)+1<0x1'0000;X++)
 			{
 				machine->clear_all(0, 0, false);
-				// RTL: X ← ¬X ; N ← X < 0 , Z ← X = 0
-				// Object code for `NOTX`
+
 				// Set the starting status bits so that we can check that they are not mutated by this instruction.
 				machine->write_csr(isa::pep10::CSR::V, (vc & 0b10) ? 1 : 0);
 				machine->write_csr(isa::pep10::CSR::C, (vc & 0b01) ? 1 : 0);

@@ -11,8 +11,7 @@
 
 TEST_CASE("Instruction: RET", "[isa::pep10]")
 {
-	// Loop over all status bit combinations to ensure that RET does not modify status bits.
-	// Rely on the packed_csr features of the machine to handle translating uint8_t to status bit assignments.
+	// Loop over non-target status bit combinations to ensure that the instruction does not modify non-target bits.
 	for(uint8_t start_stat = 0; start_stat <= 0b1111; start_stat++)
 	{
 		// RTL: PC ← Mem[SP] ; SP ← SP + 2
