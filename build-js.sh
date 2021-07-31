@@ -5,7 +5,7 @@ cd build
 	source /emsdk/emsdk_env.sh
 	mkdir -p js
 	cd js
-	emcmake cmake -DBoost_INCLUDE_DIR=/boost/ ../..
+	emcmake cmake -DBoost_INCLUDE_DIR=/boost/ ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo
 	emmake make -j$(nproc)
-	node test/libisa/test-lib.js
+	emmake make test -j$(nproc)
 )
