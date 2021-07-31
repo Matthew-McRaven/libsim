@@ -18,8 +18,6 @@ TEST_CASE("Instruction: ASLA", "[isa::pep10]")
 	std::vector<uint8_t> program = {0x14};
 	SECTION("ASLA")
 	{
-		// Loop over all status bit combinations to ensure that the instruction does not modify status bits.
-		// Must manually unpack vc bits and assign them to
 		for(uint16_t A=0; static_cast<uint32_t>(A)+1<0x1'0000;A++)
 		{
 			machine->clear_all(0, 0, false);
