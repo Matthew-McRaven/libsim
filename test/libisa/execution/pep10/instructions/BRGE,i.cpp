@@ -17,7 +17,7 @@ TEST_CASE("Instruction: BRGE,i", "[isa::pep10]")
 	auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
 	
 	// RTL: N = 0 ⇒ PC ← Oprnd
-	SECTION("BRET, i")
+	SECTION("BRGE, i")
 	{
 		// Loop over non-target status bit combinations to ensure that the instruction does not modify non-target bits.
 		for(uint8_t start_stat = 0; static_cast<uint8_t>(start_stat)+1<0b1'0000; start_stat++)
