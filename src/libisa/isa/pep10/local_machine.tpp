@@ -85,6 +85,18 @@ void isa::pep10::LocalMachine<enable_history>::write_csr(isa::pep10::CSR csr, bo
 }
 
 template<bool enable_history>
+uint8_t isa::pep10::LocalMachine<enable_history>::read_packed_csr() const
+{
+	return isa::pep10::read_packed_NZVC(*_processor.get());
+}
+
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::write_packed_csr(uint8_t value)
+{
+	return isa::pep10::write_packed_NZVC(*_processor.get(), value);
+}
+
+template<bool enable_history>
 result<void> isa::pep10::LocalMachine<enable_history>::unwind_active_instruction()
 {
 	throw std::logic_error("Not implemented");
