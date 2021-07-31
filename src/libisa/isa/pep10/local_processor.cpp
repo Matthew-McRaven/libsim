@@ -616,6 +616,9 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
 		write_NZVC(*this, CSR::V, 0);
 		write_NZVC(*this, CSR::C, 0);
 		break;
+	case instruction_mnemonic::LDWT:
+		write_register(*this, Register::TR, decoded_operand);
+		break;
 	case instruction_mnemonic::LDWA:
 		write_register(*this, Register::A, decoded_operand);
 		// Is negative if high order bit is 1.
