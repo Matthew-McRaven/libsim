@@ -15,7 +15,6 @@ TEST_CASE("Instruction: BRLT,i", "[isa::pep10]")
 {
 	auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 	auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-	// Object code for instruction under test.
 	
 	// RTL: N = 1 ⇒ PC ← Oprnd
 	SECTION("BRLT, i")
@@ -25,6 +24,7 @@ TEST_CASE("Instruction: BRLT,i", "[isa::pep10]")
 		{
 			for(uint16_t opspec=0; static_cast<uint32_t>(opspec)+1<0x1'0000;opspec++)
 			{
+				// Object code for instruction under test.
 				std::vector<uint8_t> program = {0x20, static_cast<uint8_t>((opspec>>8)&0xff), 
 					static_cast<uint8_t>(opspec&0xff)};
 				machine->clear_all(0, 0, false);
