@@ -42,7 +42,6 @@ TEST_CASE("Instruction: NEGA", "[isa::pep10]")
 				CHECK(machine->read_register(isa::pep10::Register::X) == 0);
 				CHECK(machine->read_register(isa::pep10::Register::OS) == 0);
 				CHECK(machine->read_register(isa::pep10::Register::TR) == 0);
-				CHECK(machine->read_register(isa::pep10::Register::X) == 0);
 				// VC bits did not change.
 				CHECK(machine->read_csr(isa::pep10::CSR::C) == c);
 				// PC was incremented by one byte

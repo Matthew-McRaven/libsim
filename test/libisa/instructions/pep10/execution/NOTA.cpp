@@ -43,7 +43,6 @@ TEST_CASE("Instruction: NOTA", "[isa::pep10]")
 				CHECK(machine->read_register(isa::pep10::Register::X) == 0);
 				CHECK(machine->read_register(isa::pep10::Register::OS) == 0);
 				CHECK(machine->read_register(isa::pep10::Register::TR) == 0);
-				CHECK(machine->read_register(isa::pep10::Register::X) == 0);
 				// VC bits did not change.
 				CHECK(machine->read_csr(isa::pep10::CSR::V) == ((vc & 0b10) ? 1 : 0));
 				CHECK(machine->read_csr(isa::pep10::CSR::C) == ((vc & 0b01) ? 1 : 0));
