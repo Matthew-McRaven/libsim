@@ -24,7 +24,7 @@ TEST_CASE("Instruction: NOTX", "[isa::pep10]")
 			for(uint16_t X=0; static_cast<uint32_t>(X)+1<0x1'0000;X++)
 			{
 				machine->clear_all(0, 0, false);
-				// RTL: X ← ¬A ; N ← X < 0 , Z ← X = 0
+				// RTL: X ← ¬X ; N ← X < 0 , Z ← X = 0
 				// Object code for `NOTX`
 				// Set the starting status bits so that we can check that they are not mutated by this instruction.
 				machine->write_csr(isa::pep10::CSR::V, (vc & 0b10) ? 1 : 0);
