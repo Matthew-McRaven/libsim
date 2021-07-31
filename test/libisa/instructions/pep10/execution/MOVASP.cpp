@@ -16,7 +16,7 @@ TEST_CASE("Instruction: MOVASP", "[isa::pep10]")
 	for(uint8_t start_stat = 0; start_stat <= 0b1111; start_stat++)
 	{
 		// RTL: SP ← A
-		DYNAMIC_SECTION("MOVASP")
+		DYNAMIC_SECTION(fmt::format("MOVASP: NZVC={:b}", start_stat))
 		{
 			auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 			auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);

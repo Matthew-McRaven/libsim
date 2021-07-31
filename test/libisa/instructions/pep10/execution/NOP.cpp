@@ -16,7 +16,7 @@ TEST_CASE("Instruction: NOP", "[isa::pep10]")
 	for(uint8_t start_stat = 0; start_stat <= 0b1111; start_stat++)
 	{
 		// RTL: Intentionally left blank
-		DYNAMIC_SECTION("NOP")
+		DYNAMIC_SECTION(fmt::format("NOP: NZVC={:b}", start_stat))
 		{
 			auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 			auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
