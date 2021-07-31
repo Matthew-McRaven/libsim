@@ -44,7 +44,7 @@ public:
 	// Set up / tear down
 	virtual void init() = 0;
 	virtual void debug(bool) = 0;
-	virtual void clear() = 0;
+	virtual void clear(register_size_t reg_fill, csr_size_t csr_fill) = 0;
 
 	// Read / write registers
 	virtual register_size_t read_register(register_number_t reg_number) const = 0;

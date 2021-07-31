@@ -69,10 +69,10 @@ public:
 	virtual address_size_t max_offset() const = 0;
 
 	// Don't allow explicit access to the transaction begin/end, as it's very easy to forget to release it.
-	TransactionLocker<address_size_t, memory_val_size_t, memory_vector_t>&& acquire_transaction_lock();
+	TransactionLocker<address_size_t, memory_val_size_t, memory_vector_t> acquire_transaction_lock();
 
 	// Don't allow explicit access to the instruction begin/end, as it's very easy to forget to release it.
-	InstructionLocker<address_size_t, memory_val_size_t, memory_vector_t>&& acquire_instruction_lock();
+	InstructionLocker<address_size_t, memory_val_size_t, memory_vector_t> acquire_instruction_lock();
 
 	// Needed to undo an in-progress instruction.
 	virtual result<void> unwind_active_instruction() = 0;
