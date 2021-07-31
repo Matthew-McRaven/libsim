@@ -42,7 +42,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 	{
 		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-		// Object code for `LDWA 0x0000,d`
+		// Object code for `LDBA 0x0003,d`
 		auto x = std::vector<uint8_t>{0x51, 0x00, 0x03, 0xDE, 0xAD};
 		isa::pep10::load_bytes(machine, x, 0).value();
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
@@ -57,8 +57,8 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 	{
 		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-		// Object code for `LDWA 0x0003,n\n.WORD 0x0000`
-		// This should load `0x0003` into the A register
+		// Object code for `LDBA 0x0003,n\n.WORD 0x0000`
+		// This should load `0x00DE` into the A register
 		auto x = std::vector<uint8_t>{0x52, 0x00, 0x03, 0x00, 0x05, 0xDE, 0xAD};
 		isa::pep10::load_bytes(machine, x, 0).value();
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
@@ -73,8 +73,8 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 	{
 		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-		// Object code for `LDWA 0x0000,n\n.WORD 0xDEAD`
-		// This should load `0xDEAD` into the A register
+		// Object code for `LDBA 0x0000,n\n.WORD 0xDEAD`
+		// This should load `0x00DE` into the A register
 		auto x = std::vector<uint8_t>{0x53, 0x00, 0x01, 0xDE, 0xAD};
 		isa::pep10::load_bytes(machine, x, 0).value();
 		machine->write_register(isa::pep10::Register::SP, 0x0002);
@@ -90,8 +90,8 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 	{
 		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-		// Object code for `LDWA 0x0000,n\n.WORD 0xDEAD`
-		// This should load `0xDEAD` into the A register
+		// Object code for `LDBA 0x0000,n\n.WORD 0xDEAD`
+		// This should load `0x00DE` into the A register
 		auto x = std::vector<uint8_t>{0x54, 0x00, 0x02, 0x00, 0x05, 0xDE, 0xAD};
 		isa::pep10::load_bytes(machine, x, 0).value();
 		machine->write_register(isa::pep10::Register::SP, 0x0001);
@@ -107,8 +107,8 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 	{
 		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-		// Object code for `LDWA 0x0000,n\n.WORD 0xDEAD`
-		// This should load `0xDEAD` into the A register
+		// Object code for `LDBA 0x0000,n\n.WORD 0xDEAD`
+		// This should load `0x00DE` into the A register
 		auto x = std::vector<uint8_t>{0x55, 0x00, 0x01, 0xDE, 0xAD};
 		isa::pep10::load_bytes(machine, x, 0).value();
 		machine->write_register(isa::pep10::Register::X, 0x0002);
@@ -124,8 +124,8 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 	{
 		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-		// Object code for `LDWA 0x0000,n\n.WORD 0xDEAD`
-		// This should load `0xDEAD` into the A register
+		// Object code for `LDBA 0x0000,n\n.WORD 0xDEAD`
+		// This should load `0x00DE` into the A register
 		auto x = std::vector<uint8_t>{0x56, 0x00, 0x01, 0xDE, 0xAD};
 		isa::pep10::load_bytes(machine, x, 0).value();
 		machine->write_register(isa::pep10::Register::X, 0x0001);
@@ -142,8 +142,8 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 	{
 		auto storage = std::make_shared<components::storage::Block<uint16_t, true, uint8_t>>(0xFFFF);
 		auto machine = std::make_shared<isa::pep10::LocalMachine<true>>(storage);
-		// Object code for `LDWA 0x0000,n\n.WORD 0xDEAD`
-		// This should load `0xDEAD` into the A register
+		// Object code for `LDBA 0x0000,n\n.WORD 0xDEAD`
+		// This should load `0x00DE` into the A register
 		auto x = std::vector<uint8_t>{0x57, 0x00, 0x01, 0xDE, 0xAD, 0x00, 0x02};
 		isa::pep10::load_bytes(machine, x, 0).value();
 		machine->write_register(isa::pep10::Register::X, 0x0001);
