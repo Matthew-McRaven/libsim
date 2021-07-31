@@ -226,7 +226,7 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 		write_NZVC(*this, CSR::N, acc & 0x8000);
 		write_NZVC(*this, CSR::Z, acc == 0x0);
 		break;
-	case instruction_mnemonic::NOTX:break;
+	case instruction_mnemonic::NOTX:
 		idx = ~idx;
 		write_register(*this, Register::X, idx);
 		write_NZVC(*this, CSR::N, idx & 0x8000);
