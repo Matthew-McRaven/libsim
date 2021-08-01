@@ -559,6 +559,22 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
         // Is zero if all bits are 0's.
 		write_NZVC(*this, CSR::Z, temp_word == 0);
 		break;
+	case instruction_mnemonic::XORA:
+		temp_word = acc ^ decoded_operand;
+		write_register(*this, Register::A, temp_word);
+		// Is negative if high order bit is 1.
+		write_NZVC(*this, CSR::N, temp_word & 0x8000);
+        // Is zero if all bits are 0's.
+		write_NZVC(*this, CSR::Z, temp_word == 0);
+		break;
+	case instruction_mnemonic::XORX:
+		temp_word = idx ^ decoded_operand;
+		write_register(*this, Register::X, temp_word);
+		// Is negative if high order bit is 1.
+		write_NZVC(*this, CSR::N, temp_word & 0x8000);
+        // Is zero if all bits are 0's.
+		write_NZVC(*this, CSR::Z, temp_word == 0);
+		break;
 
 	case instruction_mnemonic::CPWA:
 		// The result is the decoded operand specifier plus the accumulator
