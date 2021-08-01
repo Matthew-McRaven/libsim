@@ -508,8 +508,8 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
         //are the same, and one input & the output differ in sign.
         // >> Shifts in 0's (unsigned shorts), so after shift, only high order bit remain.
 		write_NZVC(*this, CSR::V, (~(acc ^ decoded_operand) & (acc ^ temp_word)) >> 15);
-        // Carry out iff result is unsigned less than register or operand.
-		write_NZVC(*this, CSR::C, temp_word < acc  || temp_word < decoded_operand);
+        // Carry out iff result is unsigned less than register or negated operand.
+		write_NZVC(*this, CSR::C, temp_word < acc  || temp_word < static_cast<uint16_t>(1+~decoded_operand));
         break;
 	case instruction_mnemonic::SUBX:
 		// The result is the decoded operand specifier plus the accumulator
@@ -523,8 +523,8 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
         //are the same, and one input & the output differ in sign.
         // >> Shifts in 0's (unsigned shorts), so after shift, only high order bit remain.
 		write_NZVC(*this, CSR::V, (~(idx ^ decoded_operand) & (idx ^ temp_word)) >> 15);
-        // Carry out iff result is unsigned less than register or operand.
-		write_NZVC(*this, CSR::C, temp_word < idx  || temp_word < decoded_operand);
+        // Carry out iff result is unsigned less than register or negated operand.
+		write_NZVC(*this, CSR::C, temp_word < idx  || temp_word < static_cast<uint16_t>(1+~decoded_operand));
         break;
 
 	case instruction_mnemonic::ANDA:
