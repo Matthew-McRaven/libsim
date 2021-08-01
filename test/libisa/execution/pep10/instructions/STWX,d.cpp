@@ -25,7 +25,7 @@ TEST_CASE("Instruction: STWX,d", "[isa::pep10]")
 			for(uint16_t opspec=0; static_cast<uint32_t>(opspec)+1<0x1'0000;opspec++)
 			{
 				// Object code for instruction under test.
-				std::vector<uint8_t> program = {0x61, static_cast<uint8_t>((opspec>>8)&0xff), 
+				std::vector<uint8_t> program = {0x69, static_cast<uint8_t>((opspec>>8)&0xff), 
 					static_cast<uint8_t>(opspec&0xff)};
 				machine->clear_all(0, 0, false);
 				// Set the starting status bits so that we can check that they are not mutated by this instruction.
@@ -51,7 +51,7 @@ TEST_CASE("Instruction: STWX,d", "[isa::pep10]")
 				// PC takes on the value of the operand.
 				CHECK(machine->read_register(isa::pep10::Register::PC) == 0x03);
 				// IS has the correct instruction mnemonic
-				CHECK(machine->read_register(isa::pep10::Register::IS) == 0x61);
+				CHECK(machine->read_register(isa::pep10::Register::IS) == 0x69);
 				// OS loaded the Mem[0x0001-0x0002].
 				CHECK(machine->read_register(isa::pep10::Register::OS) == opspec);
 			}
