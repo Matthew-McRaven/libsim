@@ -199,7 +199,9 @@ bool isa::pep10::is_opcode_unary(uint8_t opcode)
 bool isa::pep10::is_store(instruction_mnemonic mnemon)
 {
 	if(mnemon == instruction_mnemonic::STBA ||
-		mnemon == instruction_mnemonic::STWA) return true;
+		mnemon == instruction_mnemonic::STWA ||
+		mnemon == instruction_mnemonic::STBX ||
+		mnemon == instruction_mnemonic::STWX) return true;
 	else return false;
 }
 bool isa::pep10::is_store(uint8_t opcode)
