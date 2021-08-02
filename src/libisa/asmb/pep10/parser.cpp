@@ -148,7 +148,7 @@ auto asmb::pep10::parser::parse(
 			);
 
 			if(it == isa_def.isa.cend()) std::tie(local_success, local_message) = std::make_tuple(false, ";ERROR: Invalid instruction mnemonic.");
-			else if(auto mnemonic = it->first; isa::pep10::is_opcode_unary(mnemonic)) {
+			else if(auto mnemonic = it->first; isa::pep10::is_mnemonic_unary(mnemonic)) {
 				std::tie(local_success, local_message, local_line) = parse_unary(start, last, mnemonic);
 			}
 			else {

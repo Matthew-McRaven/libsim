@@ -171,7 +171,7 @@ std::string isa::pep10::as_string(addressing_mode addr) {
 	return std::string(magic_enum::enum_name(addr));
 }
 
-bool isa::pep10::is_opcode_unary(instruction_mnemonic mnemon)
+bool isa::pep10::is_mnemonic_unary(instruction_mnemonic mnemon)
 {
 	auto addr_class = definition.isa.at(mnemon)->iformat;
 	switch (addr_class)
@@ -191,11 +191,23 @@ bool isa::pep10::is_opcode_unary(instruction_mnemonic mnemon)
 	
 }
 
+bool isa::pep10::is_mnemonic_unary(uint8_t opcode)
+{
+	auto [inst, addr] = definition.riproll[opcode];
+	return is_mnemonic_unary(inst->mnemonic);
+}
+
+bool isa::pep10::is_opcode_unary(instruction_mnemonic mnemon)
+{
+	return definition.isa.at(mnemon)->is_unary;
+}
+
 bool isa::pep10::is_opcode_unary(uint8_t opcode)
 {
 	auto [inst, addr] = definition.riproll[opcode];
 	return is_opcode_unary(inst->mnemonic);
 }
+
 bool isa::pep10::is_store(instruction_mnemonic mnemon)
 {
 	if(mnemon == instruction_mnemonic::STBA ||

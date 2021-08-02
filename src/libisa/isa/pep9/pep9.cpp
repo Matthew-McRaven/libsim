@@ -172,9 +172,10 @@ std::string isa::pep9::as_string(instruction_mnemonic mnemon) {
 	return std::string(magic_enum::enum_name(mnemon));
 }
 
-bool isa::pep9::is_opcode_unary(instruction_mnemonic mnemon)
+
+bool isa::pep9::is_mnemonic_unary(instruction_mnemonic mnemon)
 {
-	auto addr_class = isa_definition::get_definition().isa.at(mnemon)->iformat;
+	auto addr_class = definition.isa.at(mnemon)->iformat;
 	switch (addr_class)
 	{
 	case addressing_class::A_ix:
@@ -182,21 +183,33 @@ bool isa::pep9::is_opcode_unary(instruction_mnemonic mnemon)
 	case addressing_class::AAA_i:
 	case addressing_class::RAAA_all:
 	case addressing_class::RAAA_noi:
-		return true;
+		return false;
 	case addressing_class::U_none:
 	case addressing_class::R_none:
-		return false;
+		return true;
 	default:
 		throw std::invalid_argument("Invalid opcode.");
 	}
 	
 }
 
+bool isa::pep9::is_mnemonic_unary(uint8_t opcode)
+{
+	auto [inst, addr] = definition.riproll[opcode];
+	return is_mnemonic_unary(inst->mnemonic);
+}
+
+bool isa::pep9::is_opcode_unary(instruction_mnemonic mnemon)
+{
+	return definition.isa.at(mnemon)->is_unary;
+}
+
 bool isa::pep9::is_opcode_unary(uint8_t opcode)
 {
-	auto [inst, addr] = isa_definition::get_definition().riproll[opcode];
+	auto [inst, addr] = definition.riproll[opcode];
 	return is_opcode_unary(inst->mnemonic);
 }
+
 bool isa::pep9::is_store(instruction_mnemonic mnemon)
 {
 	if(mnemon == instruction_mnemonic::STBA ||

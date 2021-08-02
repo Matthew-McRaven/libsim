@@ -114,6 +114,8 @@ struct isa_definition {
 
 std::string as_string(instruction_mnemonic);
 std::string as_string(addressing_mode);
+bool is_mnemonic_unary(instruction_mnemonic);
+bool is_mnemonic_unary(uint8_t);
 bool is_opcode_unary(instruction_mnemonic);
 bool is_opcode_unary(uint8_t);
 bool is_store(instruction_mnemonic);
