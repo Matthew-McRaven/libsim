@@ -105,7 +105,17 @@ result<void> isa::pep10::LocalMachine<enable_history>::unwind_active_instruction
 template<bool enable_history>
 uint16_t isa::pep10::LocalMachine<enable_history>::address_from_vector(isa::pep10::MemoryVector vector) const
 {
-	throw std::logic_error("Not implemented");
+	uint16_t base = _memory->max_offset();
+	switch(vector)
+	{
+		case isa::pep10::MemoryVector::kUser_Stack: return base - 11;
+		case isa::pep10::MemoryVector::kSystem_Stack: return base - 9;
+		case isa::pep10::MemoryVector::kPower_Off_Port: return base - 7;
+		case isa::pep10::MemoryVector::kDispatcher: return base - 5;
+		case isa::pep10::MemoryVector::kLoader: return base - 3;
+		case isa::pep10::MemoryVector::kTrap_Handler: return base - 1;
+	}
+	throw std::logic_error("Invalid memory vector value.");
 }
 
 template<bool enable_history>
