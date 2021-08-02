@@ -11,7 +11,7 @@
 namespace isa::pep10 {
 
 template <bool enable_history>
-class LocalMachine : public components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors> 
+class LocalMachine : public components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector> 
 {
 public:
 	// C.67 suppress polymorphic copy/move.
@@ -41,7 +41,7 @@ public:
 	void write_packed_csr(uint8_t value);
 
 	result<void> unwind_active_instruction() override;
-	uint16_t address_from_vector(isa::pep10::memory_vectors vector) const override;
+	uint16_t address_from_vector(isa::pep10::MemoryVector vector) const override;
 	void clear_all(uint8_t mem_fill, uint16_t reg_fill, bool csr_fill);
 	void clear_memory(uint8_t mem_fill);
 	void clear_processor(uint16_t reg_fill, bool csr_fill);

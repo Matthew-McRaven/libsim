@@ -5,7 +5,7 @@
 #include <magic_enum.hpp>
 
 isa::pep10::LocalProcessor::LocalProcessor(
-	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors>& owner):
+	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>& owner):
 	_owner(owner),
 	_registers(std::make_shared<components::storage::Block<uint8_t, true, uint16_t>>(
 		magic_enum::enum_count<isa::pep10::Register>()
@@ -337,7 +337,7 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 	case instruction_mnemonic::SCALL:
 	// TODO: Intentional fallthrough annotation.
 	case instruction_mnemonic::USCALL:
-		vector_value = _owner.address_from_vector(memory_vectors::SYSTEM_STACK);
+		vector_value = _owner.address_from_vector(MemoryVector::kSystem_Stack);
 		outcome_word = std::move(read_word(vector_value));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
 
@@ -368,7 +368,7 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 		write_register(*this, Register::SP, temp_word - 10);
 
-		vector_value = _owner.address_from_vector(memory_vectors::TRAP);
+		vector_value = _owner.address_from_vector(MemoryVector::kTrap_Handler);
 		outcome_word = std::move(read_word(vector_value));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
 		write_register(*this, Register::PC, outcome_word.value());    

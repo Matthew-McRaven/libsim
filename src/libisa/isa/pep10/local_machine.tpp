@@ -4,11 +4,11 @@
 
 #include "local_machine.hpp"
 
-using MPI = components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors>;
+using MPI = components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>;
 template<bool enable_history>
 isa::pep10::LocalMachine<enable_history>::LocalMachine(
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> memory): 
-	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::memory_vectors>(),
+	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>(),
 	_memory(memory), 
 	_processor(std::make_shared<isa::pep10::LocalProcessor>(
 		static_cast<MPI&>(*this)))
@@ -103,7 +103,7 @@ result<void> isa::pep10::LocalMachine<enable_history>::unwind_active_instruction
 }
 
 template<bool enable_history>
-uint16_t isa::pep10::LocalMachine<enable_history>::address_from_vector(isa::pep10::memory_vectors vector) const
+uint16_t isa::pep10::LocalMachine<enable_history>::address_from_vector(isa::pep10::MemoryVector vector) const
 {
 	throw std::logic_error("Not implemented");
 }

@@ -70,9 +70,13 @@ enum class addressing_class {
 	RAAA_noi
 
 };
-enum class memory_vectors {
-	SYSTEM_STACK,
-	TRAP,
+enum class MemoryVector {
+	kUser_Stack,
+	kSystem_Stack,
+	kPower_Off_Port,
+	kDispatcher,
+	kLoader,
+	kTrap_Handler,
 };
 
 enum class CSR {
