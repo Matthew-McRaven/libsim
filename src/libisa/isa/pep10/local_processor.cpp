@@ -343,35 +343,31 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 
 		temp_word = outcome_word.value();
 
-		// Writes IS to mem[T-1].
-		outcome_void = std::move(write_byte(temp_word - 1, read_register(*this, Register::IS)));
+        // Writes SP to mem[T-1], mem[T-2].
+		outcome_void = std::move(write_word(temp_word - 2, sp));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
-        // Writes SP to mem[T-2], mem[T-3].
-		outcome_void = std::move(write_word(temp_word - 3, read_register(*this, Register::SP)));
+        // Writes to mem[T-3], mem[T-4].
+		outcome_void = std::move(write_word(temp_word - 4, read_register(*this, Register::PC)));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
-        // Writes to mem[T-4], mem[T-5].
-		outcome_void = std::move(write_word(temp_word - 5, read_register(*this, Register::PC)));
+        // Writes to mem[T-5], mem[T-6].
+		outcome_void = std::move(write_word(temp_word - 6, idx));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
-        // Writes to mem[T-6], mem[T-7].
-		outcome_void = std::move(write_word(temp_word - 7, read_register(*this, Register::X)));
+        // Writes to mem[T-7], mem[T-8].
+		outcome_void = std::move(write_word(temp_word - 8, acc));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
-        // Writes to mem[T-8], mem[T-9].
-		outcome_void = std::move(write_word(temp_word - 9, read_register(*this, Register::A)));
+        // Writes NZVC to mem[T-9].
+		outcome_void = std::move(write_byte(temp_word - 9, ::isa::pep10::read_packed_NZVC(*this)));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
-
-        // Writes NZVC to mem[T-10].
-		outcome_void = std::move(write_byte(temp_word - 10, ::isa::pep10::read_packed_NZVC(*this)));
-		if(outcome_void.has_failure()) return outcome_void.error().clone();
-		write_register(*this, Register::SP, temp_word - 10);
+		write_register(*this, Register::SP, temp_word - 9);
 
 		vector_value = _owner.address_from_vector(MemoryVector::kTrap_Handler);
 		outcome_word = std::move(read_word(vector_value));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
-		write_register(*this, Register::PC, outcome_word.value());    
+		write_register(*this, Register::PC, outcome_word.value());
 		break;
 	default:
 		throw std::invalid_argument("Illegal instruction in unary decoder.");
