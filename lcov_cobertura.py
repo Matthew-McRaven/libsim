@@ -235,13 +235,13 @@ class LcovCobertura(object):
         root = document.documentElement
         summary = coverage_data['summary']
         self._attrs(root, {
+            'line-rate': self._percent(summary['lines-total'],
+                            100 * summary['lines-covered']) + "%",
             'branch-rate': self._percent(summary['branches-total'],
                                          summary['branches-covered']),
             'branches-covered': str(summary['branches-covered']),
             'branches-valid': str(summary['branches-total']),
             'complexity': '0',
-            'line-rate': self._percent(summary['lines-total'],
-                                       summary['lines-covered']),
             'lines-covered': str(summary['lines-covered']),
             'lines-valid': str(summary['lines-total']),
             'timestamp': coverage_data['timestamp'],
