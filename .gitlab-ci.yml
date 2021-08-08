@@ -92,11 +92,12 @@ coverage:
     - ln -s $(which python3) /usr/bin/python
     - export CXX=$(which clang++)
     - export C=$(which clang)
-    - mkdir -p ${CI_BUILDS_DIR} 
-    - cmake -B ${CI_BUILDS_DIR} -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_BUILD_TYPE=Debug -Dcode_coverage=1
-    - (cd ${CI_BUILDS_DIR} && make -j20 && make test -j20)
-    - python3 llvm-cov-helper.py ${CI_BUILDS_DIR}
+    - mkdir build
+    - cmake -B build -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_BUILD_TYPE=Debug -Dcode_coverage=1
+    - (cd build && make -j20 && make test -j20)
+    - python3 llvm-cov-helper.py build
     - ./lcov_cobertura.py coverage.lcov
+  coverage: /^\s*lines:\s*\d+.\d+\%/
   artifacts:
     name: ${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
     expire_in: 100 days
