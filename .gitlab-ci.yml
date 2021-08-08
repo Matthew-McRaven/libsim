@@ -92,17 +92,17 @@ Run coverage tests:
     - ln -s $(which python3) /usr/bin/python
     - export CXX=$(which clang++)
     - export C=$(which clang)
-    - mkdir build/coverage && cd build/coverage
+    - mkdir -p build/coverage && cd build/coverage
     - cmake ../.. -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_BUILD_TYPE=Debug -Dcode_coverage=1
     - make -j20 && make test -j20
     - cd ../..
     - python3 llvm-cov-helper.py
-    - ./lcov_cobertura.py build/coverage/coverage.lcov
+    - ./lcov_cobertura.py coverage.lcov
   artifacts:
     name: ${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
     expire_in: 100 days
     reports:
-      cobertura: build/coverage/coverage.xml
+      cobertura: coverage.xml
 
 pages:
   stage: deploy pages
