@@ -57,4 +57,4 @@ RUN cd /emsdk/llvm/git/src/compiler-rt && \
     cmake -B ../../build_compile_rt && \
     cd ../../build_compile_rt && \
     make -j32 && \
-    cp -r lib/* ../build_main_64/lib/clang/14.0.0/
+    cp -r lib ../build_main_64/lib/clang/14.0.0/
