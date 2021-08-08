@@ -52,3 +52,9 @@ RUN source /emsdk/emsdk_env.sh \
     && emconfigure ./b2 cxxflags="-fPIC -std=c++17" link=static runtime-link=static -j 20 --build-dir=./build-js --stagedir=./stage-js \
     && emconfigure ./b2 cxxflags="-fPIC -std=c++17" link=static runtime-link=static -j 20 install --build-dir=./build-js --stagedir=./stage-js  
 ENV CXX=/usr/bin/g++-10
+
+RUN cd /emsdk/llvm/git/src/compiler-rt && \
+    cmake -B ../../build_compile_rt && \
+    cd ../../build_compile_rt && \
+    make -j32 && \
+    cp -r lib/* ../build_main_64/lib/clang/14.0.0/
