@@ -10,6 +10,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "**/*.cpp" "*.cpp")
 add_executable (test-masm ${sources})
 
+if(code_coverage)
+	# Add code coverage support
+	SET(CMAKE_CXX_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+	SET(CMAKE_C_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+endif()
 if(EMSCRIPTEN)
 	set_target_properties(test-masm PROPERTIES LINK_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1")
 	# Disable unit tests that throw exceptions, because exceptions can't be caught inside wasm.
