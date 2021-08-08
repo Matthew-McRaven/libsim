@@ -18,6 +18,12 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "**/*.cpp")
 # add the executable
 add_library(RTL-Lib STATIC ${sources})
 
+if(code_coverage)
+	# Add code coverage support
+	SET(CMAKE_CXX_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+	SET(CMAKE_C_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+endif()
+
 target_include_directories(RTL-Lib PUBLIC ${Boost_INCLUDE_DIR} )
 target_link_libraries( RTL-Lib PUBLIC ${Boost_LIBRARIES} builtins)
 
