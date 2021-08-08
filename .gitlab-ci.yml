@@ -93,10 +93,8 @@ coverage:
     - export CXX=$(which clang++)
     - export C=$(which clang)
     - mkdir -p ${CI_BUILDS_DIR} 
-    - cd ${CI_BUILDS_DIR}
-    - cmake ../.. -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_BUILD_TYPE=Debug -Dcode_coverage=1
-    - make -j20 && make test -j20
-    - cd ../..
+    - cmake -B ${CI_BUILDS_DIR} -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_BUILD_TYPE=Debug -Dcode_coverage=1
+    - (cd ${CI_BUILDS_DIR} && make -j20 && make test -j20)
     - python3 llvm-cov-helper.py ${CI_BUILDS_DIR}
     - ./lcov_cobertura.py coverage.lcov
   artifacts:
