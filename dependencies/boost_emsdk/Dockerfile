@@ -31,11 +31,11 @@ RUN git clone --jobs 10 --recursive --branch boost-${BOOST_VERSION}  https://git
 
 # Install EMSDK
 RUN cd /emsdk && git pull && ./emsdk install sdk-upstream-master-64bit && ./emsdk activate sdk-upstream-master-64bit
-RUN cd /emsdk/llvm/git/src/compiler-rt && \
-    cmake -B ../../build_compile_rt && \
-    cd ../../build_compile_rt && \
-    make -j32 && \
-    cp -r lib/* ../build_main_64/lib/clang/13.0.0/
+#RUN cd /emsdk/llvm/git/src/compiler-rt && \
+#    cmake -B ../../build_compile_rt && \
+#    cd ../../build_compile_rt && \
+#    make -j32 && \
+#    cp -r lib/* ../build_main_64/lib/clang/13.0.0/
 
 # Copy boost configuration, which is necessary for building python librs correctly.
 COPY user-config.jam /boost/user-config.jam
