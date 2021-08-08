@@ -7,7 +7,7 @@ stages:
 - deploy pages
 
 variables:
-  BUILD_VERSION: v0.4.2
+  BUILD_VERSION: v0.5.0
 
 Build Boost and Emscripten:
   stage: build dependencies
@@ -79,6 +79,30 @@ Test emscripten bindings:
     - emmake make test -j20
     - npm config set @pep10:registry https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/
     - npm config set '//gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken' ${CI_JOB_TOKEN}
+
+Run coverage tests:
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  stage: test
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
+  needs: [Build Boost and Emscripten]
+  script:
+    - source /emsdk/emsdk_env.sh
+    # lcov_cobertura expects python3 to be named python.
+    - ln -s $(which python3) /usr/bin/python
+    - export CXX=$(which clang++)
+    - export C=$(which clang)
+    - mkdir build/coverage && cd build/coverage
+    - cmake ../.. -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_BUILD_TYPE=Debug -Dcode_coverage=1
+    - make -j20 && make test -j20
+    - cd ../..
+    - python3 llvm-cov-helper.py
+    - ./lcov_cobertura.py build/coverage/coverage.lcov
+  artifacts:
+    name: ${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
+    expire_in: 100 days
+    reports:
+      cobertura: build/coverage/coverage.xml
 
 pages:
   stage: deploy pages
