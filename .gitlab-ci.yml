@@ -97,7 +97,7 @@ coverage:
     - (cd build && make -j20 && make test -j20)
     - python3 llvm-cov-helper.py build
     - ./lcov_cobertura.py coverage.lcov
-  coverage: /^\s*lines:\s*\d+.\d+\%/
+  coverage: /^\s*<coverage\s*lines-rate="\\d+.\d+"\%/
   artifacts:
     name: ${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
     expire_in: 100 days
