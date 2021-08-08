@@ -15,7 +15,7 @@ RUN echo $BOOST_VERSION
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
      && apt-get -y install --no-install-recommends g++-10 make zip cmake git libsqlite3-dev zlib1g-dev \
 	 libreadline-gplv2-dev libncursesw5-dev libssl-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev \
-     python3.9 python3.9-dev python3.9-distutils vim ripgrep doxygen clang-tidy ssh-client
+     python3.9 python3.9-dev python3.9-distutils vim ripgrep doxygen clang-tidy ssh-client lcov
      
 # Install pip for python 3.9
 RUN curl https://bootstrap.pypa.io/get-pip.py | python3.9
@@ -31,6 +31,11 @@ RUN git clone --jobs 10 --recursive --branch boost-${BOOST_VERSION}  https://git
 
 # Install EMSDK
 RUN cd /emsdk && git pull && ./emsdk install sdk-upstream-master-64bit && ./emsdk activate sdk-upstream-master-64bit
+RUN cd /emsdk/llvm/git/src/compiler-rt && \
+    cmake -B ../../build_compile_rt && \
+    cd ../../build_compile_rt && \
+    make -j32 && \
+    cp -r lib/* ../build_main_64/lib/clang/13.0.0/
 
 # Copy boost configuration, which is necessary for building python librs correctly.
 COPY user-config.jam /boost/user-config.jam
