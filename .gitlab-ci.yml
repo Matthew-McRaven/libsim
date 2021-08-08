@@ -7,7 +7,7 @@ stages:
 - deploy pages
 
 variables:
-  BUILD_VERSION: v0.5.1
+  BUILD_VERSION: v0.5.2
 
 Build Boost and Emscripten:
   stage: build dependencies
