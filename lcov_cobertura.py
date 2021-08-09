@@ -213,7 +213,7 @@ class LcovCobertura(object):
         for package_data in list(coverage_data['packages'].values()):
             package_data['line-rate'] = self._percent(
                 package_data['lines-total'],
-                100*package_data['lines-covered']) + "%"
+                package_data['lines-covered'])
             package_data['branch-rate'] = self._percent(
                 package_data['branches-total'],
                 package_data['branches-covered'])
@@ -236,7 +236,7 @@ class LcovCobertura(object):
         summary = coverage_data['summary']
         self._attrs(root, {
             'line-rate': self._percent(summary['lines-total'],
-                            100 * summary['lines-covered']) + "%",
+                            summary['lines-covered']),
             'branch-rate': self._percent(summary['branches-total'],
                                          summary['branches-covered']),
             'branches-covered': str(summary['branches-covered']),
