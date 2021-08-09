@@ -97,7 +97,7 @@ coverage:
     - (cd build && make -j20 && make test -j20)
     - python3 llvm-cov-helper.py build
     - ./lcov_cobertura.py coverage.lcov
-    # Job output must contain code coverage %.
+    # Job output must contain code coverage.
     - lcov --summary coverage.lcov 
   coverage: /^\s*lines/
   artifacts:
@@ -105,7 +105,6 @@ coverage:
     expire_in: 2 days
     reports:
       cobertura: coverage.xml
-      lcov:
 
 pages:
   stage: deploy pages
