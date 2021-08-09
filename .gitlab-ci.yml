@@ -99,7 +99,7 @@ coverage:
     - ./lcov_cobertura.py coverage.lcov
     # Job output must contain code coverage.
     - lcov --summary coverage.lcov 
-  coverage: /^\s*lines.*/
+  coverage: '/^\s*lines.*/'
   artifacts:
     name: ${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
     expire_in: 2 days
