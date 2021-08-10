@@ -22,8 +22,8 @@ TEST_CASE("Instruction: RET", "[isa::pep10]")
 			
 			machine->write_register(isa::pep10::Register::SP, 0x0004);
 			// Set Mem[SP] to have a non-zero value.
-			machine->write_memory(0x00004, 0xDE);
-			machine->write_memory(0x00005, 0xAD);
+			machine->write_memory(0x00004, 0xDE).value();
+			machine->write_memory(0x00005, 0xAD).value();
 			// Set the starting status bits so that we can check that they are not mutated by this instruction.
 			machine->write_packed_csr(start_stat);
 

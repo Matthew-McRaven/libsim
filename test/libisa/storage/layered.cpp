@@ -14,7 +14,7 @@ TEST_CASE( "Validate layered storage") {
 		using storage_t = components::storage::Layered<uint16_t, true>;
 		auto layered = storage_t(10, 0, storage_t::ReadMiss::kDefaultValue, storage_t::WriteMiss::kIgnore);
 		auto backing_store = std::make_shared<components::storage::Block<uint16_t, true>>(8);
-		layered.append_storage(1, backing_store);
+		layered.append_storage(1, backing_store).value();
 		REQUIRE(layered.write(1, 15).has_value());
 		// Check that both storage devices can access the written value.
 		CHECK(backing_store->read(0).value() == 15);
@@ -41,8 +41,8 @@ TEST_CASE( "Validate layered storage") {
 		auto layered = storage_t(10, 0, storage_t::ReadMiss::kDefaultValue, storage_t::WriteMiss::kIgnore);
 		auto backing_store0 = std::make_shared<components::storage::Block<uint16_t, true>>(2);
 		auto backing_store1 = std::make_shared<components::storage::Block<uint16_t, true>>(8);
-		layered.append_storage(0, backing_store0);
-		layered.append_storage(1, backing_store1);
+		layered.append_storage(0, backing_store0).value();
+		layered.append_storage(1, backing_store1).value();
 		REQUIRE(layered.write(1, 15).has_value());
 
 		// Check that only the higher "priority" storage device is written.

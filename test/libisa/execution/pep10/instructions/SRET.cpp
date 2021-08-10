@@ -29,19 +29,19 @@ TEST_CASE("Instruction: SRET", "[isa::pep10]")
 		auto system_stack_idx = machine->address_from_vector(isa::pep10::MemoryVector::kSystem_Stack);
 		
 		//Stat bits
-		machine->write_memory(0xFEE4, 0b1111);
+		machine->write_memory(0xFEE4, 0b1111).value();
 		// A
-		machine->write_memory(0xFEE4 + 1, 0xDE);
-		machine->write_memory(0xFEE4 + 2, 0xAD);
+		machine->write_memory(0xFEE4 + 1, 0xDE).value();
+		machine->write_memory(0xFEE4 + 2, 0xAD).value();
 		// X
-		machine->write_memory(0xFEE4 + 3, 0xBE);
-		machine->write_memory(0xFEE4 + 4, 0xEF);
+		machine->write_memory(0xFEE4 + 3, 0xBE).value();
+		machine->write_memory(0xFEE4 + 4, 0xEF).value();
 		// PC
-		machine->write_memory(0xFEE4 + 5, 0xCA);
-		machine->write_memory(0xFEE4 + 6, 0xFE);
+		machine->write_memory(0xFEE4 + 5, 0xCA).value();
+		machine->write_memory(0xFEE4 + 6, 0xFE).value();
 		// SP
-		machine->write_memory(0xFEE4 + 7, 0x80);
-		machine->write_memory(0xFEE4 + 8, 0x86);
+		machine->write_memory(0xFEE4 + 7, 0x80).value();
+		machine->write_memory(0xFEE4 + 8, 0x86).value();
 
 
 		auto ret = machine->step();

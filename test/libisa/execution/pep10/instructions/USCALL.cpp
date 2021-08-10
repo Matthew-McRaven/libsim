@@ -33,10 +33,10 @@ TEST_CASE("Instruction: USCALL", "[isa::pep10]")
 			isa::pep10::load_bytes(machine, program, 0).value();
 			auto trap_handler = machine->address_from_vector(isa::pep10::MemoryVector::kTrap_Handler);
 			auto system_stack = machine->address_from_vector(isa::pep10::MemoryVector::kSystem_Stack);
-			machine->write_memory(system_stack, 0xFE);
-			machine->write_memory(system_stack + 1, 0xED);
-			machine->write_memory(trap_handler, 0xD0);
-			machine->write_memory(trap_handler + 1, 0x0D);
+			machine->write_memory(system_stack, 0xFE).value();
+			machine->write_memory(system_stack + 1, 0xED).value();
+			machine->write_memory(trap_handler, 0xD0).value();
+			machine->write_memory(trap_handler + 1, 0x0D).value();
 
 
 			auto ret = machine->step();
