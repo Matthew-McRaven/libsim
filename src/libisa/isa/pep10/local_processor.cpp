@@ -95,9 +95,7 @@ void isa::pep10::LocalProcessor::debug(bool)
 void isa::pep10::LocalProcessor::clear(uint16_t reg_fill, bool csr_fill)
 {
 	_registers->clear(reg_fill);
-	_registers->clear_delta();
 	_csrs->clear(csr_fill);
-	_csrs->clear_delta();
 }
 
 // Read / write registers

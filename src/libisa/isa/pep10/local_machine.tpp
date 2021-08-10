@@ -129,7 +129,6 @@ template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::clear_memory(uint8_t mem_fill)
 {
 	_memory->clear(mem_fill);
-	_memory->clear_delta();
 }
 
 template<bool enable_history>
