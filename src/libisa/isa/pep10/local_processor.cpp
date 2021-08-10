@@ -29,7 +29,8 @@ result<bool> isa::pep10::LocalProcessor::step()
 	// Load instruction spec from memory.
 	auto is = read_byte(pc);
 	if(is.has_failure()) {
-		_owner.unwind_active_instruction();
+		// We can't handle an error inside an error, so crash if unwinding fails.
+		_owner.unwind_active_instruction().value();
 		// Must clone to convert error from reference to value.
 		return is.error().clone();
 	}
@@ -41,14 +42,16 @@ result<bool> isa::pep10::LocalProcessor::step()
 	if(isa::pep10::is_opcode_unary(is.value())) {
 		auto success = unary_dispatch(is.value());
 		if(success.has_failure()) {
-			_owner.unwind_active_instruction();
+			// We can't handle an error inside an error, so crash if unwinding fails.
+			_owner.unwind_active_instruction().value();
 			return success.error().clone();
 		}
 	} else {
 		// Load operand specifier from memory.
 		auto os = read_word(pc);
 		if(os.has_failure()) {
-			_owner.unwind_active_instruction();
+			// We can't handle an error inside an error, so crash if unwinding fails.
+			_owner.unwind_active_instruction().value();
 			// Must clone to convert error from reference to value.
 			return os.error().clone();
 		}
@@ -59,7 +62,8 @@ result<bool> isa::pep10::LocalProcessor::step()
 
 		auto success = nonunary_dispatch(is.value(), os.value());
 		if(success.has_failure()) {
-			_owner.unwind_active_instruction();
+			// We can't handle an error inside an error, so crash if unwinding fails.
+			_owner.unwind_active_instruction().value();
 			return success.error().clone();
 		}
 	}
