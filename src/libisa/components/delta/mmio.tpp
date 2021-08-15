@@ -2,7 +2,7 @@
 template <typename offset_t, typename val_size_t>
 	requires (components::storage::UnsignedIntegral<offset_t> && components::storage::Integral<val_size_t>)
 components::delta::Input<offset_t, val_size_t>::Input(components::storage::Input<offset_t, true, val_size_t>& storage): 
-	components::delta::Base<offset_t, val_size_t>(storage), 
+	components::delta::Base<offset_t, val_size_t>(), 
 	_storage(storage)
 {
 
@@ -40,7 +40,7 @@ void components::delta::Input<offset_t, val_size_t>::add_delta()
 template <typename offset_t, typename val_size_t>
 	requires (components::storage::UnsignedIntegral<offset_t> && components::storage::Integral<val_size_t>)
 components::delta::Output<offset_t, val_size_t>::Output(components::storage::Output<offset_t, true, val_size_t>& storage): 
-	components::delta::Base<offset_t, val_size_t>(storage), 
+	components::delta::Base<offset_t, val_size_t>(), 
 	_storage(storage)
 {
 

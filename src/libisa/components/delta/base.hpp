@@ -24,14 +24,10 @@ template<typename offset_t, typename val_size_t=uint8_t>
 class Base
 {
 public:
-	Base(components::storage::Base<offset_t, true, val_size_t>& storage);
 	virtual ~Base() = default;
 	virtual void apply_backward() = 0;
 	virtual void apply_forward() = 0;
 	virtual void clear() = 0;
-protected:
-	components::storage::Base<offset_t, true, val_size_t>& _storage;
+	
 };
 } // namespace components::delta
-
-#include "base.tpp"

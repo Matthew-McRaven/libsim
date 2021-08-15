@@ -18,9 +18,11 @@ public:
 	void clear() override;
 	void add_delta(offset_t offset, val_size_t old_value, val_size_t new_value);
 private:
+	components::storage::Base<offset_t, true, val_size_t>& _storage;
 	// Store changes in a vector, sorted from smallest to largest offset.
 	// Keep elements with duplicate offsets---skipping them would cause replay to differ from execution.
 	std::vector<std::tuple<offset_t, val_size_t /*old*/, val_size_t/*new*/>> _deltas;
+	
 };
 } // namespace components::delta
 
