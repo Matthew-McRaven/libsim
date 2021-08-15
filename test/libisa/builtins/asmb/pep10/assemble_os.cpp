@@ -25,7 +25,7 @@ TEST_CASE( "Parse entire OS", "[asmb::pep10::parser]"  ) {
 
 		REQUIRE(res.first);
 		auto x = project->image->os;
-		REQUIRE(project->image->os->body_ir->ir_lines.size() == 642);
+		REQUIRE(project->image->os->body_ir->ir_lines.size() == 649);
 	}
 
 }
