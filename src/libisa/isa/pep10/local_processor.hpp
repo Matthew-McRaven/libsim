@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#include "components/delta/base.hpp"
 #include "components/machine/processor_model.hpp"
 #include "components/machine/interace.hpp"
 #include "components/storage/block.hpp"
@@ -38,7 +39,8 @@ public:
 	uint64_t instruction_count() const override;
 
 	// Todo: How do I coallate deltas for the CPU register bank
-	void* take_delta() override;
+	result<std::unique_ptr<components::delta::Base<uint8_t, uint16_t>>> take_register_delta() override;
+	result<std::unique_ptr<components::delta::Base<uint8_t, bool>>> take_csr_delta() override;
 	
 private:
 	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>& _owner;

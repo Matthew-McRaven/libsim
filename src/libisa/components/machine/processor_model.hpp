@@ -59,8 +59,8 @@ public:
 	virtual uint64_t cycle_count() const = 0;
 	virtual uint64_t instruction_count() const = 0;
 	 
-	// Todo: How do I coallate deltas for the CPU register bank
-	virtual void* take_delta() = 0;
+	virtual  result<std::unique_ptr<components::delta::Base<register_number_t, register_size_t>>> take_register_delta() = 0;
+	virtual  result<std::unique_ptr<components::delta::Base<csr_number_t, csr_size_t>>> take_csr_delta() = 0;
 };
 
 template <typename processor_t>
