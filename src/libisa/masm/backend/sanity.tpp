@@ -41,6 +41,16 @@ bool whole_program_sanity_fixup(std::shared_ptr<masm::project::project<uint16_t>
 					{masm::message_type::kError, ";ERROR: .BURN is illegal in user programs."}
 				);
 			}
+			else if(auto ptr = std::dynamic_pointer_cast<masm::ir::dot_input<uint16_t>>(line); ptr) {
+				project->message_resolver->log_message(section, line->source_line,
+					{masm::message_type::kError, ";ERROR: .INPUT is illegal in user programs."}
+				);
+			}
+			else if(auto ptr = std::dynamic_pointer_cast<masm::ir::dot_output<uint16_t>>(line); ptr) {
+				project->message_resolver->log_message(section, line->source_line,
+					{masm::message_type::kError, ";ERROR: .OUTPUT is illegal in user programs."}
+				);
+			}
 		}
 	}
 	// Check that a USER program doesn't have a BURN.
