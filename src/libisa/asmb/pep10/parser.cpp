@@ -205,6 +205,22 @@ auto asmb::pep10::parser::parse(
 					local_message = ";ERROR: .EXPORT does not support symbol declaration.";
 				}
 			}
+			else if(boost::iequals(text_dot, "INPUT")) {
+				std::tie(local_success, local_message, local_line) = parse_INPUT(start, last, symbol_table);
+				if(!local_success) {} // Don't try and fix any errors, but suppress adding additional errors if present.
+				else if(local_symbol) {
+					local_success = false;
+					local_message = ";ERROR: .INPUT does not support symbol declaration.";
+				}
+			}
+			else if(boost::iequals(text_dot, "OUTPUT")) {
+				std::tie(local_success, local_message, local_line) = parse_OUTPUT(start, last, symbol_table);
+				if(!local_success) {} // Don't try and fix any errors, but suppress adding additional errors if present.
+				else if(local_symbol) {
+					local_success = false;
+					local_message = ";ERROR: .OUTPUT does not support symbol declaration.";
+				}
+			}
 			else if(boost::iequals(text_dot, "SCALL")) {
 				std::tie(local_success, local_message, local_line) = parse_SCALL(start, last, symbol_table, project->macro_registry);
 				if(local_success && local_symbol) {
@@ -573,6 +589,46 @@ std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::pa
 		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
 		symbol_table->mark_global(as_ref->symbol_value()->name);
 		assert(as_ref);
+		ret_val->argument = as_ref;
+		return {true, "", ret_val};
+	}
+}
+
+std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_INPUT(token_iterator_t& start, 
+	const token_iterator_t& last, symbol_table_pointer_t symbol_table)
+{
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {masm::frontend::token_type::kIdentifier};
+
+	auto ret_val = std::make_shared<masm::ir::dot_input<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .INPUT requires a symbolic argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, symbol_table); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else {
+		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
+		ret_val->argument = as_ref;
+		return {true, "", ret_val};
+	}
+}
+
+std::tuple<bool, std::string, asmb::pep10::parser::ir_pointer_t> asmb::pep10::parser::parse_OUTPUT(token_iterator_t& start, 
+	const token_iterator_t& last, symbol_table_pointer_t symbol_table)
+{
+	using token_class_t = const std::set<masm::frontend::token_type>;
+	static const token_class_t arg = {masm::frontend::token_type::kIdentifier};
+
+	auto ret_val = std::make_shared<masm::ir::dot_output<uint16_t>>();
+	if(auto [match_arg, token_arg, text_arg] = masm::frontend::match(start, last, arg, true); !match_arg) {
+		return {false, ";ERROR: .OUTPUT requires a symbolic argument.", nullptr};
+	}
+	else if(auto [valid_operand, err_msg, argument] = parse_operand(token_arg, text_arg, symbol_table); !valid_operand) {
+		return {false, err_msg, nullptr};
+	}
+	else {
+		auto as_ref = std::dynamic_pointer_cast<masm::ir::symbol_ref_argument<uint16_t>>(argument);
 		ret_val->argument = as_ref;
 		return {true, "", ret_val};
 	}
