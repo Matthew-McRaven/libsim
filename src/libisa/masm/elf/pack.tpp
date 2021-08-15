@@ -39,8 +39,8 @@ bool masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 			if(auto as_in = std::dynamic_pointer_cast<masm::ir::dot_input<addr_size_t>>(line); as_in){
 				inout_mappings[as_in->argument->string()] = masm::elf::mmio::Type::kInput;
 			}
-			else if(auto as_out = std::dynamic_pointer_cast<masm::ir::dot_output<addr_size_t>>(line); as_in){
-				inout_mappings[as_in->argument->string()] = masm::elf::mmio::Type::kOutput;
+			else if(auto as_out = std::dynamic_pointer_cast<masm::ir::dot_output<addr_size_t>>(line); as_out){
+				inout_mappings[as_out->argument->string()] = masm::elf::mmio::Type::kOutput;
 			}
 
 			if(!line->emits_object_code) continue;
