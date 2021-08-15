@@ -5,6 +5,8 @@
 #include <magic_enum.hpp>
 
 #include "components/delta/grouped.hpp"
+#include "components/machine/processor_error.hpp"
+#include "components/machine/processor_model.hpp"
 
 isa::pep10::LocalProcessor::LocalProcessor(
 	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>& owner):
@@ -383,7 +385,7 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 		write_register(*this, Register::PC, outcome_word.value());
 		break;
 	default:
-		throw std::invalid_argument("Illegal instruction in unary decoder.");
+		return status_code(ProcessorErrc::IllegalUnaryInstruction);
 	}
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }
@@ -642,6 +644,7 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
 		write_NZVC(*this, CSR::C, 0);
 		break;
 	case instruction_mnemonic::LDWT:
+		if(addr != addressing_mode::I) return status_code(ProcessorErrc::IllegalAddressingMode);
 		write_register(*this, Register::TR, decoded_operand);
 		break;
 	case instruction_mnemonic::LDWA:
@@ -689,7 +692,7 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
 		if(outcome_void.has_error()) return outcome_void.error().clone();
 		break;
 	default:
-		throw std::invalid_argument("Illegal instruction in nonunary decoder.");
+		return status_code(ProcessorErrc::IllegalNonunaryInstruction);
 	}
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }
@@ -783,6 +786,7 @@ result<uint16_t> isa::pep10::LocalProcessor::decode_load_operand(const instructi
 			if(outcome_byte.has_error()) return outcome_byte.error().clone();
 			return outcome_byte.value();
 		default:
+			// Keep the throw. If an illegal enum is passed, we can't recover. Crashing will let us debug.
 			throw std::invalid_argument("Not a valid addressing mode");
 		}
 	}
@@ -827,10 +831,12 @@ result<uint16_t> isa::pep10::LocalProcessor::decode_load_operand(const instructi
 			if(outcome_word.has_error()) return outcome_word.error().clone();
 			return outcome_word.value();
 		default:
+		// Keep the throw. If an illegal enum is passed, we can't recover. Crashing will let us debug.
 			throw std::invalid_argument("Not a valid addressing mode");
 		}
 	}
-	throw std::invalid_argument("Not a valid addressing mode");
+	// Needed to silence compiler watning
+	throw std::invalid_argument("Unreachable");
 }
 
 result<uint16_t> isa::pep10::LocalProcessor::decode_store_operand(const instruction_definition& instr, addressing_mode mode, uint16_t addr)
@@ -839,6 +845,9 @@ result<uint16_t> isa::pep10::LocalProcessor::decode_store_operand(const instruct
 	result<uint16_t> outcome_word = result<uint16_t>(OUTCOME_V2_NAMESPACE::in_place_type<uint16_t>);
 	switch (mode)
 	{
+	// Return a non-thrown error when attempting to store immediate.
+	case addressing_mode::I:
+		return status_code(ProcessorErrc::IllegalAddressingMode);
 	case addressing_mode::D: 
 		return addr;
 	case addressing_mode::N:
@@ -857,6 +866,7 @@ result<uint16_t> isa::pep10::LocalProcessor::decode_store_operand(const instruct
 		if(outcome_word.has_error()) return outcome_word.error().clone();
 		return outcome_word.value() + read_register(*this, Register::X);
 	default:
+		// Keep the throw. If an illegal enum is passed, we can't recover. Crashing will let us debug.
 		throw std::invalid_argument("Not a valid addressing mode");
 	}
 	// Not reachable, but necessary to silence compiler warning
