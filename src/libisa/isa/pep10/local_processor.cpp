@@ -4,6 +4,8 @@
 
 #include <magic_enum.hpp>
 
+#include "components/delta/grouped.hpp"
+
 isa::pep10::LocalProcessor::LocalProcessor(
 	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>& owner):
 	_owner(owner),
@@ -148,10 +150,19 @@ uint64_t isa::pep10::LocalProcessor::instruction_count() const
 	return _cycle_count;
 }
 
-// Todo: How do I coallate deltas for the CPU register bank
-void* isa::pep10::LocalProcessor::take_delta()
+
+result<std::unique_ptr<components::delta::Base<uint8_t, uint16_t>>> isa::pep10::LocalProcessor::take_register_delta()
 {
-	throw std::logic_error("Not implemented.");
+	auto result_regs = _registers->take_delta();
+	if(result_regs.has_error()) return result_regs.error().clone();
+	return std::move(result_regs.value());	
+}
+
+result<std::unique_ptr<components::delta::Base<uint8_t, bool>>> isa::pep10::LocalProcessor::take_csr_delta()
+{
+	auto result_csr = _csrs->take_delta();
+	if(result_csr.has_error()) return result_csr.error().clone();
+	return std::move(result_csr.value());
 }
 
 result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)

@@ -99,7 +99,24 @@ void isa::pep10::LocalMachine<enable_history>::write_packed_csr(uint8_t value)
 template<bool enable_history>
 result<void> isa::pep10::LocalMachine<enable_history>::unwind_active_instruction()
 {
-	throw std::logic_error("Not implemented");
+	if constexpr(enable_history) {
+		
+		if(auto result_mem = _memory->take_delta(); result_mem.has_error()) return result_mem.error().clone();
+		else result_mem.value()->apply_backward();
+
+		if(auto result_reg = _processor->take_register_delta(); result_reg.has_error()) return result_reg.error().clone();
+		else result_reg.value()->apply_backward();
+
+		if(auto result_csr = _processor->take_csr_delta(); result_csr.has_error()) return result_csr.error().clone();
+		else result_csr.value()->apply_backward();
+		
+		return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
+	}
+	else {
+		throw status_code(StorageErrc::DeltaDisabled);
+	}
+	
+
 }
 
 template<bool enable_history>
