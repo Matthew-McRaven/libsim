@@ -1,6 +1,7 @@
 #include <array>
 #include <iostream>
 
+#include <boost/range.hpp>
 #include <catch.hpp>
 
 #include "components/storage/layered.hpp"
@@ -51,4 +52,31 @@ TEST_CASE( "Validate layered storage") {
 		CHECK(layered.read(1).value() == 15);
 	}
 
+}
+
+TEST_CASE( "Validate layered storage delta iterator") {
+	
+	SECTION("Allocate two storages, iterate over delta.")
+	{
+		using storage_t = components::storage::Layered<uint16_t, true>;
+		auto layered = storage_t(10, 0, storage_t::ReadMiss::kDefaultValue, storage_t::WriteMiss::kIgnore);
+		auto backing_store0 = std::make_shared<components::storage::Block<uint16_t, true>>(2);
+		auto backing_store1 = std::make_shared<components::storage::Block<uint16_t, true>>(8);
+		layered.append_storage(0, backing_store0).value();
+		layered.append_storage(1, backing_store1).value();
+		REQUIRE(layered.write(0, 0xde).has_value());
+		REQUIRE(layered.write(1, 0xad).has_value());
+		REQUIRE(layered.write(2, 0xbe).has_value());
+		REQUIRE(layered.write(3, 0xef).has_value());
+		auto delta = layered.take_delta().value();
+		auto begin = delta->cbegin(), end = delta->cend();
+		auto range = boost::iterator_range<decltype(begin)>(begin, end);
+		for(auto&[storage, offset, value] : range){
+			REQUIRE(storage == &layered);
+			if(offset == 0) {CHECK(value == 0xde);}
+			else if(offset == 1) {CHECK(value == 0xad);}
+			else if(offset == 2) {CHECK(value == 0xbe);}
+			else if(offset == 3) {CHECK(value == 0xef);}
+		}
+	}
 }

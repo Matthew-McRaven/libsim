@@ -1,7 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include <outcome.hpp>
 
+#include "components/delta/base.hpp"
 #include "components/machine/interace.hpp"
 #include "components/storage/base.hpp"
 #include "isa/pep10/local_processor.hpp"

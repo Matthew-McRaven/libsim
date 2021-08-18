@@ -1,6 +1,8 @@
 #include <array>
 #include <iostream>
 
+#include <boost/range.hpp>
+#include <boost/range/adaptor/indexed.hpp>
 #include <catch.hpp>
 
 #include "components/storage/mmio.hpp"
@@ -51,6 +53,26 @@ TEST_CASE( "Validate memory-mapped output storage") {
 		auto _3 = endpoint->next_value();
 		REQUIRE(_3);
 		CHECK(*_3 == 0);
+	}
+
+	SECTION("Iterate over deltas.")
+	{
+		// Create memory-mapped input storage.
+		auto in = components::storage::Output<uint16_t, true>(0);
+		auto endpoint = in.endpoint();
+		REQUIRE(in.write(0, 10).has_value());
+		REQUIRE(in.write(0, 20).has_value());
+		auto delta = in.take_delta().value();
+		auto begin = delta->cbegin(), end = delta->cend();
+		auto range = boost::iterator_range<decltype(begin)>(begin, end);
+		int index = 0;
+		for(auto &[storage, offset, value] : range){
+			if(index == 0) {CHECK((int)value == 10);}
+			else if(index == 1) {CHECK((int)value == 20);}
+			else {REQUIRE(false);}
+			index++;
+		}
+		REQUIRE(index == 2);
 	}
 
 }
