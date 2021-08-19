@@ -56,10 +56,20 @@ public:
 	result<void> clear_deltas() override;
 	// TODO: Determine how to flatten multiple delta iterators in to a single cohesive one.
 	void* deltas_between(uint64_t start, uint64_t end) const override;
+
+	// Needed to get MMIO devices from names.
+	void clear_MMIO_addresses() override;
+	void register_MMIO_address(const std::string& device_name, uint16_t address) override;
+	result<uint16_t> device_address(const std::string& device_name) const override; 
+	result<components::storage::Input<uint16_t, enable_history, uint8_t>*> 
+		input_device(const std::string& device_name) override;
+	result<components::storage::Output<uint16_t, enable_history, uint8_t>*> 
+		output_device(const std::string& device_name) override;
 private:
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> _memory;
 	std::shared_ptr<isa::pep10::LocalProcessor> _processor;
 	std::map<uint64_t, components::machine::StepDelta<uint16_t, uint8_t, uint8_t, uint16_t, uint8_t, bool>> _deltas;
+	std::map<std::string, uint16_t> _mmio_mapping;
 
 	/*
 	 * Implement MachineProcessorInterface.

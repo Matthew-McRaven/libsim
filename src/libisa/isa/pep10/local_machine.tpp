@@ -12,6 +12,7 @@ isa::pep10::LocalMachine<enable_history>::LocalMachine(
 	components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>(),
 	_memory(memory), 
 	_processor(std::make_shared<isa::pep10::LocalProcessor>(static_cast<MPI&>(*this))),
+	_mmio_mapping()
 {
 	
 }
@@ -197,6 +198,46 @@ void* isa::pep10::LocalMachine<enable_history>::deltas_between(uint64_t start, u
 	throw std::logic_error("Not implemented");
 }
 
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::clear_MMIO_addresses()
+{
+	_mmio_mapping.clear();
+}
+
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::register_MMIO_address(const std::string& device_name, uint16_t address)
+{
+	_mmio_mapping[device_name] = address;
+}
+
+template<bool enable_history>
+result<uint16_t> isa::pep10::LocalMachine<enable_history>::device_address(const std::string& device_name) const
+{
+	if(auto addr=_mmio_mapping.find(device_name); addr == _mmio_mapping.end()) return status_code(MachineErrc::NoSuchDevice);
+	else return addr->second;
+}
+
+template<bool enable_history>
+result<components::storage::Input<uint16_t, enable_history, uint8_t>*> 
+	isa::pep10::LocalMachine<enable_history>::input_device(const std::string& device_name)
+{
+	using input_t = components::storage::Input<uint16_t, enable_history, uint8_t>*;
+	if(auto addr=_mmio_mapping.find(device_name); addr == _mmio_mapping.end()) return status_code(MachineErrc::NoSuchDevice);
+	else if(auto device=_memory->device_at(addr->second); device.has_error()) return device.error().clone();
+	else if(auto as_input=dynamic_cast<input_t>(device.value()); as_input) return as_input;
+	return status_code(MachineErrc::NoSuchDevice);
+}
+
+template<bool enable_history>
+result<components::storage::Output<uint16_t, enable_history, uint8_t>*> 
+	isa::pep10::LocalMachine<enable_history>::output_device(const std::string& device_name)
+{
+	using output_t = components::storage::Output<uint16_t, enable_history, uint8_t>*;
+	if(auto addr=_mmio_mapping.find(device_name); addr == _mmio_mapping.end()) return status_code(MachineErrc::NoSuchDevice);
+	else if(auto device=_memory->device_at(addr->second); device.has_error()) return device.error().clone();
+	else if(auto as_input=dynamic_cast<output_t>(device.value()); as_input) return as_input;
+	return status_code(MachineErrc::NoSuchDevice);
+}
 template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::begin_transaction()
 {

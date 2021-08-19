@@ -88,6 +88,15 @@ public:
 	// TODO: Determine how to flatten multiple delta iterators in to a single cohesive one.
 	virtual void* deltas_between(uint64_t start, uint64_t end) const = 0;
 
+	// Needed to get MMIO devices from names.
+	virtual void clear_MMIO_addresses() = 0;
+	virtual void register_MMIO_address(const std::string& device_name, address_size_t address) = 0;
+	virtual result<address_size_t> device_address(const std::string& device_name) const = 0;
+	virtual result<components::storage::Input<address_size_t, enable_history, memory_val_size_t>*> 
+		input_device(const std::string& device_name) = 0;
+	virtual result<components::storage::Output<address_size_t, enable_history, memory_val_size_t>*> 
+		output_device(const std::string& device_name) = 0;
+
 private:
 	// Needed for cache model to work.
 	virtual void begin_transaction() = 0;
