@@ -2,16 +2,16 @@
 
 #include <boost/range/adaptor/indexed.hpp>
 
+#include "components/machine/machine_error.hpp"
 #include "local_machine.hpp"
 
-using MPI = components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>;
+using MPI = components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>;
 template<bool enable_history>
 isa::pep10::LocalMachine<enable_history>::LocalMachine(
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> memory): 
-	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>(),
+	components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>(),
 	_memory(memory), 
-	_processor(std::make_shared<isa::pep10::LocalProcessor>(
-		static_cast<MPI&>(*this)))
+	_processor(std::make_shared<isa::pep10::LocalProcessor>(static_cast<MPI&>(*this))),
 {
 	
 }

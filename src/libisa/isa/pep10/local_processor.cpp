@@ -9,7 +9,7 @@
 #include "components/machine/processor_model.hpp"
 
 isa::pep10::LocalProcessor::LocalProcessor(
-	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>& owner):
+	components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>& owner):
 	_owner(owner),
 	_registers(std::make_shared<components::storage::Block<uint8_t, true, uint16_t>>(
 		magic_enum::enum_count<isa::pep10::Register>()

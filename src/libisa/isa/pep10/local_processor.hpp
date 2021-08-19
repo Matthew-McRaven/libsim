@@ -12,7 +12,7 @@ namespace isa::pep10 {
 class LocalProcessor : public components::machine::ProcessorModel<uint16_t, uint8_t, uint16_t, uint8_t, bool, true> 
 {
 public:
-	LocalProcessor(components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>& owner);
+	LocalProcessor(components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>& owner);
 	
 
 	// Interface that must be implemented by deriving processor models
@@ -43,7 +43,7 @@ public:
 	result<std::unique_ptr<components::delta::Base<uint8_t, bool>>> take_csr_delta() override;
 	
 private:
-	components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector>& _owner;
+	components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>& _owner;
 	std::shared_ptr<components::storage::Block<uint8_t, true, uint16_t>> _registers {nullptr};
 	std::shared_ptr<components::storage::Block<uint8_t, true, bool>> _csrs {nullptr};
 	uint64_t _cycle_count {0};

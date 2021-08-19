@@ -15,7 +15,7 @@
 namespace isa::pep10 {
 
 template <bool enable_history>
-class LocalMachine : public components::machine::MachineProcessorInterface<uint16_t, uint8_t, isa::pep10::MemoryVector> 
+class LocalMachine : public components::machine::MachineProcessorInterface<uint16_t, enable_history, uint8_t, isa::pep10::MemoryVector> 
 {
 public:
 	// C.67 suppress polymorphic copy/move.

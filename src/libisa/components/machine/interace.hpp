@@ -2,20 +2,21 @@
 
 #include <outcome.hpp>
 
+#include "components/storage/mmio.hpp"
 #include "outcome_helper.hpp"
 
 namespace components::machine
 {
 // Forward declare interface so that locker will work correctly.
-template <typename address_size_t, typename val_size_t, typename memory_vector_t>
+template <typename address_size_t, bool enable_history, typename val_size_t, typename memory_vector_t>
 class MachineProcessorInterface;
 
 // Use RAII to begin/end a transaction.
 // This is super helpful since a there's too many paths through the processor caused by potential disappointment.
-template <typename address_size_t, typename val_size_t, typename memory_vector_t>
+template <typename address_size_t, bool enable_history, typename val_size_t, typename memory_vector_t>
 struct TransactionLocker
 {
-	TransactionLocker(MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& processor): _processor(processor)
+	TransactionLocker(MachineProcessorInterface<address_size_t, enable_history, val_size_t, memory_vector_t>& processor): _processor(processor)
 	{
 		_processor.begin_transaction();
 	}
@@ -30,15 +31,15 @@ struct TransactionLocker
 		_processor.end_transaction();
 	}
 private:
-	MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& _processor;
+	MachineProcessorInterface<address_size_t, enable_history, val_size_t, memory_vector_t>& _processor;
 };
 
 // Use RAII to begin/end a transaction.
 // This is super helpful since a there's too many paths through the processor caused by potential disappointment.
-template <typename address_size_t, typename val_size_t, typename memory_vector_t>
+template <typename address_size_t, bool enable_history, typename val_size_t, typename memory_vector_t>
 struct InstructionLocker
 {
-	InstructionLocker(MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& processor): _processor(processor)
+	InstructionLocker(MachineProcessorInterface<address_size_t, enable_history, val_size_t, memory_vector_t>& processor): _processor(processor)
 	{
 		_processor.begin_instruction();
 	}
@@ -53,10 +54,10 @@ struct InstructionLocker
 		_processor.end_instruction();
 	}
 private:
-	MachineProcessorInterface<address_size_t, val_size_t, memory_vector_t>& _processor;
+	MachineProcessorInterface<address_size_t, enable_history, val_size_t, memory_vector_t>& _processor;
 };
 
-template <typename address_size_t, typename memory_val_size_t, typename memory_vector_t>
+template <typename address_size_t, bool enable_history, typename memory_val_size_t,typename memory_vector_t>
 class MachineProcessorInterface
 {
 public:
@@ -69,10 +70,10 @@ public:
 	virtual address_size_t max_offset() const = 0;
 
 	// Don't allow explicit access to the transaction begin/end, as it's very easy to forget to release it.
-	TransactionLocker<address_size_t, memory_val_size_t, memory_vector_t> acquire_transaction_lock();
+	TransactionLocker<address_size_t, enable_history, memory_val_size_t, memory_vector_t> acquire_transaction_lock();
 
 	// Don't allow explicit access to the instruction begin/end, as it's very easy to forget to release it.
-	InstructionLocker<address_size_t, memory_val_size_t, memory_vector_t> acquire_instruction_lock();
+	InstructionLocker<address_size_t, enable_history, memory_val_size_t, memory_vector_t> acquire_instruction_lock();
 
 	// Needed to undo an in-progress instruction.
 	virtual result<void> unwind_active_instruction() = 0;
@@ -91,12 +92,12 @@ private:
 	// Needed for cache model to work.
 	virtual void begin_transaction() = 0;
 	virtual void end_transaction() = 0;
-	friend class TransactionLocker<address_size_t, memory_val_size_t, memory_vector_t>;
+	friend class TransactionLocker<address_size_t, enable_history, memory_val_size_t, memory_vector_t>;
 
 	// Needed for instruction statistics to work.
 	virtual void begin_instruction() = 0;
 	virtual void end_instruction() = 0;
-	friend class InstructionLocker<address_size_t, memory_val_size_t, memory_vector_t>;
+	friend class InstructionLocker<address_size_t, enable_history, memory_val_size_t, memory_vector_t>;
 
 
 };
