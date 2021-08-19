@@ -80,3 +80,23 @@ TEST_CASE( "Validate layered storage delta iterator") {
 		}
 	}
 }
+
+TEST_CASE( "Validate layered storage device_at") {
+	
+	SECTION("Allocate two storages, check with device_at")
+	{
+		using storage_t = components::storage::Layered<uint16_t, true>;
+		auto layered = storage_t(10, 0, storage_t::ReadMiss::kDefaultValue, storage_t::WriteMiss::kIgnore);
+		auto backing_store0 = std::make_shared<components::storage::Block<uint16_t, true>>(2);
+		auto backing_store1 = std::make_shared<components::storage::Block<uint16_t, true>>(8);
+		layered.append_storage(0, backing_store0).value();
+		layered.append_storage(1, backing_store1).value();
+		CHECK(layered.device_at(0).value() == backing_store0.get());
+		CHECK(layered.device_at(1).value() == backing_store0.get());
+		CHECK(layered.device_at(2).value() == backing_store0.get());
+		CHECK(layered.device_at(3).value() == backing_store1.get());
+		CHECK(layered.device_at(8).value() == backing_store1.get());
+		CHECK(layered.device_at(9).value() == backing_store1.get());
+		CHECK(layered.device_at(10).has_error());
+	}
+}

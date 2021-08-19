@@ -76,6 +76,13 @@ void helper(std::string type, T& mem)
 				else {REQUIRE(false);}
 			}
 		}
+		DYNAMIC_SECTION("device_at: " << suffix)
+		{
+			CHECK(mem.device_at(0).value() == &mem);
+			CHECK(mem.device_at(size-1).value() == &mem);
+			CHECK(mem.device_at(size).value() == &mem);
+			CHECK(mem.device_at(size+1).has_error());
+		}
 	}
 }
 
