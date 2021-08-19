@@ -5,6 +5,7 @@
 #include <outcome.hpp>
 
 #include "components/delta/base.hpp"
+#include "components/machine/delta.hpp"
 #include "components/machine/interace.hpp"
 #include "components/storage/base.hpp"
 #include "isa/pep10/local_processor.hpp"
@@ -48,10 +49,17 @@ public:
 	void clear_all(uint8_t mem_fill, uint16_t reg_fill, bool csr_fill);
 	void clear_memory(uint8_t mem_fill);
 	void clear_processor(uint16_t reg_fill, bool csr_fill);
-private:
 
+	// Step back serialization / update querries.
+	uint64_t current_time() const override;
+	result<void> save_deltas() override;
+	result<void> clear_deltas() override;
+	// TODO: Determine how to flatten multiple delta iterators in to a single cohesive one.
+	void* deltas_between(uint64_t start, uint64_t end) const override;
+private:
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> _memory;
 	std::shared_ptr<isa::pep10::LocalProcessor> _processor;
+	std::map<uint64_t, components::machine::StepDelta<uint16_t, uint8_t, uint8_t, uint16_t, uint8_t, bool>> _deltas;
 
 	/*
 	 * Implement MachineProcessorInterface.

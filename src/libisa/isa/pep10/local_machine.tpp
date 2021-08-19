@@ -140,6 +140,7 @@ void isa::pep10::LocalMachine<enable_history>::clear_all(uint8_t mem_fill, uint1
 {
 	clear_memory(mem_fill);
 	clear_processor(reg_fill, csr_fill);
+	if constexpr(enable_history) clear_deltas().value();
 }
 
 template<bool enable_history>
@@ -154,6 +155,47 @@ void isa::pep10::LocalMachine<enable_history>::clear_processor(uint16_t reg_fill
 	_processor->clear(reg_fill, csr_fill);
 }
 
+template<bool enable_history>
+uint64_t isa::pep10::LocalMachine<enable_history>::current_time() const
+{
+	return _processor->cycle_count();
+}
+
+template<bool enable_history>
+result<void> isa::pep10::LocalMachine<enable_history>::save_deltas()
+{
+	using _StepDelta = components::machine::StepDelta<uint16_t, uint8_t, uint8_t, uint16_t, uint8_t, bool>;
+	if constexpr(enable_history) {
+		auto mem = _memory->take_delta();
+		if(mem.has_error()) return mem.error().clone();
+		auto reg = _processor->take_register_delta();
+		if(reg.has_error()) return reg.error().clone();
+		auto csr = _processor->take_csr_delta();
+		if(csr.has_error()) return csr.error().clone();
+		auto merged = _StepDelta(std::move(mem.value()), std::move(reg.value()), std::move(csr.value()));
+		_deltas.emplace(current_time(), std::move(merged));
+		return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
+	} else {
+		return status_code(StorageErrc::DeltaDisabled);
+	}
+}
+
+template<bool enable_history>
+result<void> isa::pep10::LocalMachine<enable_history>::clear_deltas()
+{
+	if constexpr(enable_history) {
+		_deltas.clear();
+		return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
+	} else {
+		return status_code(StorageErrc::DeltaDisabled);
+	}
+}
+
+template<bool enable_history>
+void* isa::pep10::LocalMachine<enable_history>::deltas_between(uint64_t start, uint64_t end) const
+{
+	throw std::logic_error("Not implemented");
+}
 
 template<bool enable_history>
 void isa::pep10::LocalMachine<enable_history>::begin_transaction()

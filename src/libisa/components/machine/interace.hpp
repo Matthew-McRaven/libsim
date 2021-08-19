@@ -79,6 +79,14 @@ public:
 
 	// Needed to implement system calls.
 	virtual address_size_t address_from_vector(memory_vector_t vector) const = 0;
+
+	// Step back serialization / update querries.
+	virtual uint64_t current_time() const = 0;
+	virtual result<void> save_deltas() = 0;
+	virtual result<void> clear_deltas() = 0;
+	// TODO: Determine how to flatten multiple delta iterators in to a single cohesive one.
+	virtual void* deltas_between(uint64_t start, uint64_t end) const = 0;
+
 private:
 	// Needed for cache model to work.
 	virtual void begin_transaction() = 0;
@@ -89,6 +97,8 @@ private:
 	virtual void begin_instruction() = 0;
 	virtual void end_instruction() = 0;
 	friend class InstructionLocker<address_size_t, memory_val_size_t, memory_vector_t>;
+
+
 };
 } // namespace components::machine
 

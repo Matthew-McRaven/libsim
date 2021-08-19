@@ -71,6 +71,7 @@ result<bool> isa::pep10::LocalProcessor::step()
 			return success.error().clone();
 		}
 	}
+	_owner.save_deltas();
 	++_cycle_count;
 	// TODO: Return if the machine is still running.
 	return true;
