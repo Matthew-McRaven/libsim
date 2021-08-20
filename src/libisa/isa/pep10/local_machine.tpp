@@ -14,7 +14,7 @@ isa::pep10::LocalMachine<enable_history>::LocalMachine(
 	_processor(std::make_shared<isa::pep10::LocalProcessor>(static_cast<MPI&>(*this))),
 	_mmio_mapping()
 {
-	
+
 }
 
 template<bool enable_history>
@@ -41,7 +41,10 @@ void isa::pep10::LocalMachine<enable_history>::end_simulation()
 template<bool enable_history>
 bool isa::pep10::LocalMachine<enable_history>::halted() const
 {
-	throw std::logic_error("Not implemented.");
+	// Machine is considered halted if a non-zero value has been written to the power off port.
+	if(!_pwrOff_address) return false;
+	else if(auto mem_val = get_memory(*_pwrOff_address); mem_val.has_value()) return mem_val.value() != 0x00;
+	else return false;
 }
 
 template<bool enable_history>

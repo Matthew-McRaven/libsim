@@ -73,9 +73,8 @@ result<bool> isa::pep10::LocalProcessor::step()
 	}
 	_owner.save_deltas();
 	++_cycle_count;
-	// TODO: Return if the machine is still running.
-	return true;
-	//return halted();
+	// Step returns false if the machine is halted, therefore must negate condition.
+	return !_owner.halted();
 }
 
 bool isa::pep10::LocalProcessor::can_step_into() const
