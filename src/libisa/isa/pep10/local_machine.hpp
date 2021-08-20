@@ -53,7 +53,7 @@ public:
 	void clear_processor(uint16_t reg_fill, bool csr_fill);
 
 	// Step back serialization / update querries.
-	uint64_t current_time() const override;
+	uint64_t cycle_count() const override;
 	result<void> save_deltas() override;
 	result<void> clear_deltas() override;
 	// TODO: Determine how to flatten multiple delta iterators in to a single cohesive one.

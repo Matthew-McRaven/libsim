@@ -173,7 +173,7 @@ void isa::pep10::LocalMachine<enable_history>::clear_processor(uint16_t reg_fill
 }
 
 template<bool enable_history>
-uint64_t isa::pep10::LocalMachine<enable_history>::current_time() const
+uint64_t isa::pep10::LocalMachine<enable_history>::cycle_count() const
 {
 	return _processor->cycle_count();
 }
@@ -190,7 +190,7 @@ result<void> isa::pep10::LocalMachine<enable_history>::save_deltas()
 		auto csr = _processor->take_csr_delta();
 		if(csr.has_error()) return csr.error().clone();
 		auto merged = _StepDelta(std::move(mem.value()), std::move(reg.value()), std::move(csr.value()));
-		_deltas.emplace(current_time(), std::move(merged));
+		_deltas.emplace(cycle_count(), std::move(merged));
 		return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 	} else {
 		return status_code(StorageErrc::DeltaDisabled);
