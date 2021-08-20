@@ -26,6 +26,19 @@ result<bool> isa::pep10::LocalMachine<enable_history>::step()
 }
 
 template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::begin_simulation()
+{
+	if(auto pwr_val = device_address("pwrOff"); pwr_val.has_value()) _pwrOff_address = pwr_val.value();
+	else _pwrOff_address = std::nullopt;
+}
+
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::end_simulation()
+{
+
+}
+
+template<bool enable_history>
 bool isa::pep10::LocalMachine<enable_history>::halted() const
 {
 	throw std::logic_error("Not implemented.");

@@ -30,6 +30,8 @@ public:
 	/*
 	 * Implement MachineProcessorInterface.
 	 */
+	void begin_simulation() override;
+	void end_simulation() override;
 	bool halted() const override;
 	result<uint8_t> get_memory(uint16_t address) const override;
 	result<void> set_memory(uint16_t address, uint8_t value) override;
@@ -68,6 +70,7 @@ public:
 private:
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> _memory;
 	std::shared_ptr<isa::pep10::LocalProcessor> _processor;
+	std::optional<uint16_t> _pwrOff_address;
 	std::map<uint64_t, components::machine::StepDelta<uint16_t, uint8_t, uint8_t, uint16_t, uint8_t, bool>> _deltas;
 	std::map<std::string, uint16_t> _mmio_mapping;
 
