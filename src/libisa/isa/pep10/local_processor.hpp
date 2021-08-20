@@ -4,7 +4,7 @@
 
 #include "components/delta/base.hpp"
 #include "components/machine/processor_model.hpp"
-#include "components/machine/interace.hpp"
+#include "components/machine/interface.hpp"
 #include "components/storage/block.hpp"
 #include "isa/pep10/pep10.hpp"
 namespace isa::pep10 {

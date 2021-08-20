@@ -84,7 +84,7 @@ public:
 	virtual address_size_t address_from_vector(memory_vector_t vector) const = 0;
 
 	// Step back serialization / update querries.
-	virtual uint64_t current_time() const = 0;
+	virtual uint64_t cycle_count() const = 0;
 	virtual result<void> save_deltas() = 0;
 	virtual result<void> clear_deltas() = 0;
 	// TODO: Determine how to flatten multiple delta iterators in to a single cohesive one.

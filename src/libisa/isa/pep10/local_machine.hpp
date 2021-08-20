@@ -6,7 +6,7 @@
 
 #include "components/delta/base.hpp"
 #include "components/machine/delta.hpp"
-#include "components/machine/interace.hpp"
+#include "components/machine/interface.hpp"
 #include "components/storage/base.hpp"
 #include "isa/pep10/local_processor.hpp"
 #include "isa/pep10/pep10.hpp"
