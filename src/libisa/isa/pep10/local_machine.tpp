@@ -291,3 +291,30 @@ result<void> isa::pep10::load_bytes(std::shared_ptr<isa::pep10::LocalMachine<ena
 	}
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }
+
+// Run the machine forever, or until a value is written to the pwrOff port.
+template<bool enable_history>
+result<void> isa::pep10::run(std::shared_ptr<LocalMachine<enable_history>> machine)
+{
+	result<bool> res = true;
+	do {
+		res =std::move(machine->step());
+		if(res.has_error()) return res.error().clone();
+		// TODO: Add "break" for breakpoints.
+	} while (res.value());
+	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
+	
+}
+
+// Run the machine forever, or until a value is written to the pwrOff port, or a maximum number of steps is exceeded.
+template<bool enable_history>
+result<bool> isa::pep10::run(std::shared_ptr<LocalMachine<enable_history>> machine, uint64_t max_timesteps)
+{
+	result<bool> res = true;
+	do {
+		res =std::move(machine->step());
+		if(res.has_error()) return res.error().clone();
+		// TODO: Add "break" for breakpoints.
+	} while (res.value());
+	return result<bool>(!machine->halted());
+}

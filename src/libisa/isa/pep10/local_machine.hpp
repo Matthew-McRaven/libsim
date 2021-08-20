@@ -87,5 +87,13 @@ private:
 template<bool enable_history>
 result<void> load_bytes(std::shared_ptr<LocalMachine<enable_history>> machine, std::vector<uint8_t> bytes, uint16_t offset);
 
+// Run the machine forever, or until a value is written to the pwrOff port.
+template<bool enable_history>
+result<void> run(std::shared_ptr<LocalMachine<enable_history>> machine);
+
+// Run the machine forever, or until a value is written to the pwrOff port, or a maximum number of steps is exceeded.
+template<bool enable_history>
+result<bool> run(std::shared_ptr<LocalMachine<enable_history>> machine, uint64_t max_timesteps);
+
 } // namespace isa::pep10
 #include "local_machine.tpp"
