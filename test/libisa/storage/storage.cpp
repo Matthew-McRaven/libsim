@@ -22,7 +22,7 @@ void helper(std::string type, T& mem)
 		}
 
 		DYNAMIC_SECTION( "Check that we can read all in-bounds addresses: " << suffix) {
-			for(auto it=0; it<size; it++) {
+			for(auto it=0; it<=size; it++) {
 				CHECK_NOTHROW(mem.read(it).value());
 			}
 		}
@@ -44,10 +44,10 @@ void helper(std::string type, T& mem)
 		#endif
 
 		DYNAMIC_SECTION( "Check that all bytes can be written: " << suffix) {
-			for(auto it=0; it<size; it++) {
+			for(auto it=0; it<=size; it++) {
 				CHECK_NOTHROW(mem.write(it, it+8));
 			}
-			for(auto it=0; it<size; it++) {
+			for(auto it=0; it<=size; it++) {
 				auto i = mem.read(it);
 				REQUIRE_FALSE(i.has_failure());
 				CHECK_NOTHROW(i.value() == it+8);
@@ -56,7 +56,7 @@ void helper(std::string type, T& mem)
 
 		DYNAMIC_SECTION( "Check that all bytes can be cleared: " << suffix) {
 			mem.clear();
-			for(auto it=0; it<size; it++) {
+			for(auto it=0; it<=size; it++) {
 				auto i = mem.read(it);
 				REQUIRE_FALSE(i.has_failure());
 				CHECK_NOTHROW(i.value() == 0);
@@ -66,13 +66,13 @@ void helper(std::string type, T& mem)
 		{
 			mem.clear();
 			CHECK(mem.write(0, 0xfe).has_value());
-			CHECK(mem.write(size-1, 0xed).has_value());
+			CHECK(mem.write(size, 0xed).has_value());
 			auto delta = mem.take_delta().value();
 			auto begin = delta->cbegin(), end = delta->cend();
 			auto range = boost::iterator_range<decltype(begin)>(begin, end);
 			for(auto&[storage, offset, value] : range){
 				if(offset == 0) {CHECK(value == 0xfe);}
-				else if (offset == size-1) {CHECK(value == 0xed);}
+				else if (offset == size) {CHECK(value == 0xed);}
 				else {REQUIRE(false);}
 			}
 		}
@@ -83,6 +83,14 @@ void helper(std::string type, T& mem)
 			CHECK(mem.device_at(size).value() == &mem);
 			CHECK(mem.device_at(size+1).has_error());
 		}
+		DYNAMIC_SECTION("load_bytes: " << suffix)
+		{
+			CHECK(components::storage::load_bytes(mem, {0xDE, 0xAD, 0xBE, 0xEF}, size).has_value());
+			CHECK(mem.read(size).value() == 0xDE);
+			CHECK(mem.read(0).value() == 0xAD);
+			CHECK(mem.read(1).value() == 0xBE);
+			CHECK(mem.read(2).value() == 0xEF);
+		}
 	}
 }
 
@@ -90,9 +98,9 @@ TEST_CASE( "Validate storage systems") {
 	using tp = components::storage::Base<uint8_t>;
 	// Use shared points to automatically clean up our allocations.
 	std::vector<std::tuple<std::string, std::shared_ptr<tp>>> arr = {
-		{"Block", std::shared_ptr<tp>(new components::storage::Block<uint8_t>(0))},
-		{"Map", std::shared_ptr<tp>(new components::storage::Map<uint8_t>(0, 0))},
-		{"Range", std::shared_ptr<tp>(new components::storage::Range<uint8_t>(0, 0))}
+		{"Range", std::shared_ptr<tp>(new components::storage::Range<uint8_t>(0, 0))},
+		//{"Block", std::shared_ptr<tp>(new components::storage::Block<uint8_t>(0))},
+		//{"Map", std::shared_ptr<tp>(new components::storage::Map<uint8_t>(0, 0))},
 	}; 
 	for(auto& [type, store] : arr) {
 		helper(type, *store);
