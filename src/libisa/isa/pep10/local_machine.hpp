@@ -85,7 +85,7 @@ private:
 
 // Will "wrap-around" if bytes exceed maximum offset.
 template<bool enable_history>
-result<void> load_bytes(std::shared_ptr<LocalMachine<enable_history>> machine, std::vector<uint8_t> bytes, uint16_t offset);
+result<void> load_bytes(std::shared_ptr<LocalMachine<enable_history>> machine, const std::vector<uint8_t>& bytes, uint16_t offset);
 
 // Run the machine forever, or until a value is written to the pwrOff port.
 template<bool enable_history>

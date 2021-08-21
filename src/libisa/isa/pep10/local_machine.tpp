@@ -282,11 +282,15 @@ void isa::pep10::LocalMachine<enable_history>::end_instruction()
 
 template<bool enable_history>
 result<void> isa::pep10::load_bytes(std::shared_ptr<isa::pep10::LocalMachine<enable_history>> machine, 
-	std::vector<uint8_t> bytes, uint16_t offset)
+	const std::vector<uint8_t>& bytes, uint16_t offset)
 {
+	// Must add 1 to modulus, otherwise we won't be able to "hit" the maximum address.
+	assert(machine->max_offset() != 0xFFFF'FFFF'FFFF'FFFF);
+	const uint64_t modulo = machine->max_offset() + 1;
+
 	for(auto [index, byte] : bytes | boost::adaptors::indexed(0))
 	{
-		auto res = machine->write_memory((offset+index)%machine->max_offset(), byte);
+		auto res = machine->set_memory((offset+index)%modulo, byte);
 		if(res.has_failure()) return res.error().clone();
 	}
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
