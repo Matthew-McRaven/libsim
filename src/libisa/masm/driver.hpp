@@ -2,6 +2,8 @@
 
 #include <queue>
 
+#include <elfio/elfio.hpp>
+
 #include "masm/project/section.hpp"
 #include "masm/project/project.hpp"
 #include "masm/frontend/tokenizer.hpp"
@@ -22,7 +24,8 @@ namespace masm
 		using project_t = std::shared_ptr<masm::project::project<address_size_t> >;
 		using image_t = std::shared_ptr<masm::elf::image<address_size_t> >;
 		using section_t = std::shared_ptr<masm::elf::code_section<address_size_t> >;
-		using work_t = std::variant<source_t, section_t, image_t>;
+		using elf_image_t = std::shared_ptr<ELFIO::elfio>;
+		using work_t = std::variant<source_t, section_t, image_t, elf_image_t>;
 		using work_iterable_t = std::list<std::pair<stage_t, work_t> >;
 		using result_t = std::tuple<bool,  work_iterable_t>;
 		using transform_t = std::function<result_t(project_t&, std::list<work_t>&)>;
