@@ -90,14 +90,25 @@ std::shared_ptr<asmb::pep10::driver::driver_t> asmb::pep10::driver::make_driver(
 	transform_t tx_elf = [=](project_t& proj, std::list<driver_t::work_t>& work) {
 		bool success = true;
 		driver_t::work_iterable_t result_work;
-		std::transform(work.begin(), work.end(), std::back_inserter(result_work),[&](auto value){
-			auto local_success = masm::elf::pack_image(proj, std::get<driver_t::image_t>(value));
-			success &= local_success;
-			return driver_t::work_iterable_t::value_type{stage_t::PACK, value};
-		});
+		for(auto value : work) {
+			if(proj->as_elf == nullptr) {
+				success &= masm::elf::pack_image(proj, std::get<driver_t::image_t>(value));
+				result_work.emplace_back(driver_t::work_iterable_t::value_type{stage_t::PACK, proj->as_elf});
+			}
+		}
 		return driver_t::result_t{success, result_work};
 	};
 	driver->register_transform(tx_elf, stage_t::ADDRESS_ASSIGN);
+
+	transform_t tx_end = [=](project_t& proj, std::list<driver_t::work_t>& work) {
+		driver_t::work_iterable_t result_work;
+		std::transform(work.begin(), work.end(), std::back_inserter(result_work),[&](auto elf_image){
+			return driver_t::work_iterable_t::value_type{stage_t::FINISHED, elf_image};
+		});
+		return driver_t::result_t{true, result_work};
+	};
+	driver->register_transform(tx_end, stage_t::PACK);
+
 	return driver;
 }
 
