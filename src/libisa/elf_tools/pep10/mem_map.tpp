@@ -22,7 +22,7 @@ result<std::tuple<uint16_t, std::shared_ptr<components::storage::Base<uint16_t, 
 	}
 
 	if(os == nullptr) return status_code(PepElfErrc::NoOSText);
-	// NB: get_size() may be off-by one.
+	// Must convert size (1-indexed) to maximum offset (0-indexed), so must subtract 1.
 	auto os_ram = std::make_shared<components::storage::Block<uint16_t, enable_history, uint8_t>>(os->get_size()-1);
 	auto os_rom = std::make_shared<components::storage::ReadOnly<uint16_t, enable_history, uint8_t>>(os_ram, components::storage::WriteAttemptPolicy::kIgnore);
 	return {os->get_address(), os_rom};
@@ -58,8 +58,9 @@ result<std::tuple<uint16_t, std::shared_ptr<components::storage::Base<uint16_t, 
 	}
 
 	if(os == nullptr) return status_code(PepElfErrc::NoOSText);
-	// RAM will span from [0, start of os]. Layered storage will prefer OS to RAM, however.
-	auto ram = std::shared_ptr<components::storage::Block<uint16_t, enable_history, uint8_t>>(os->get_address()-1);
+	// RAM will span from [0, start of os). Layered storage will prefer OS to RAM, however.
+	// Must convert size (1-indexed) to maximum offset (0-indexed), so must subtract 1.
+	auto ram = std::make_shared<components::storage::Block<uint16_t, enable_history, uint8_t>>(os->get_address()-1);
 	return {0, ram};
 }
 
