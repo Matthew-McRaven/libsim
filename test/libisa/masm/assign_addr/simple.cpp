@@ -14,7 +14,7 @@ TEST_CASE( "Allocate address to simple programs", "[masm::ir::assign_addr]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "os";
 		file->body = ".BURN 0x0001\nASRA\nNOTX\n.END\n";
-		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::ADDRESS_ASSIGN);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::FINISHED);
 		std::cout << res.second;
 		REQUIRE(res.first);
 		auto x = project->image->os;
@@ -40,7 +40,7 @@ TEST_CASE( "Allocate address to simple programs", "[masm::ir::assign_addr]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "os";
 		file->body = ".BURN 0x0005\nbr main\nmain:ADDA 1,i\n.END\n";
-		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::ADDRESS_ASSIGN);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::FINISHED);
 		std::cout << res.second;
 		REQUIRE(res.first);
 		auto x = project->image->os;
@@ -66,7 +66,7 @@ TEST_CASE( "Allocate address to simple programs", "[masm::ir::assign_addr]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "os";
 		file->body = ".BURN 0x0004\n.WORD 1\n.BYTE 2\n.WORD 0xffff\n.END\n";
-		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::ADDRESS_ASSIGN);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::FINISHED);
 		std::cout << res.second;
 		REQUIRE(res.first);
 		auto x = project->image->os;
@@ -87,7 +87,7 @@ TEST_CASE( "Allocate address to simple programs", "[masm::ir::assign_addr]"  ) {
 		auto file = std::make_shared<masm::project::source_file>();
 		file->name = "os";
 		file->body = ".BURN 0x0007\n.ASCII \"hi\"\n.ASCII \"world\"\n.BYTE 2\n.END\n";
-		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::ADDRESS_ASSIGN);
+		auto res = driver->assemble_os(project, file, masm::project::toolchain_stage::FINISHED);
 		std::cout << res.second;
 		REQUIRE(res.first);
 		auto x = project->image->os;
