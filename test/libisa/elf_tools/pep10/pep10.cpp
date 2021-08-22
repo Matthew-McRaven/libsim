@@ -47,4 +47,14 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 		// And the default OS should go right up to the maximum offset.
 		CHECK(ROM_offset + ROM_storage->max_offset() == 0xFFFF);
 	}
+
+	SECTION("RAM in correct location and is correct size.") {	
+		auto image = os_to_image();
+		auto RAM_result = elf_tools::pep10::construct_ram<false>(*image);
+		REQUIRE(RAM_result.has_value());
+		auto [RAM_offset, RAM_storage] = RAM_result.value();
+		// RAM should not unexpectedly change in size or location.
+		CHECK(RAM_offset == 0x0000);
+		CHECK(RAM_storage->max_offset() == 0xFAAE);
+	}
 }
