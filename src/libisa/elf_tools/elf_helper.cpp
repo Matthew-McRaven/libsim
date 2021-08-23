@@ -12,7 +12,7 @@ ELFIO::section* elf_tools::find_section(ELFIO::elfio& image, const std::string& 
 	return sec;
 }
 
-const ELFIO::section* elf_tools::find_section(const ELFIO::elfio& image, const std::string& name)
+ELFIO::section* elf_tools::find_section(const ELFIO::elfio& image, const std::string& name)
 {
 	ELFIO::section* sec = nullptr;
 	// Section 0 contains nothing useful, so we can skip it with preincrement.
