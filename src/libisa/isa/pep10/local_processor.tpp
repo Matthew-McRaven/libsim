@@ -199,10 +199,15 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 	result<uint8_t> outcome_byte = result<uint8_t>(OUTCOME_V2_NAMESPACE::in_place_type<uint8_t>);
 	result<void> outcome_void = result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 
+	sp = read_register(*this, Register::SP);
+	acc = read_register(*this, Register::A);
+	idx = read_register(*this, Register::X);
     switch(instr->mnemonic) {
 	case instruction_mnemonic::RET:
 		outcome_word = std::move(read_word(sp));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
+		write_register(*this, Register::PC, outcome_word.value());
+		write_register(*this, Register::SP, sp+2);
 		break;
 
 	case instruction_mnemonic::SRET:
@@ -210,31 +215,42 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 		outcome_byte = std::move(read_byte(sp));
 		if(outcome_byte.has_failure()) return outcome_byte.error().clone();
 		// Function will automatically mask out bits that don't matter
+		write_packed_NZVC(*this, outcome_byte.value());
 		
         outcome_word = std::move(read_word(sp + 1));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
+		write_register(*this, Register::A, outcome_word.value());
 
         outcome_word = std::move(read_word(sp + 3));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
+		write_register(*this, Register::X, outcome_word.value());
 
         outcome_word = std::move(read_word(sp + 5));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
+		write_register(*this, Register::PC, outcome_word.value());
 
         outcome_word = std::move(read_word(sp + 7));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
+		write_register(*this, Register::SP, outcome_word.value());
         break;
 
 	case instruction_mnemonic::MOVSPA:
+		write_register(*this, Register::A, sp);
 		break;
 	case instruction_mnemonic::MOVASP:
+		write_register(*this, Register::SP, acc);
 		break;
 
 	case instruction_mnemonic::MOVFLGA:
+		write_register(*this, Register::A, ::isa::pep10::read_packed_NZVC(*this));
 		break;
 	case instruction_mnemonic::MOVAFLG:
+		write_packed_NZVC(*this, acc);
 		break;
 
 	case instruction_mnemonic::MOVTA:
+		temp_word = read_register(*this, Register::TR);
+		write_register(*this, Register::A, temp_word);
 		break;
 
 	case instruction_mnemonic::NOP:
@@ -242,70 +258,114 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 
 	case instruction_mnemonic::NOTA:
 		acc = ~acc;
+		write_register(*this, Register::A, acc);
+		write_NZVC(*this, CSR::N, acc & 0x8000);
+		write_NZVC(*this, CSR::Z, acc == 0x0);
 		break;
 	case instruction_mnemonic::NOTX:
 		idx = ~idx;
+		write_register(*this, Register::X, idx);
+		write_NZVC(*this, CSR::N, idx & 0x8000);
+		write_NZVC(*this, CSR::Z, idx == 0x0);
 		break;
 
 	case instruction_mnemonic::NEGA:
 		acc = ~acc + 1;
+		write_register(*this, Register::A, acc);
+		write_NZVC(*this, CSR::N, acc & 0x8000);
+		write_NZVC(*this, CSR::Z, acc == 0x0);
+		write_NZVC(*this, CSR::V, acc == 0x8000);
 		break;
 	case instruction_mnemonic::NEGX:
 		idx = ~idx + 1;
+		write_register(*this, Register::X, idx);
+		write_NZVC(*this, CSR::N, idx & 0x8000);
+		write_NZVC(*this, CSR::Z, idx == 0x0);
+		write_NZVC(*this, CSR::V, idx == 0x8000);
 		break;
 
 	case instruction_mnemonic::ASLA:
 		// Store in temp, because we need acc for status bit computation.
 		temp_word = static_cast<uint16_t>(acc<<1);
+		write_register(*this, Register::A, temp_word);
 		// Is negative if high order bit is 1.
+        write_NZVC(*this, CSR::N, temp_word & 0x8000);
          // Is zero if all bits are 0's.
+        write_NZVC(*this, CSR::Z, temp_word == 0);
         // Signed overflow occurs when the starting & ending values of the high order bit differ (a xor temp == 1).
         // Then shift the result over by 15 places to only keep high order bit (which is the sign).
+        write_NZVC(*this, CSR::V, (acc ^ temp_word) >> 15);
         // Carry out if register starts with high order 1.
+        write_NZVC(*this, CSR::C, acc & 0x8000);
 		break;
 	case instruction_mnemonic::ASLX:
 		// Store in temp, because we need acc for status bit computation.
 		temp_word = static_cast<uint16_t>(idx<<1);
+		write_register(*this, Register::X, temp_word);
 		// Is negative if high order bit is 1.
+        write_NZVC(*this, CSR::N, temp_word & 0x8000);
          // Is zero if all bits are 0's.
+        write_NZVC(*this, CSR::Z, temp_word == 0);
         // Signed overflow occurs when the starting & ending values of the high order bit differ (a xor temp == 1).
         // Then shift the result over by 15 places to only keep high order bit (which is the sign).
+        write_NZVC(*this, CSR::V, (idx ^ temp_word) >> 15);
         // Carry out if register starts with high order 1.
+        write_NZVC(*this, CSR::C, idx & 0x8000);
 		break;
 
 	case instruction_mnemonic::ASRA:
 		// Shift all bits to the right by 1 position. Since using unsigned shift, must explicitly
         // perform sign extension by hand.
         temp_word = static_cast<uint16_t>(acc >> 1 | ((acc & 0x8000) ? 1<<15 : 0));
+		write_register(*this, Register::A, temp_word);
 		// Is negative if high order bit is 1.
+        write_NZVC(*this, CSR::N, temp_word & 0x8000);
          // Is zero if all bits are 0's.
+        write_NZVC(*this, CSR::Z, temp_word == 0);
         // Carry out if register starts with low order 1.
+        write_NZVC(*this, CSR::C, acc & 0x1);
         break;
 	case instruction_mnemonic::ASRX:
 		// Shift all bits to the right by 1 position. Since using unsigned shift, must explicitly
         // perform sign extension by hand.
         temp_word = static_cast<uint16_t>(idx >> 1 | ((idx & 0x8000) ? 1<<15 : 0));
+        write_register(*this, Register::X, temp_word);                                                       
 		// Is negative if high order bit is 1.
+        write_NZVC(*this, CSR::N, temp_word & 0x8000);
          // Is zero if all bits are 0's.
+        write_NZVC(*this, CSR::Z, temp_word == 0);
         // Carry out if register starts with low order 1.
+        write_NZVC(*this, CSR::C, idx & 0x1);
         break;
 
 	case instruction_mnemonic::ROLA:
 		// Shift the carry in to low order bit.
+		temp_word = static_cast<uint16_t> (acc << 1 | (read_NZVC(*this, CSR::C) ? 1 : 0));
+        write_register(*this, Register::A, temp_word);
 		// Carry out if register starts with high order 1.                       
+		write_NZVC(*this, CSR::C, acc & 0x8000);
         break;
 	case instruction_mnemonic::ROLX:
 		// Shift the carry in to low order bit.
+		temp_word = static_cast<uint16_t> (idx << 1 | (read_NZVC(*this, CSR::C) ? 1 : 0));
+        write_register(*this, Register::X, temp_word);      
 		// Carry out if register starts with high order 1.                       
+		write_NZVC(*this, CSR::C, idx & 0x8000);
         break;
 
 	case instruction_mnemonic::RORA:
 		// Shift the carry in to high order bit.
+		temp_word = static_cast<uint16_t> (acc >> 1 | (read_NZVC(*this, CSR::C) ? 1<<15 : 0));
+        write_register(*this, Register::A, temp_word);      
 		// Carry out if register starts with low order 1.                       
+		write_NZVC(*this, CSR::C, acc & 0x1);
         break;
 	case instruction_mnemonic::RORX:
 		// Shift the carry in to high order bit.
+		temp_word = static_cast<uint16_t> (idx >> 1 | (read_NZVC(*this, CSR::C) ? 1<<15 : 0));
+        write_register(*this, Register::X, temp_word);      
 		// Carry out if register starts with low order 1.                       
+		write_NZVC(*this, CSR::C, idx & 0x1);
         break;
 
 	case instruction_mnemonic::SCALL:
@@ -322,6 +382,7 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
         // Writes to mem[T-3], mem[T-4].
+		outcome_void = std::move(write_word(temp_word - 4, read_register(*this, Register::PC)));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
         // Writes to mem[T-5], mem[T-6].
@@ -333,16 +394,20 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
         // Writes NZVC to mem[T-9].
+		outcome_void = std::move(write_byte(temp_word - 9, ::isa::pep10::read_packed_NZVC(*this)));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
+		write_register(*this, Register::SP, temp_word - 9);
 
 		vector_value = _owner.address_from_vector(MemoryVector::kTrap_Handler);
 		outcome_word = std::move(read_word(vector_value));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
+		write_register(*this, Register::PC, outcome_word.value());
 		break;
 	default:
 		return status_code(ProcessorErrc::IllegalUnaryInstruction);
 	}
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
+
 }
 
 template<bool enable_history>
