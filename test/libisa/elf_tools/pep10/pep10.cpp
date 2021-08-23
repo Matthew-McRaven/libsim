@@ -111,4 +111,53 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 			}
 		}
 	}
+	SECTION("Layered memory device has correct layout.") {	
+		auto image = os_to_image();
+		auto storage_result = elf_tools::pep10::construct_memory_map<false>(*image);
+		REQUIRE(storage_result.has_value());
+		auto storage = storage_result.value();
+		// Pick two addresses that are definitely RAM/ROM, so that we can check that the correct device is returned.
+		auto RAM_baseline = storage->device_at(0x0000).value();
+		auto ROM_baseline = storage->device_at(0xFFFF).value();
+
+		// Test that RAM spans from 0x0000 to 0xFAAA
+		for(uint16_t it=0; it<0xFAAB; it++) {
+			auto RAM_result = storage->device_at(it);
+			REQUIRE(RAM_result.has_value());
+			auto RAM = dynamic_cast<components::storage::Block<uint16_t, false, uint8_t>*>(RAM_result.value());
+			CHECK(RAM != nullptr);
+			CHECK(RAM == RAM_baseline);
+		}
+
+		// Test that ROM spans from 0xFAAF to 0xFFFF
+		for(uint32_t it=0xFAAF; it<=0xFFFF; it++) {
+			auto ROM_result = storage->device_at((uint16_t)it);
+			REQUIRE(ROM_result.has_value());
+			auto ROM = dynamic_cast<components::storage::Block<uint16_t, false, uint8_t>*>(ROM_result.value());
+			CHECK(ROM != nullptr);
+			CHECK(ROM == ROM_baseline);
+		}
+
+		// Test MMIO ports in alphabetic order
+		auto charIn_result = storage->device_at(0xFAAC);
+		REQUIRE(charIn_result.has_value());
+		auto charIn = dynamic_cast<components::storage::Input<uint16_t, false, uint8_t>*>(charIn_result.value());
+		CHECK(charIn != nullptr);
+
+		auto charOut_result = storage->device_at(0xFAAD);
+		REQUIRE(charOut_result.has_value());
+		auto charOut = dynamic_cast<components::storage::Output<uint16_t, false, uint8_t>*>(charOut_result.value());
+		CHECK(charOut != nullptr);
+
+		auto diskIn_result = storage->device_at(0xFAAB);
+		REQUIRE(diskIn_result.has_value());
+		auto diskIn = dynamic_cast<components::storage::Input<uint16_t, false, uint8_t>*>(diskIn_result.value());
+		CHECK(diskIn != nullptr);
+
+		auto pwrOff_result = storage->device_at(0xFAAE);
+		REQUIRE(pwrOff_result.has_value());
+		auto pwrOff = dynamic_cast<components::storage::Output<uint16_t, false, uint8_t>*>(pwrOff_result.value());
+		CHECK(pwrOff != nullptr);
+
+	}
 }
