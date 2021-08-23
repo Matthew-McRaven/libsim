@@ -69,7 +69,7 @@ public:
 		output_device(const std::string& device_name) override;
 private:
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> _memory;
-	std::shared_ptr<isa::pep10::LocalProcessor> _processor;
+	std::shared_ptr<isa::pep10::LocalProcessor<enable_history>> _processor;
 	std::optional<uint16_t> _pwrOff_address;
 	std::map<uint64_t, components::machine::StepDelta<uint16_t, uint8_t, uint8_t, uint16_t, uint8_t, bool>> _deltas;
 	std::map<std::string, uint16_t> _mmio_mapping;

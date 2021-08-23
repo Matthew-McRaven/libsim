@@ -9,10 +9,12 @@
 #include "isa/pep10/pep10.hpp"
 namespace isa::pep10 {
 
-class LocalProcessor : public components::machine::ProcessorModel<uint16_t, uint8_t, uint16_t, uint8_t, bool, true> 
+template <bool enable_history>
+class LocalProcessor : public components::machine::ProcessorModel<uint16_t, uint8_t, uint16_t, uint8_t, bool, enable_history> 
 {
 public:
-	LocalProcessor(components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>& owner);
+	LocalProcessor(){}
+	LocalProcessor(components::machine::MachineProcessorInterface<uint16_t, enable_history, uint8_t, isa::pep10::MemoryVector>& owner);
 	
 
 	// Interface that must be implemented by deriving processor models
@@ -43,9 +45,9 @@ public:
 	result<std::unique_ptr<components::delta::Base<uint8_t, bool>>> take_csr_delta() override;
 	
 private:
-	components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>& _owner;
-	std::shared_ptr<components::storage::Block<uint8_t, true, uint16_t>> _registers {nullptr};
-	std::shared_ptr<components::storage::Block<uint8_t, true, bool>> _csrs {nullptr};
+	components::machine::MachineProcessorInterface<uint16_t, enable_history, uint8_t, isa::pep10::MemoryVector>& _owner;
+	std::shared_ptr<components::storage::Block<uint8_t, enable_history, uint16_t>> _registers {nullptr};
+	std::shared_ptr<components::storage::Block<uint8_t, enable_history, bool>> _csrs {nullptr};
 	uint64_t _cycle_count {0};
 
 	result<void> unary_dispatch(uint8_t is);
@@ -60,12 +62,25 @@ private:
 	result<uint16_t> decode_store_operand(const isa::pep10::instruction_definition& is, isa::pep10::addressing_mode mode, uint16_t addr);
 };
 
-uint16_t read_register(const LocalProcessor& proc, isa::pep10::Register reg);
-void write_register(LocalProcessor& proc, isa::pep10::Register reg, uint16_t value);
+template <bool enable_history>
+uint16_t read_register(const LocalProcessor<enable_history>& proc, isa::pep10::Register reg);
 
-bool read_NZVC(const LocalProcessor&proc, isa::pep10::CSR reg);
-void write_NZVC(LocalProcessor& proc, isa::pep10::CSR reg, bool value);
-uint8_t read_packed_NZVC(const LocalProcessor& proc);
-void write_packed_NZVC(LocalProcessor& proc, uint8_t packed);
+template <bool enable_history>
+void write_register(LocalProcessor<enable_history>& proc, isa::pep10::Register reg, uint16_t value);
+
+
+template <bool enable_history>
+bool read_NZVC(const LocalProcessor<enable_history>&proc, isa::pep10::CSR reg);
+
+template <bool enable_history>
+void write_NZVC(LocalProcessor<enable_history>& proc, isa::pep10::CSR reg, bool value);
+
+template <bool enable_history>
+uint8_t read_packed_NZVC(const LocalProcessor<enable_history>& proc);
+
+template <bool enable_history>
+void write_packed_NZVC(LocalProcessor<enable_history>& proc, uint8_t packed);
 
 };
+
+#include "local_processor.tpp"

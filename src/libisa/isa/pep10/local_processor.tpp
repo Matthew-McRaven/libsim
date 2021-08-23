@@ -8,20 +8,22 @@
 #include "components/machine/processor_error.hpp"
 #include "components/machine/processor_model.hpp"
 
-isa::pep10::LocalProcessor::LocalProcessor(
-	components::machine::MachineProcessorInterface<uint16_t, true, uint8_t, isa::pep10::MemoryVector>& owner):
+template <bool enable_history>
+isa::pep10::LocalProcessor<enable_history>::LocalProcessor(
+	components::machine::MachineProcessorInterface<uint16_t, enable_history, uint8_t, isa::pep10::MemoryVector>& owner):
 	_owner(owner),
-	_registers(std::make_shared<components::storage::Block<uint8_t, true, uint16_t>>(
+	_registers(std::make_shared<components::storage::Block<uint8_t, enable_history, uint16_t>>(
 		magic_enum::enum_count<isa::pep10::Register>()
 	)),
-	_csrs(std::make_shared<components::storage::Block<uint8_t, true, bool>>(
+	_csrs(std::make_shared<components::storage::Block<uint8_t, enable_history, bool>>(
 		magic_enum::enum_count<isa::pep10::CSR>()
 	))
 {
 
 }
 
-result<bool> isa::pep10::LocalProcessor::step()
+template <bool enable_history>
+result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 {
 	using ::isa::pep10::read_register;
 	using ::isa::pep10::write_register;
@@ -71,70 +73,82 @@ result<bool> isa::pep10::LocalProcessor::step()
 			return success.error().clone();
 		}
 	}
-	_owner.save_deltas();
+	// TODO: Don't ignore errors here! I just need to silence compiler warning for now.
+	_owner.save_deltas().value();
 	++_cycle_count;
 	// Step returns false if the machine is halted, therefore must negate condition.
 	return !_owner.halted();
 }
 
-bool isa::pep10::LocalProcessor::can_step_into() const
+template<bool enable_history>
+bool isa::pep10::LocalProcessor<enable_history>::can_step_into() const
 {
 	throw std::logic_error("Not implemented.");
 }
 
-uint16_t isa::pep10::LocalProcessor::call_depth() const
+template<bool enable_history>
+uint16_t isa::pep10::LocalProcessor<enable_history>::call_depth() const
 {
 	throw std::logic_error("Not implemented.");
 }
 
 
-void isa::pep10::LocalProcessor::init()
+template<bool enable_history>
+void isa::pep10::LocalProcessor<enable_history>::init()
 {
 	_cycle_count = 0;
 	_registers->clear(0);
 	_csrs->clear(0);
 }
 
-void isa::pep10::LocalProcessor::debug(bool)
+template<bool enable_history>
+void isa::pep10::LocalProcessor<enable_history>::debug(bool)
 {
 	throw std::invalid_argument("Pep/10 ISA model is not yet implemented.");
 }
 
-void isa::pep10::LocalProcessor::clear(uint16_t reg_fill, bool csr_fill)
+template<bool enable_history>
+void isa::pep10::LocalProcessor<enable_history>::clear(uint16_t reg_fill, bool csr_fill)
 {
 	_registers->clear(reg_fill);
 	_csrs->clear(csr_fill);
 }
 
 // Read / write registers
-uint16_t isa::pep10::LocalProcessor::read_register(uint8_t reg_number) const
+template<bool enable_history>
+uint16_t isa::pep10::LocalProcessor<enable_history>::read_register(uint8_t reg_number) const
 {
 	return _registers->read(reg_number).value();
 }
 
-void isa::pep10::LocalProcessor::write_register(uint8_t reg_number, uint16_t value)
+template<bool enable_history>
+void isa::pep10::LocalProcessor<enable_history>::write_register(uint8_t reg_number, uint16_t value)
 {
 	_registers->write(reg_number, value).value();
 }
 
-uint8_t isa::pep10::LocalProcessor::register_count() const
+template<bool enable_history>
+uint8_t isa::pep10::LocalProcessor<enable_history>::register_count() const
 {
 	// Max offset is 0 indexed, whereas count is 1 indexed.
 	return _registers->max_offset()+1;
 }
 
 
-bool isa::pep10::LocalProcessor::read_csr(uint8_t csr_number) const
+template<bool enable_history>
+bool isa::pep10::LocalProcessor<enable_history>::read_csr(uint8_t csr_number) const
 {
 	return _csrs->read(csr_number).value();
 }
 
-void isa::pep10::LocalProcessor::write_csr(uint8_t csr_number, bool value)
+template<bool enable_history>
+void isa::pep10::LocalProcessor<enable_history>::write_csr(uint8_t csr_number, bool value)
 {
 	_csrs->write(csr_number, value).value();
 }
 
-uint8_t isa::pep10::LocalProcessor::csr_count() const
+template<bool enable_history>
+uint8_t isa::pep10::LocalProcessor<enable_history>::csr_count() const
 {
 	// Max offset is 0 indexed, whereas count is 1 indexed.
 	return _csrs->max_offset()+1;
@@ -142,32 +156,37 @@ uint8_t isa::pep10::LocalProcessor::csr_count() const
 
 
 // Statistics
-uint64_t isa::pep10::LocalProcessor::cycle_count() const
+template<bool enable_history>
+uint64_t isa::pep10::LocalProcessor<enable_history>::cycle_count() const
 {
 	return _cycle_count;
 }
 
-uint64_t isa::pep10::LocalProcessor::instruction_count() const
+template<bool enable_history>
+uint64_t isa::pep10::LocalProcessor<enable_history>::instruction_count() const
 {
 	return _cycle_count;
 }
 
 
-result<std::unique_ptr<components::delta::Base<uint8_t, uint16_t>>> isa::pep10::LocalProcessor::take_register_delta()
+template<bool enable_history>
+result<std::unique_ptr<components::delta::Base<uint8_t, uint16_t>>> isa::pep10::LocalProcessor<enable_history>::take_register_delta()
 {
 	auto result_regs = _registers->take_delta();
 	if(result_regs.has_error()) return result_regs.error().clone();
 	return std::move(result_regs.value());	
 }
 
-result<std::unique_ptr<components::delta::Base<uint8_t, bool>>> isa::pep10::LocalProcessor::take_csr_delta()
+template<bool enable_history>
+result<std::unique_ptr<components::delta::Base<uint8_t, bool>>> isa::pep10::LocalProcessor<enable_history>::take_csr_delta()
 {
 	auto result_csr = _csrs->take_delta();
 	if(result_csr.has_error()) return result_csr.error().clone();
 	return std::move(result_csr.value());
 }
 
-result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
+template<bool enable_history>
+result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t is)
 {
 	using ::isa::pep10::read_register;
 	using ::isa::pep10::write_register;
@@ -180,15 +199,10 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 	result<uint8_t> outcome_byte = result<uint8_t>(OUTCOME_V2_NAMESPACE::in_place_type<uint8_t>);
 	result<void> outcome_void = result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 
-	sp = read_register(*this, Register::SP);
-	acc = read_register(*this, Register::A);
-	idx = read_register(*this, Register::X);
     switch(instr->mnemonic) {
 	case instruction_mnemonic::RET:
 		outcome_word = std::move(read_word(sp));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
-		write_register(*this, Register::PC, outcome_word.value());
-		write_register(*this, Register::SP, sp+2);
 		break;
 
 	case instruction_mnemonic::SRET:
@@ -196,42 +210,31 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 		outcome_byte = std::move(read_byte(sp));
 		if(outcome_byte.has_failure()) return outcome_byte.error().clone();
 		// Function will automatically mask out bits that don't matter
-		write_packed_NZVC(*this, outcome_byte.value());
 		
         outcome_word = std::move(read_word(sp + 1));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
-		write_register(*this, Register::A, outcome_word.value());
 
         outcome_word = std::move(read_word(sp + 3));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
-		write_register(*this, Register::X, outcome_word.value());
 
         outcome_word = std::move(read_word(sp + 5));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
-		write_register(*this, Register::PC, outcome_word.value());
 
         outcome_word = std::move(read_word(sp + 7));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
-		write_register(*this, Register::SP, outcome_word.value());
         break;
 
 	case instruction_mnemonic::MOVSPA:
-		write_register(*this, Register::A, sp);
 		break;
 	case instruction_mnemonic::MOVASP:
-		write_register(*this, Register::SP, acc);
 		break;
 
 	case instruction_mnemonic::MOVFLGA:
-		write_register(*this, Register::A, ::isa::pep10::read_packed_NZVC(*this));
 		break;
 	case instruction_mnemonic::MOVAFLG:
-		write_packed_NZVC(*this, acc);
 		break;
 
 	case instruction_mnemonic::MOVTA:
-		temp_word = read_register(*this, Register::TR);
-		write_register(*this, Register::A, temp_word);
 		break;
 
 	case instruction_mnemonic::NOP:
@@ -239,114 +242,70 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 
 	case instruction_mnemonic::NOTA:
 		acc = ~acc;
-		write_register(*this, Register::A, acc);
-		write_NZVC(*this, CSR::N, acc & 0x8000);
-		write_NZVC(*this, CSR::Z, acc == 0x0);
 		break;
 	case instruction_mnemonic::NOTX:
 		idx = ~idx;
-		write_register(*this, Register::X, idx);
-		write_NZVC(*this, CSR::N, idx & 0x8000);
-		write_NZVC(*this, CSR::Z, idx == 0x0);
 		break;
 
 	case instruction_mnemonic::NEGA:
 		acc = ~acc + 1;
-		write_register(*this, Register::A, acc);
-		write_NZVC(*this, CSR::N, acc & 0x8000);
-		write_NZVC(*this, CSR::Z, acc == 0x0);
-		write_NZVC(*this, CSR::V, acc == 0x8000);
 		break;
 	case instruction_mnemonic::NEGX:
 		idx = ~idx + 1;
-		write_register(*this, Register::X, idx);
-		write_NZVC(*this, CSR::N, idx & 0x8000);
-		write_NZVC(*this, CSR::Z, idx == 0x0);
-		write_NZVC(*this, CSR::V, idx == 0x8000);
 		break;
 
 	case instruction_mnemonic::ASLA:
 		// Store in temp, because we need acc for status bit computation.
 		temp_word = static_cast<uint16_t>(acc<<1);
-		write_register(*this, Register::A, temp_word);
 		// Is negative if high order bit is 1.
-        write_NZVC(*this, CSR::N, temp_word & 0x8000);
          // Is zero if all bits are 0's.
-        write_NZVC(*this, CSR::Z, temp_word == 0);
         // Signed overflow occurs when the starting & ending values of the high order bit differ (a xor temp == 1).
         // Then shift the result over by 15 places to only keep high order bit (which is the sign).
-        write_NZVC(*this, CSR::V, (acc ^ temp_word) >> 15);
         // Carry out if register starts with high order 1.
-        write_NZVC(*this, CSR::C, acc & 0x8000);
 		break;
 	case instruction_mnemonic::ASLX:
 		// Store in temp, because we need acc for status bit computation.
 		temp_word = static_cast<uint16_t>(idx<<1);
-		write_register(*this, Register::X, temp_word);
 		// Is negative if high order bit is 1.
-        write_NZVC(*this, CSR::N, temp_word & 0x8000);
          // Is zero if all bits are 0's.
-        write_NZVC(*this, CSR::Z, temp_word == 0);
         // Signed overflow occurs when the starting & ending values of the high order bit differ (a xor temp == 1).
         // Then shift the result over by 15 places to only keep high order bit (which is the sign).
-        write_NZVC(*this, CSR::V, (idx ^ temp_word) >> 15);
         // Carry out if register starts with high order 1.
-        write_NZVC(*this, CSR::C, idx & 0x8000);
 		break;
 
 	case instruction_mnemonic::ASRA:
 		// Shift all bits to the right by 1 position. Since using unsigned shift, must explicitly
         // perform sign extension by hand.
         temp_word = static_cast<uint16_t>(acc >> 1 | ((acc & 0x8000) ? 1<<15 : 0));
-		write_register(*this, Register::A, temp_word);
 		// Is negative if high order bit is 1.
-        write_NZVC(*this, CSR::N, temp_word & 0x8000);
          // Is zero if all bits are 0's.
-        write_NZVC(*this, CSR::Z, temp_word == 0);
         // Carry out if register starts with low order 1.
-        write_NZVC(*this, CSR::C, acc & 0x1);
         break;
 	case instruction_mnemonic::ASRX:
 		// Shift all bits to the right by 1 position. Since using unsigned shift, must explicitly
         // perform sign extension by hand.
         temp_word = static_cast<uint16_t>(idx >> 1 | ((idx & 0x8000) ? 1<<15 : 0));
-        write_register(*this, Register::X, temp_word);                                                       
 		// Is negative if high order bit is 1.
-        write_NZVC(*this, CSR::N, temp_word & 0x8000);
          // Is zero if all bits are 0's.
-        write_NZVC(*this, CSR::Z, temp_word == 0);
         // Carry out if register starts with low order 1.
-        write_NZVC(*this, CSR::C, idx & 0x1);
         break;
 
 	case instruction_mnemonic::ROLA:
 		// Shift the carry in to low order bit.
-		temp_word = static_cast<uint16_t> (acc << 1 | (read_NZVC(*this, CSR::C) ? 1 : 0));
-        write_register(*this, Register::A, temp_word);
 		// Carry out if register starts with high order 1.                       
-		write_NZVC(*this, CSR::C, acc & 0x8000);
         break;
 	case instruction_mnemonic::ROLX:
 		// Shift the carry in to low order bit.
-		temp_word = static_cast<uint16_t> (idx << 1 | (read_NZVC(*this, CSR::C) ? 1 : 0));
-        write_register(*this, Register::X, temp_word);      
 		// Carry out if register starts with high order 1.                       
-		write_NZVC(*this, CSR::C, idx & 0x8000);
         break;
 
 	case instruction_mnemonic::RORA:
 		// Shift the carry in to high order bit.
-		temp_word = static_cast<uint16_t> (acc >> 1 | (read_NZVC(*this, CSR::C) ? 1<<15 : 0));
-        write_register(*this, Register::A, temp_word);      
 		// Carry out if register starts with low order 1.                       
-		write_NZVC(*this, CSR::C, acc & 0x1);
         break;
 	case instruction_mnemonic::RORX:
 		// Shift the carry in to high order bit.
-		temp_word = static_cast<uint16_t> (idx >> 1 | (read_NZVC(*this, CSR::C) ? 1<<15 : 0));
-        write_register(*this, Register::X, temp_word);      
 		// Carry out if register starts with low order 1.                       
-		write_NZVC(*this, CSR::C, idx & 0x1);
         break;
 
 	case instruction_mnemonic::SCALL:
@@ -363,7 +322,6 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
         // Writes to mem[T-3], mem[T-4].
-		outcome_void = std::move(write_word(temp_word - 4, read_register(*this, Register::PC)));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
         // Writes to mem[T-5], mem[T-6].
@@ -375,14 +333,11 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
         // Writes NZVC to mem[T-9].
-		outcome_void = std::move(write_byte(temp_word - 9, ::isa::pep10::read_packed_NZVC(*this)));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
-		write_register(*this, Register::SP, temp_word - 9);
 
 		vector_value = _owner.address_from_vector(MemoryVector::kTrap_Handler);
 		outcome_word = std::move(read_word(vector_value));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
-		write_register(*this, Register::PC, outcome_word.value());
 		break;
 	default:
 		return status_code(ProcessorErrc::IllegalUnaryInstruction);
@@ -390,7 +345,8 @@ result<void> isa::pep10::LocalProcessor::unary_dispatch(uint8_t is)
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }
 
-result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t os)
+template<bool enable_history>
+result<void> isa::pep10::LocalProcessor<enable_history>::nonunary_dispatch(uint8_t is, uint16_t os)
 {
 	using ::isa::pep10::read_register;
 	using ::isa::pep10::write_register;
@@ -697,7 +653,8 @@ result<void> isa::pep10::LocalProcessor::nonunary_dispatch(uint8_t is, uint16_t 
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }
 
-result<uint8_t> isa::pep10::LocalProcessor::read_byte(uint16_t address) const
+template<bool enable_history>
+result<uint8_t> isa::pep10::LocalProcessor<enable_history>::read_byte(uint16_t address) const
 {
 
 	auto locker = _owner.acquire_transaction_lock();
@@ -707,7 +664,8 @@ result<uint8_t> isa::pep10::LocalProcessor::read_byte(uint16_t address) const
 	return i.value();
 }
 
-result<uint16_t> isa::pep10::LocalProcessor::read_word(uint16_t address) const
+template<bool enable_history>
+result<uint16_t> isa::pep10::LocalProcessor<enable_history>::read_word(uint16_t address) const
 {
 	auto locker = _owner.acquire_transaction_lock();
 	auto msb = _owner.read_memory(address);
@@ -718,13 +676,15 @@ result<uint16_t> isa::pep10::LocalProcessor::read_word(uint16_t address) const
 	return msb.value() << 8 | lsb.value();
 }
 
-result<void> isa::pep10::LocalProcessor::write_byte(uint16_t address, uint8_t value)
+template<bool enable_history>
+result<void> isa::pep10::LocalProcessor<enable_history>::write_byte(uint16_t address, uint8_t value)
 {
 	auto locker = _owner.acquire_transaction_lock();
 	return _owner.write_memory(address, value);
 }
 
-result<void> isa::pep10::LocalProcessor::write_word(uint16_t address, uint16_t value)
+template<bool enable_history>
+result<void> isa::pep10::LocalProcessor<enable_history>::write_word(uint16_t address, uint16_t value)
 {
 	auto locker = _owner.acquire_transaction_lock();
 	uint8_t msb = ((value & 0xff00) >> 8);
@@ -736,7 +696,9 @@ result<void> isa::pep10::LocalProcessor::write_word(uint16_t address, uint16_t v
 	else return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 }
 
-result<uint16_t> isa::pep10::LocalProcessor::decode_load_operand(const instruction_definition& instr, addressing_mode mode, uint16_t addr)
+template<bool enable_history>
+result<uint16_t> isa::pep10::LocalProcessor<enable_history>::decode_load_operand(const instruction_definition& instr, 
+	addressing_mode mode, uint16_t addr)
 {
 	using ::isa::pep10::read_register;
 	result<uint8_t> outcome_byte = result<uint8_t>(OUTCOME_V2_NAMESPACE::in_place_type<uint8_t>);
@@ -839,7 +801,9 @@ result<uint16_t> isa::pep10::LocalProcessor::decode_load_operand(const instructi
 	throw std::invalid_argument("Unreachable");
 }
 
-result<uint16_t> isa::pep10::LocalProcessor::decode_store_operand(const instruction_definition& instr, addressing_mode mode, uint16_t addr)
+template<bool enable_history>
+result<uint16_t> isa::pep10::LocalProcessor<enable_history>::decode_store_operand(const instruction_definition& instr, 
+	addressing_mode mode, uint16_t addr)
 {
 	using ::isa::pep10::read_register;
 	result<uint16_t> outcome_word = result<uint16_t>(OUTCOME_V2_NAMESPACE::in_place_type<uint16_t>);
@@ -873,27 +837,32 @@ result<uint16_t> isa::pep10::LocalProcessor::decode_store_operand(const instruct
 	throw std::invalid_argument("Unreachable");
 }
 
-uint16_t isa::pep10::read_register(const LocalProcessor& proc, Register reg) 
+template<bool enable_history>
+uint16_t isa::pep10::read_register(const LocalProcessor<enable_history>& proc, Register reg) 
 {
 	return proc.read_register(static_cast<uint8_t>(reg));
 }
 
-void isa::pep10::write_register(LocalProcessor& proc, Register reg, uint16_t value)
+template<bool enable_history>
+void isa::pep10::write_register(LocalProcessor<enable_history>& proc, Register reg, uint16_t value)
 {
 	proc.write_register(static_cast<uint8_t>(reg), value);
 }
 
-bool isa::pep10::read_NZVC(const LocalProcessor& proc, CSR reg)
+template<bool enable_history>
+bool isa::pep10::read_NZVC(const LocalProcessor<enable_history>& proc, CSR reg)
 {
 	return proc.read_csr(static_cast<uint8_t>(reg));
 }
 
-void isa::pep10::write_NZVC(LocalProcessor& proc, CSR reg, bool value)
+template<bool enable_history>
+void isa::pep10::write_NZVC(LocalProcessor<enable_history>& proc, CSR reg, bool value)
 {
 	proc.write_csr(static_cast<uint8_t>(reg), value);
 }
 
-uint8_t isa::pep10::read_packed_NZVC(const LocalProcessor& proc)
+template<bool enable_history>
+uint8_t isa::pep10::read_packed_NZVC(const LocalProcessor<enable_history>& proc)
 {
 	uint8_t NZVC = 0;
 	NZVC |= read_NZVC(proc, CSR::N) << 3;
@@ -903,7 +872,8 @@ uint8_t isa::pep10::read_packed_NZVC(const LocalProcessor& proc)
 	return NZVC;
 }
 
-void isa::pep10::write_packed_NZVC(LocalProcessor& proc, uint8_t packed)
+template<bool enable_history>
+void isa::pep10::write_packed_NZVC(LocalProcessor<enable_history>& proc, uint8_t packed)
 {
 	write_NZVC(proc, CSR::N, packed & 0b1000);
 	write_NZVC(proc, CSR::Z, packed & 0b0100);
