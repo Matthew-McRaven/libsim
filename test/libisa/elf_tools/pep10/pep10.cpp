@@ -57,4 +57,31 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 		CHECK(RAM_offset == 0x0000);
 		CHECK(RAM_storage->max_offset() == 0xFAAE);
 	}
+
+	SECTION("MMIO ports in correct location and is correct count.") {	
+		auto image = os_to_image();
+		auto ports_result = elf_tools::pep10::port_definitions(*image);
+		REQUIRE(ports_result.has_value());
+		auto ports = ports_result.value();
+
+		// Pep/10 should have 4 MMIO ports with the given address/type properties.
+		CHECK(ports.size() == 4);
+		for(auto& port : ports) {
+			if(port.name == "charIn") {
+				CHECK(port.type == masm::elf::mmio::Type::kInput);
+				CHECK(port.offset == 0xFAAC);
+			} else if(port.name == "charOut") {
+				CHECK(port.type == masm::elf::mmio::Type::kOutput);
+				CHECK(port.offset == 0xFAAD);
+			} else if(port.name == "diskIn") {
+				CHECK(port.type == masm::elf::mmio::Type::kInput);
+				CHECK(port.offset == 0xFAAB);
+			} else if(port.name == "pwrOff") {
+				CHECK(port.type == masm::elf::mmio::Type::kOutput);
+				CHECK(port.offset == 0xFAAE);
+			} else {
+				CHECK((false && "Bad MMIO definition"));
+			}
+		}
+	}
 }
