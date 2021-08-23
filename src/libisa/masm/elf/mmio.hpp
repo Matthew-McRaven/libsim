@@ -18,6 +18,7 @@ enum class Type : uint16_t
 struct Definition
 {
 	Type type;
+	// Indexes in the os.symtab symbol table which contains the name of this MMIO port.
 	uint16_t symbol_table_offset;
 };
 

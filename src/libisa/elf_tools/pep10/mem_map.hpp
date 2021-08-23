@@ -33,8 +33,7 @@ struct PortDefinition
 	std::string name;
 };
 
-result<std::vector<PortDefinition>>
-	port_definitions(const ELFIO::elfio& image);
+result<std::vector<PortDefinition>> port_definitions(const ELFIO::elfio& image);
 
 // Create all memory-mapped ports for ELF definition.
 template <bool enable_history>

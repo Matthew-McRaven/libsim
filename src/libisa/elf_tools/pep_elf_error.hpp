@@ -10,8 +10,9 @@ enum class PepElfErrc
 {
   Success     = 0, // 0 should not represent an error.
   NoOSText, //There was no os.text section. This is unrecoverable.
-  NoOSMMIO,
-  NoOSSymtab,
+  NoOSMMIO, // No os.mmio section. This is unrecoverable.
+  NoOSSymtab, // No os.symtab section. This is unrecoverable.
+  BadMMIOSymbol, // os.mmio entry did not point to a valid symbol. This is not recoverable.
   InvalidMMIOType,
   
 };
@@ -37,6 +38,9 @@ struct quick_status_code_from_enum<PepElfErrc>
     // Format is: { enum value, "string representation", { list of errc mappings ... } }
     {PepElfErrc::Success, "Elf image->Pep machine conversion succesful", {errc::success}},
     {PepElfErrc::NoOSText, "No os.text section was present in the provided image", {errc::invalid_argument}},
+    {PepElfErrc::NoOSMMIO, "No os.mmio section was present in the provided image", {errc::invalid_argument}},
+    {PepElfErrc::NoOSSymtab, "No os.symtab section was present in the provided image", {errc::invalid_argument}},
+    {PepElfErrc::BadMMIOSymbol, "MMIO symbol_table_offset out of range", {errc::invalid_argument}},
     };
     return v;
   }
