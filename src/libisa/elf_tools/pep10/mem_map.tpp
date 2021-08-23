@@ -30,7 +30,8 @@ result<void> elf_tools::pep10::load_os_contents(const ELFIO::elfio& image,
 	auto os = elf_tools::find_section(image, "os.text");
 	if(os == nullptr) return status_code(PepElfErrc::NoOSText);
 	auto bytes = std::vector<uint8_t> {os->get_data(), os->get_data()+os->get_size()};
-	components::storage::load_bytes<uint16_t, enable_history, uint8_t>(*storage, bytes, 0);
+	auto load_result = components::storage::load_bytes<uint16_t, enable_history, uint8_t>(*storage, bytes, 0);
+	if(load_result.has_error()) return load_result.error().clone();
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 
 }
@@ -112,7 +113,8 @@ result<std::shared_ptr<components::storage::Layered<uint16_t, enable_history, ui
 	auto ROM_result = construct_os_storage<enable_history>(image);
 	if(ROM_result.has_error()) ROM_result.error().clone();
 	auto [ROM_offset, ROM_storage] = ROM_result.value();
-	load_os_contents(image, ROM_storage);
+	auto load_os = load_os_contents(image, ROM_storage);
+	if(load_os.has_error()) return load_os.error().clone();
 
 	// Create RAM storage and DO NOT load user bytes.
 	auto RAM_result = construct_ram<enable_history>(image);
@@ -126,8 +128,16 @@ result<std::shared_ptr<components::storage::Layered<uint16_t, enable_history, ui
 	using layered_t = components::storage::Layered<uint16_t, enable_history, uint8_t>;
 	auto layered = std::make_shared<components::storage::Layered<uint16_t, enable_history, uint8_t>>(0xFFFF, 0, 
 		layered_t::ReadMiss::kOOB, layered_t::WriteMiss::kOOB);
-	for(auto [port_offset, port_storage] : ports.value()) layered->append_storage(port_offset, port_storage); 
-	layered->append_storage(ROM_offset, ROM_storage);
-	layered->append_storage(RAM_offset, RAM_storage);
+	for(auto [port_offset, port_storage] : ports.value()) {
+		auto append_port = layered->append_storage(port_offset, port_storage);
+		if(append_port.has_error()) return append_port.error().clone();
+	}
+
+	auto append_ROM = layered->append_storage(ROM_offset, ROM_storage);
+	if(append_ROM.has_error()) return append_ROM.error().clone();
+
+	auto append_RAM = layered->append_storage(RAM_offset, RAM_storage);
+	if(append_RAM.has_error()) return append_RAM.error().clone();
+
 	return layered;
 }
