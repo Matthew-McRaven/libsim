@@ -22,3 +22,11 @@ ELFIO::section* elf_tools::find_section(const ELFIO::elfio& image, const std::st
 	}
 	return sec;
 }
+
+result<std::vector<uint8_t>> elf_tools::section_as_bytes(const ELFIO::elfio& image, const std::string& name)
+{
+	auto sec = find_section(image, name);
+	if(sec == nullptr) return {system_error2::errc::invalid_argument};
+
+	return std::vector<uint8_t>(sec->get_data(), sec->get_data()+sec->get_size());
+}

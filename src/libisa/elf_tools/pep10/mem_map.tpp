@@ -27,9 +27,9 @@ template <bool enable_history>
 result<void> elf_tools::pep10::load_os_contents(const ELFIO::elfio& image, 
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> storage)
 {
-	auto os = elf_tools::find_section(image, "os.text");
-	if(os == nullptr) return status_code(PepElfErrc::NoOSText);
-	auto bytes = std::vector<uint8_t> {os->get_data(), os->get_data()+os->get_size()};
+	auto os = elf_tools::section_as_bytes(image, "os.text");
+	if(os.has_error()) return os.error().clone();
+	auto bytes = os.value();
 	auto load_result = components::storage::load_bytes<uint16_t, enable_history, uint8_t>(*storage, bytes, 0);
 	if(load_result.has_error()) return load_result.error().clone();
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
