@@ -7,6 +7,7 @@
 #include "components/storage/layered.hpp"
 #include "components/storage/mmio.hpp"
 #include "components/storage/read_only.hpp"
+#include "elf_tools/elf_helper.hpp"
 #include "elf_tools/pep_elf_error.hpp"
 
 
@@ -14,13 +15,7 @@ template <bool enable_history>
 result<std::tuple<uint16_t, std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>>>>
 	elf_tools::pep10::construct_os_storage(const ELFIO::elfio& image)
 {
-	ELFIO::section* os = nullptr;
-	// Section 0 contains nothing useful, so we can skip it with preincrement.
-	for(auto i=0; i<image.sections.size();++i) {
-		auto local_sec = image.sections[i];
-		if(local_sec->get_name() == "os.text") os = local_sec;
-	}
-
+	auto os = elf_tools::find_section(image, "os.text");
 	if(os == nullptr) return status_code(PepElfErrc::NoOSText);
 	// Must convert size (1-indexed) to maximum offset (0-indexed), so must subtract 1.
 	auto os_ram = std::make_shared<components::storage::Block<uint16_t, enable_history, uint8_t>>(os->get_size()-1);
@@ -32,13 +27,7 @@ template <bool enable_history>
 result<void> elf_tools::pep10::load_os_contents(const ELFIO::elfio& image, 
 	std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>> storage)
 {
-	ELFIO::section* os = nullptr;
-	// Section 0 contains nothing useful, so we can skip it with preincrement.
-	for(auto i=0; i<image.sections.size();++i) {
-		auto local_sec = image.sections[i];
-		if(local_sec->get_name() == "os.text") os = local_sec;
-	}
-
+	auto os = elf_tools::find_section(image, "os.text");
 	if(os == nullptr) return status_code(PepElfErrc::NoOSText);
 	auto bytes = std::vector<uint8_t> {os->get_data(), os->get_data()+os->get_size()};
 	components::storage::load_bytes<uint16_t, enable_history, uint8_t>(storage, bytes, 0);
@@ -50,13 +39,7 @@ template <bool enable_history>
 result<std::tuple<uint16_t, std::shared_ptr<components::storage::Base<uint16_t, enable_history, uint8_t>>>>
 	elf_tools::pep10::construct_ram(const ELFIO::elfio& image)
 {
-	ELFIO::section* os = nullptr;
-	// Section 0 contains nothing useful, so we can skip it with preincrement.
-	for(auto i=0; i<image.sections.size();++i) {
-		auto local_sec = image.sections[i];
-		if(local_sec->get_name() == "os.text") os = local_sec;
-	}
-
+	auto os = elf_tools::find_section(image, "os.text");
 	if(os == nullptr) return status_code(PepElfErrc::NoOSText);
 	// RAM will span from [0, start of os). Layered storage will prefer OS to RAM, however.
 	// Must convert size (1-indexed) to maximum offset (0-indexed), so must subtract 1.
