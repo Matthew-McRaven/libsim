@@ -58,7 +58,7 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 		CHECK(RAM_storage->max_offset() == 0xFAAE);
 	}
 
-	SECTION("MMIO ports in correct location and is correct count.") {	
+	SECTION("MMIO definitions are correct.") {	
 		auto image = os_to_image();
 		auto ports_result = elf_tools::pep10::port_definitions(*image);
 		REQUIRE(ports_result.has_value());
@@ -81,6 +81,33 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 				CHECK(port.offset == 0xFAAE);
 			} else {
 				CHECK((false && "Bad MMIO definition"));
+			}
+		}
+	}
+
+	SECTION("MMIO ports in correct location and is correct count.") {	
+		auto image = os_to_image();
+		auto ports_result = elf_tools::pep10::construct_mmio_ports<false>(*image);
+		REQUIRE(ports_result.has_value());
+		auto ports = ports_result.value();
+
+		// Pep/10 should have 4 MMIO ports with the given address/type properties.
+		CHECK(ports.size() == 4);
+		for(auto& [offset, storage] : ports) {
+			if(offset == 0xFAAC) { //charIn
+				auto ptr = std::dynamic_pointer_cast<components::storage::Input<uint16_t, false, uint8_t>>(storage);
+				CHECK(ptr != nullptr);
+			} else if(offset == 0xFAAD) { // charOut
+				auto ptr = std::dynamic_pointer_cast<components::storage::Output<uint16_t, false, uint8_t>>(storage);
+				CHECK(ptr != nullptr);
+			} else if(offset == 0xFAAB) { //diskIn
+				auto ptr = std::dynamic_pointer_cast<components::storage::Input<uint16_t, false, uint8_t>>(storage);
+				CHECK(ptr != nullptr);
+			} else if(offset == 0xFAAE) { //pwrOff
+				auto ptr = std::dynamic_pointer_cast<components::storage::Output<uint16_t, false, uint8_t>>(storage);
+				CHECK(ptr != nullptr);
+			} else {
+				CHECK((false && "Not a valid MMIO port."));
 			}
 		}
 	}
