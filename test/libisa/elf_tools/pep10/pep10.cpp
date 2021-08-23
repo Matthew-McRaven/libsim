@@ -30,6 +30,35 @@ std::shared_ptr<ELFIO::elfio> os_to_image()
 	return project->as_elf;
 	
 }
+
+std::shared_ptr<ELFIO::elfio> joint_to_image(const std::string& user_prog)
+{
+	using namespace asmb::pep10::driver;
+	auto driver = make_driver();
+	auto project = masm::project::init_project<uint16_t>();
+	auto ex = registry::instance();
+	for(const auto& macro : ex.macros()){
+		CHECK(project->macro_registry->register_macro(macro.name, macro.text, masm::MacroType::CoreMacro));
+	}
+
+	auto fig_os = ex.find("pep10", 9, "00").value();
+	auto text_os = fig_os.elements.at(element_type::kPep);
+	auto file_os = std::make_shared<masm::project::source_file>();
+	file_os->name = "os";
+	file_os->body = text_os;
+
+	auto file_user = std::make_shared<masm::project::source_file>();
+	file_user->name = "user";
+	file_user->body = user_prog;
+
+	auto res = driver->assemble_joint(project, file_os, file_user, masm::project::toolchain_stage::FINISHED);
+	std::cout << res.second;
+	REQUIRE(res.first);
+	REQUIRE(project->as_elf);
+	return project->as_elf;
+	
+}
+
 TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 
@@ -181,5 +210,43 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 		auto pwrOff_lookup = machine->output_device("pwrOff");
 		CHECK(pwrOff_lookup.has_value());
+	}
+
+	SECTION("Buffer user program to diskIn.") {
+		auto image = joint_to_image(".WORD 52\n.WORD28\n.END");
+		auto machine_result = isa::pep10::machine_from_elf<false>(*image);
+		REQUIRE(machine_result.has_value());
+		auto machine = machine_result.value();
+		isa::pep10::load_user_program(*image, machine, isa::pep10::Loader::kDiskIn);
+
+		auto diskIn_lookup = machine->input_device("diskIn");
+		CHECK(diskIn_lookup.has_value());
+		auto diskIn = diskIn_lookup.value();
+
+		auto bytes_result = elf_tools::section_as_bytes(*image, "user.text");
+		CHECK(bytes_result.has_value());
+		auto bytes = bytes_result.value();
+		CHECK(bytes.size() == 4);
+
+		for(int it=0; it<bytes.size(); it++) {
+			CHECK(diskIn->read(0x0).value() == bytes[it]);
+		}
+	}
+
+	SECTION("Buffer user program to RAM.") {
+		auto image = joint_to_image(".WORD 52\n.WORD28\n.END");
+		auto machine_result = isa::pep10::machine_from_elf<false>(*image);
+		REQUIRE(machine_result.has_value());
+		auto machine = machine_result.value();
+		isa::pep10::load_user_program(*image, machine, isa::pep10::Loader::kRAM);
+
+		auto bytes_result = elf_tools::section_as_bytes(*image, "user.text");
+		CHECK(bytes_result.has_value());
+		auto bytes = bytes_result.value();
+		CHECK(bytes.size() == 4);
+
+		for(int it=0; it<bytes.size(); it++) {
+			CHECK(machine->read_memory(it).value() == bytes[it]);
+		}
 	}
 }

@@ -18,3 +18,25 @@ result<std::shared_ptr<isa::pep10::LocalMachine<enable_history>>> isa::pep10::ma
 
 	return machine;
 }
+
+// Either load the user program into RAM or buffer it behind disk in.
+template<bool enable_history>
+result<void> isa::pep10::load_user_program(const ELFIO::elfio& image, 
+	std::shared_ptr<isa::pep10::LocalMachine<enable_history>> machine, isa::pep10::Loader loader_policy)
+{
+	auto bytes_result = elf_tools::section_as_bytes(image, "user.text");
+	if(bytes_result.has_error()) return bytes_result.error().clone();
+	auto bytes = bytes_result.value();
+
+	if(loader_policy == isa::pep10::Loader::kDiskIn) {
+		auto diskIn_result = machine->input_device("diskIn");
+		if(diskIn_result.has_error()) return diskIn_result.error().clone();
+		auto diskIn = diskIn_result.value();
+		components::storage::buffer_input(*diskIn, bytes);
+		return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
+	} else if(loader_policy == isa::pep10::Loader::kRAM) {
+		return isa::pep10::load_bytes(machine, bytes, 0);
+	} else {
+		return system_error2::errc::invalid_argument;
+	}
+}
