@@ -5,6 +5,7 @@
 #include "asmb/pep10/create_driver.hpp"
 #include "elf_tools/pep10/mem_map.hpp"
 #include "ex_registry.hpp"
+#include "isa/pep10/from_elf.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/macro.hpp"
 
@@ -111,6 +112,7 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 			}
 		}
 	}
+
 	SECTION("Layered memory device has correct layout.") {	
 		auto image = os_to_image();
 		auto storage_result = elf_tools::pep10::construct_memory_map<false>(*image);
@@ -159,5 +161,25 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 		auto pwrOff = dynamic_cast<components::storage::Output<uint16_t, false, uint8_t>*>(pwrOff_result.value());
 		CHECK(pwrOff != nullptr);
 
+	}
+
+	SECTION("Validate machine creation.") {
+		auto image = os_to_image();
+		auto machine_result = isa::pep10::machine_from_elf<false>(*image);
+		REQUIRE(machine_result.has_value());
+		auto machine = machine_result.value();
+
+		// Test MMIO ports in alphabetic order
+		auto charIn_lookup = machine->input_device("charIn");
+		CHECK(charIn_lookup.has_value());
+
+		auto charOut_lookup = machine->output_device("charOut");
+		CHECK(charOut_lookup.has_value());
+
+		auto diskIn_lookup = machine->input_device("diskIn");
+		CHECK(diskIn_lookup.has_value());
+
+		auto pwrOff_lookup = machine->output_device("pwrOff");
+		CHECK(pwrOff_lookup.has_value());
 	}
 }
