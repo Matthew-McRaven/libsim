@@ -8,6 +8,8 @@
 #include "components/machine/processor_error.hpp"
 #include "components/machine/processor_model.hpp"
 
+static const bool DEBUG_PROC = true;
+
 template <bool enable_history>
 isa::pep10::LocalProcessor<enable_history>::LocalProcessor(
 	components::machine::MachineProcessorInterface<uint16_t, enable_history, uint8_t, isa::pep10::MemoryVector>& owner):
@@ -99,6 +101,14 @@ void isa::pep10::LocalProcessor<enable_history>::init()
 	_cycle_count = 0;
 	_registers->clear(0);
 	_csrs->clear(0);
+
+	// According to spec, must load values from memory vectors into SP, PC.
+	auto SP = _owner.address_from_vector(isa::pep10::MemoryVector::kSystem_Stack);
+	auto SP_val = read_word(SP).value();
+	::isa::pep10::write_register(*this, isa::pep10::Register::SP, SP_val);
+	auto PC = _owner.address_from_vector(isa::pep10::MemoryVector::kDispatcher);
+	auto PC_val = read_word(PC).value();
+	::isa::pep10::write_register(*this, isa::pep10::Register::PC, PC_val);
 }
 
 template<bool enable_history>

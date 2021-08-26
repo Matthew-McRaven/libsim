@@ -30,6 +30,8 @@ void isa::pep10::LocalMachine<enable_history>::begin_simulation()
 {
 	if(auto pwr_val = device_address("pwrOff"); pwr_val.has_value()) _pwrOff_address = pwr_val.value();
 	else _pwrOff_address = std::nullopt;
+
+	_processor->init();
 }
 
 template<bool enable_history>
