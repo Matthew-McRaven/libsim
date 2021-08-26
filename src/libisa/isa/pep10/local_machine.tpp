@@ -320,6 +320,7 @@ result<bool> isa::pep10::run(std::shared_ptr<LocalMachine<enable_history>> machi
 	do {
 		res =std::move(machine->step());
 		if(res.has_error()) return res.error().clone();
+		if(machine->cycle_count()>=max_timesteps) break;
 		// TODO: Add "break" for breakpoints.
 	} while (res.value());
 	return result<bool>(!machine->halted());
