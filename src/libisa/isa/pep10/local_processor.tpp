@@ -48,7 +48,12 @@ result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 	write_register(*this, Register::PC, ++pc);
 
 	if(isa::pep10::is_opcode_unary(is.value())) {
+
 		auto success = unary_dispatch(is.value());
+
+		static const auto unary_fmt = "{PC} {A} {X}, {SP} ||{IS}";
+		if constexpr(DEBUG_PROC) debug_summary(*this, unary_fmt);
+
 		if(success.has_failure()) {
 			// We can't handle an error inside an error, so crash if unwinding fails.
 			_owner.unwind_active_instruction().value();
@@ -69,6 +74,10 @@ result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 		write_register(*this, Register::PC, pc+2);
 
 		auto success = nonunary_dispatch(is.value(), os.value());
+
+		static const auto nonunary_fmt = "{PC} {A} {X}, {SP} ||{IS} {OS},{ADDR}";
+		if constexpr(DEBUG_PROC) debug_summary(*this, nonunary_fmt);
+
 		if(success.has_failure()) {
 			// We can't handle an error inside an error, so crash if unwinding fails.
 			_owner.unwind_active_instruction().value();
@@ -910,6 +919,25 @@ result<uint16_t> isa::pep10::LocalProcessor<enable_history>::decode_store_operan
 	}
 	// Not reachable, but necessary to silence compiler warning
 	throw std::invalid_argument("Unreachable");
+}
+
+template<bool enable_history>
+void isa::pep10::debug_summary(const LocalProcessor<enable_history>& proc,const std::string& format) 
+{
+	static const auto& isa = isa::pep10::isa_definition::get_definition();
+	std::map<std::string, std::string> args;
+	args["A"] = fmt::format("{:04x}", read_register(proc, Register::A));
+	args["X"] = fmt::format("{:04x}", read_register(proc, Register::X));
+	args["SP"] = fmt::format("{:04x}", read_register(proc, Register::SP));
+	args["PC"] = fmt::format("{:04x}", read_register(proc, Register::PC));
+	auto is = read_register(proc, Register::IS);
+	auto instr = isa.riproll[is];
+	args["IS"] = fmt::format("{}", isa::pep10::as_string(instr.inst->mnemonic));
+	args["OS"] = fmt::format("{:04x}", read_register(proc, Register::OS));
+	args["ADDR"] = fmt::format("{}", magic_enum::enum_name(instr.addr));
+	std::cout << fmt::format(format, fmt::arg("A",args["A"]), fmt::arg("X", args["X"]), fmt::arg("SP", args["SP"]),
+		fmt::arg("PC", args["PC"]), fmt::arg("IS", args["IS"]), fmt::arg("OS", args["OS"]), 
+		fmt::arg("ADDR", args["ADDR"])) << std::endl;
 }
 
 template<bool enable_history>

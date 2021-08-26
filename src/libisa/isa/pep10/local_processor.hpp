@@ -62,6 +62,20 @@ private:
 	result<uint16_t> decode_store_operand(const isa::pep10::instruction_definition& is, isa::pep10::addressing_mode mode, uint16_t addr);
 };
 
+/*
+ * Format string must be a valid fmtlib / {fmt} expression, using named arguments rather than positional ones.
+ * Valid name codes:
+ *   A: Value of the  accumulator after executing the current instruction.
+ *   X: Value of the index register after executing the current instruction.
+ *   SP: Value of the the stack pointer after executing the current instruction.
+ *   PC: Value of the program counter after executing the current instruction.
+ *   IS: A string representation of the current mnemonic.
+ *   OS: The undecoded operand specifier.
+ *   ADDR: A string representation of the addressing mode.
+ */
+template <bool enable_history>
+void debug_summary(const LocalProcessor<enable_history>& proc, const std::string& format);
+
 template <bool enable_history>
 uint16_t read_register(const LocalProcessor<enable_history>& proc, isa::pep10::Register reg);
 
