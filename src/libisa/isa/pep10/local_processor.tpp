@@ -74,7 +74,7 @@ result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 		}
 	}
 	// TODO: Don't ignore errors here! I just need to silence compiler warning for now.
-	_owner.save_deltas().value();
+	if constexpr(enable_history) _owner.save_deltas().value();
 	++_cycle_count;
 	// Step returns false if the machine is halted, therefore must negate condition.
 	return !_owner.halted();
