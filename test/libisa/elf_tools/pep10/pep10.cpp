@@ -225,8 +225,9 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 		auto bytes_result = elf_tools::section_as_bytes(*image, "user.text");
 		CHECK(bytes_result.has_value());
-		auto bytes = bytes_result.value();
-		CHECK(bytes.size() == 4);
+		auto formatted_bytes = masm::utils::format_bytecode(bytes_result.value());
+		auto bytes = masm::byte_vector(formatted_bytes);
+		CHECK(bytes.size() == 14);
 
 		for(int it=0; it<bytes.size(); it++) {
 			CHECK(diskIn->read(0x0).value() == bytes[it]);
