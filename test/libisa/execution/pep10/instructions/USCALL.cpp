@@ -43,17 +43,18 @@ TEST_CASE("Instruction: USCALL", "[isa::pep10]")
 			REQUIRE(ret.has_value());
 			CHECK(ret.value());
 
-			CHECK(machine->read_register(isa::pep10::Register::SP) == 0xFEED - 9);
+			CHECK(machine->read_register(isa::pep10::Register::SP) == 0xFEED - 10);
 			CHECK(machine->read_register(isa::pep10::Register::PC) == 0xD00D);
-			REQUIRE((int)machine->get_memory(0xFEED - 2).value() == 0xDE);
-			CHECK((int)machine->get_memory(0xFEED - 1).value() == 0xAD);
-			CHECK((int)machine->get_memory(0xFEED - 4).value() == 0x00);
-			CHECK((int)machine->get_memory(0xFEED - 3).value() == 0x01);
-			CHECK((int)machine->get_memory(0xFEED - 6).value() == 0xCA);
-			CHECK((int)machine->get_memory(0xFEED - 5).value() == 0xFE);
-			CHECK((int)machine->get_memory(0xFEED - 8).value() == 0xBE);
-			REQUIRE((int)machine->get_memory(0xFEED - 7).value() == 0xEF);
-			CHECK((int)machine->get_memory(0xFEED - 9).value() == start_stat);
+			CHECK((int)machine->get_memory(0xFEED - 1).value() == 0x7);
+			CHECK((int)machine->get_memory(0xFEED - 3).value() == 0xDE);
+			CHECK((int)machine->get_memory(0xFEED - 2).value() == 0xAD);
+			CHECK((int)machine->get_memory(0xFEED - 5).value() == 0x00);
+			CHECK((int)machine->get_memory(0xFEED - 4).value() == 0x01);
+			CHECK((int)machine->get_memory(0xFEED - 7).value() == 0xCA);
+			CHECK((int)machine->get_memory(0xFEED - 6).value() == 0xFE);
+			CHECK((int)machine->get_memory(0xFEED - 9).value() == 0xBE);
+			CHECK((int)machine->get_memory(0xFEED - 8).value() == 0xEF);
+			CHECK((int)machine->get_memory(0xFEED - 10).value() == start_stat);
 			// Trap register must not be mutated.
 			CHECK(machine->read_register(isa::pep10::Register::TR) == 0);
 			// IS has the correct instruction mnemonic

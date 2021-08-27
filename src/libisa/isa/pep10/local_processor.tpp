@@ -8,7 +8,7 @@
 #include "components/machine/processor_error.hpp"
 #include "components/machine/processor_model.hpp"
 
-static const bool DEBUG_PROC = true;
+static const bool DEBUG_PROC = false;
 
 template <bool enable_history>
 isa::pep10::LocalProcessor<enable_history>::LocalProcessor(
@@ -396,26 +396,29 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 
 		temp_word = outcome_word.value();
 
-        // Writes SP to mem[T-1], mem[T-2].
-		outcome_void = std::move(write_word(temp_word - 2, sp));
+		outcome_void = std::move(write_byte(temp_word - 1, is));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
-        // Writes to mem[T-3], mem[T-4].
-		outcome_void = std::move(write_word(temp_word - 4, read_register(*this, Register::PC)));
+        // Writes SP to mem[T-2], mem[T-3].
+		outcome_void = std::move(write_word(temp_word - 3, sp));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
-        // Writes to mem[T-5], mem[T-6].
-		outcome_void = std::move(write_word(temp_word - 6, idx));
+        // Writes to mem[T-4], mem[T-5].
+		outcome_void = std::move(write_word(temp_word - 5, read_register(*this, Register::PC)));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
-        // Writes to mem[T-7], mem[T-8].
-		outcome_void = std::move(write_word(temp_word - 8, acc));
+        // Writes to mem[T-6], mem[T-7].
+		outcome_void = std::move(write_word(temp_word - 7, idx));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
 
-        // Writes NZVC to mem[T-9].
-		outcome_void = std::move(write_byte(temp_word - 9, ::isa::pep10::read_packed_NZVC(*this)));
+        // Writes to mem[T-8], mem[T-9].
+		outcome_void = std::move(write_word(temp_word - 9, acc));
 		if(outcome_void.has_failure()) return outcome_void.error().clone();
-		write_register(*this, Register::SP, temp_word - 9);
+
+        // Writes NZVC to mem[T-10].
+		outcome_void = std::move(write_byte(temp_word - 10, ::isa::pep10::read_packed_NZVC(*this)));
+		if(outcome_void.has_failure()) return outcome_void.error().clone();
+		write_register(*this, Register::SP, temp_word - 10);
 
 		vector_value = _owner.address_from_vector(MemoryVector::kTrap_Handler);
 		outcome_word = std::move(read_word(vector_value));
