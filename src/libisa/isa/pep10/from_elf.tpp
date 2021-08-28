@@ -36,9 +36,9 @@ result<void> isa::pep10::load_user_program(const ELFIO::elfio& image,
 		auto diskIn_result = machine->input_device("diskIn");
 		if(diskIn_result.has_error()) return diskIn_result.error().clone();
 		auto diskIn = diskIn_result.value();
-		std::string bytes_as_hex = masm::utils::format_bytecode(bytes);
-		std::cout << bytes_as_hex << std::endl;
-		bytes = masm::byte_vector(bytes_as_hex);
+		std::string bytes_as_hex = utils::bytes_to_hex_string(bytes, 16, true);
+		// Reinterpret char* as uint8_t, make a copy along the way.
+		bytes = std::vector<uint8_t>(bytes_as_hex.begin(), bytes_as_hex.end());
 		components::storage::buffer_input(*diskIn, bytes);
 		return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 	} else if(loader_policy == isa::pep10::Loader::kRAM) {

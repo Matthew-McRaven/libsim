@@ -2,6 +2,7 @@
 
 #include <fmt/core.h>
 
+#include "utils/format.hpp"
 template <typename addr_size_t>
 std::string masm::utils::generate_listing(std::shared_ptr<masm::elf::top_level_section<addr_size_t> >& image)
 {
@@ -27,7 +28,7 @@ std::string masm::utils::generate_formatted_bytecode(std::shared_ptr<masm::elf::
 	assert(bytes_per_line > 0);
 
 	auto object_code =  get_bytecode(image);
-	return format_bytecode(object_code, bytes_per_line);
+	return ::utils::bytes_to_hex_string(object_code, bytes_per_line, true);
 
 }
 

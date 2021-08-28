@@ -8,6 +8,7 @@
 #include "isa/pep10/from_elf.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/macro.hpp"
+#include "utils/format.hpp"
 
 std::shared_ptr<ELFIO::elfio> os_to_image()
 {
@@ -225,8 +226,8 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 		auto bytes_result = elf_tools::section_as_bytes(*image, "user.text");
 		CHECK(bytes_result.has_value());
-		auto formatted_bytes = masm::utils::format_bytecode(bytes_result.value());
-		auto bytes = masm::byte_vector(formatted_bytes);
+		auto formatted_bytes = utils::bytes_to_hex_string(bytes_result.value(), 16, true);
+		auto bytes = std::vector<uint8_t>(formatted_bytes.begin(), formatted_bytes.end());
 		CHECK(bytes.size() == 14);
 
 		for(int it=0; it<bytes.size(); it++) {

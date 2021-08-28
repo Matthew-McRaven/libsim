@@ -87,6 +87,10 @@ private:
 template<bool enable_history>
 result<void> load_bytes(std::shared_ptr<LocalMachine<enable_history>> machine, const std::vector<uint8_t>& bytes, uint16_t offset);
 
+// Load default values into SP & PC.
+template<bool enable_history>
+result<void> initialize_defaults(std::shared_ptr<LocalMachine<enable_history>> machine);
+
 // Run the machine forever, or until a value is written to the pwrOff port.
 template<bool enable_history>
 result<void> run(std::shared_ptr<LocalMachine<enable_history>> machine);
