@@ -55,16 +55,18 @@ result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 		if constexpr(DEBUG_PROC) debug_summary(*this, unary_fmt);
 
 		if(success.has_failure()) {
-			// We can't handle an error inside an error, so crash if unwinding fails.
-			_owner.unwind_active_instruction().value();
+			// Unwind active instruction only if history is enabled.
+			// If history is enabled, unwind active instruction *must* work.
+			if constexpr(enable_history) _owner.unwind_active_instruction().value();
 			return success.error().clone();
 		}
 	} else {
 		// Load operand specifier from memory.
 		auto os = read_word(pc);
 		if(os.has_failure()) {
-			// We can't handle an error inside an error, so crash if unwinding fails.
-			_owner.unwind_active_instruction().value();
+			// Unwind active instruction only if history is enabled.
+			// If history is enabled, unwind active instruction *must* work.
+			if constexpr(enable_history) _owner.unwind_active_instruction().value();
 			// Must clone to convert error from reference to value.
 			return os.error().clone();
 		}
@@ -79,8 +81,10 @@ result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 		if constexpr(DEBUG_PROC) debug_summary(*this, nonunary_fmt);
 
 		if(success.has_failure()) {
-			// We can't handle an error inside an error, so crash if unwinding fails.
-			_owner.unwind_active_instruction().value();
+			// Unwind active instruction only if history is enabled.
+			// If history is enabled, unwind active instruction *must* work.
+			if constexpr(enable_history) _owner.unwind_active_instruction().value();
+			
 			return success.error().clone();
 		}
 	}

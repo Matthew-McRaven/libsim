@@ -132,7 +132,7 @@ result<void> isa::pep10::LocalMachine<enable_history>::unwind_active_instruction
 		return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
 	}
 	else {
-		throw status_code(StorageErrc::DeltaDisabled);
+		return status_code(StorageErrc::DeltaDisabled);
 	}
 	
 
