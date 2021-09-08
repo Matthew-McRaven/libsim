@@ -68,15 +68,15 @@ public:
 	virtual uint64_t instruction_count() const = 0;
 
 	// Breakpoints
-	virtual void add_breakpoint(address_size_t address);
+	virtual void add_breakpoint(address_size_t address) = 0;
 	// Returns true if address had a breakpoint, false otherwise. Either way, no breakpoint shall exist at address.
-	virtual bool remove_breakpoint(address_size_t address); 
-	virtual void remove_all_breakpoints();
+	virtual bool remove_breakpoint(address_size_t address) = 0; 
+	virtual void remove_all_breakpoints() = 0;
 	 
 	virtual  result<std::unique_ptr<components::delta::Base<register_number_t, register_size_t>>> take_register_delta() = 0;
 	virtual  result<std::unique_ptr<components::delta::Base<csr_number_t, csr_size_t>>> take_csr_delta() = 0;
 	// Needed to gather all deltas since last step() call.
-	virtual uint64_t last_step_time() const;
+	virtual uint64_t last_step_time() const = 0;
 };
 
 template <typename processor_t>
