@@ -52,6 +52,12 @@ public:
 	void clear_memory(uint8_t mem_fill);
 	void clear_processor(uint16_t reg_fill, bool csr_fill);
 
+	// Debug / statistics
+	void add_breakpoint(uint16_t address);
+	// Returns true if address had a breakpoint, false otherwise. Either way, no breakpoint shall exist at address.
+	bool remove_breakpoint(uint16_t address); 
+	void remove_all_breakpoints();
+
 	// Step back serialization / update querries.
 	uint64_t cycle_count() const override;
 	result<void> save_deltas() override;

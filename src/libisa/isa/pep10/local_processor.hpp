@@ -40,15 +40,25 @@ public:
 	uint64_t cycle_count() const override;
 	uint64_t instruction_count() const override;
 
+	// Breakpoints
+	void add_breakpoint(uint16_t address) override;
+	// Returns true if address had a breakpoint, false otherwise. Either way, no breakpoint shall exist at address.
+	bool remove_breakpoint(uint16_t address) override; 
+	void remove_all_breakpoints() override;
+
 	// Todo: How do I coallate deltas for the CPU register bank
 	result<std::unique_ptr<components::delta::Base<uint8_t, uint16_t>>> take_register_delta() override;
 	result<std::unique_ptr<components::delta::Base<uint8_t, bool>>> take_csr_delta() override;
+
+	// Needed to gather all deltas since last step() call.
+	uint64_t last_step_time() const override;
 	
 private:
 	components::machine::MachineProcessorInterface<uint16_t, enable_history, uint8_t, isa::pep10::MemoryVector>& _owner;
 	std::shared_ptr<components::storage::Block<uint8_t, enable_history, uint16_t>> _registers {nullptr};
 	std::shared_ptr<components::storage::Block<uint8_t, enable_history, bool>> _csrs {nullptr};
-	uint64_t _cycle_count {0};
+	uint64_t _cycle_count {0}, _last_step_time {0};
+	std::set<uint16_t> _breakpoints;
 
 	result<void> unary_dispatch(uint8_t is);
 	result<void> nonunary_dispatch(uint8_t is, uint16_t os);

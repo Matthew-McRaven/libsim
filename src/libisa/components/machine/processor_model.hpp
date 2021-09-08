@@ -10,7 +10,7 @@
 
 namespace step
 {
-enum class type
+enum class Type
 {
 	kSingle,
 	kStepInto,
@@ -19,10 +19,16 @@ enum class type
 	kStepUntilDone,
 };
 
-enum class direction
+enum class Direction
 {
 	kForward,
 	kBackward,
+};
+enum class Result
+{
+	kHalted,     // The machine stopped execution by writing to the pwrOff port, and may not be resumed.
+	kBreakpoint, // The machine stopped execution because of a breakpoint, and may be resumed.
+	kNeedsMMIO,  // The machine stopped execution due to lack of MMIO, and it may be resumed upon enqueueing further data.
 };
 }
 
@@ -60,13 +66,21 @@ public:
 	// Statistics
 	virtual uint64_t cycle_count() const = 0;
 	virtual uint64_t instruction_count() const = 0;
+
+	// Breakpoints
+	virtual void add_breakpoint(address_size_t address);
+	// Returns true if address had a breakpoint, false otherwise. Either way, no breakpoint shall exist at address.
+	virtual bool remove_breakpoint(address_size_t address); 
+	virtual void remove_all_breakpoints();
 	 
 	virtual  result<std::unique_ptr<components::delta::Base<register_number_t, register_size_t>>> take_register_delta() = 0;
 	virtual  result<std::unique_ptr<components::delta::Base<csr_number_t, csr_size_t>>> take_csr_delta() = 0;
+	// Needed to gather all deltas since last step() call.
+	virtual uint64_t last_step_time() const;
 };
 
 template <typename processor_t>
-result<bool> step(std::shared_ptr<processor_t> cpu,step::type step, step::direction direction);
+result<bool> step(std::shared_ptr<processor_t> cpu, step::Type step, step::Direction direction);
 result<bool> step_while(std::function<bool(void)> condition);
 }
 

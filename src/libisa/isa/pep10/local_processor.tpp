@@ -193,6 +193,27 @@ uint64_t isa::pep10::LocalProcessor<enable_history>::instruction_count() const
 
 
 template<bool enable_history>
+void isa::pep10::LocalProcessor<enable_history>::add_breakpoint(uint16_t address)
+{
+	_breakpoints.insert(address);
+}
+
+template<bool enable_history>
+bool isa::pep10::LocalProcessor<enable_history>::remove_breakpoint(uint16_t address)
+{
+	auto contained = _breakpoints.contains(address);
+	_breakpoints.erase(address);
+	return contained;
+}
+
+template<bool enable_history>
+void isa::pep10::LocalProcessor<enable_history>::remove_all_breakpoints()
+{
+	_breakpoints.clear();
+}
+
+
+template<bool enable_history>
 result<std::unique_ptr<components::delta::Base<uint8_t, uint16_t>>> isa::pep10::LocalProcessor<enable_history>::take_register_delta()
 {
 	auto result_regs = _registers->take_delta();
@@ -207,6 +228,13 @@ result<std::unique_ptr<components::delta::Base<uint8_t, bool>>> isa::pep10::Loca
 	if(result_csr.has_error()) return result_csr.error().clone();
 	return std::move(result_csr.value());
 }
+
+template<bool enable_history>
+uint64_t isa::pep10::LocalProcessor<enable_history>::last_step_time() const
+{
+	return this->_last_step_time;
+}
+
 
 template<bool enable_history>
 result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t is)

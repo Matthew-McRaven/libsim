@@ -175,6 +175,24 @@ void isa::pep10::LocalMachine<enable_history>::clear_processor(uint16_t reg_fill
 }
 
 template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::add_breakpoint(uint16_t address)
+{
+	_processor->add_breakpoint(address);
+}
+
+template<bool enable_history>
+bool isa::pep10::LocalMachine<enable_history>::remove_breakpoint(uint16_t address)
+{
+	return _processor->remove_breakpoint(address);
+}
+
+template<bool enable_history>
+void isa::pep10::LocalMachine<enable_history>::remove_all_breakpoints()
+{
+	_processor->remove_all_breakpoints();
+}
+
+template<bool enable_history>
 uint64_t isa::pep10::LocalMachine<enable_history>::cycle_count() const
 {
 	return _processor->cycle_count();
