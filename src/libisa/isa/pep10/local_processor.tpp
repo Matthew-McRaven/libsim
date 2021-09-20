@@ -1,5 +1,6 @@
 #include "isa/pep10/local_processor.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 #include <magic_enum.hpp>
@@ -116,7 +117,7 @@ bool isa::pep10::LocalProcessor<enable_history>::can_step_into() const
 template<bool enable_history>
 uint16_t isa::pep10::LocalProcessor<enable_history>::call_depth() const
 {
-	throw std::logic_error("Not implemented.");
+	return _call_depth;
 }
 
 
@@ -125,6 +126,7 @@ void isa::pep10::LocalProcessor<enable_history>::init()
 {
 	_cycle_count = 0;
 	_last_step_time = 0;
+	_call_depth = 0;
 	_registers->clear(0);
 	_csrs->clear(0);
 
@@ -272,6 +274,9 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
 		write_register(*this, Register::PC, outcome_word.value());
 		write_register(*this, Register::SP, sp+2);
+
+		// Prevent negative overflow on _call_depth.
+		_call_depth = std::min(0ul, _call_depth+1);
 		break;
 
 	case instruction_mnemonic::SRET:
@@ -296,6 +301,9 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
         outcome_word = std::move(read_word(sp + 7));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
 		write_register(*this, Register::SP, outcome_word.value());
+
+		// Prevent negative overflow on _call_depth.
+		_call_depth = std::min(0ul, _call_depth+1);
         break;
 
 	case instruction_mnemonic::MOVSPA:
@@ -469,6 +477,8 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 		outcome_word = std::move(read_word(vector_value));
 		if(outcome_word.has_failure()) return outcome_word.error().clone();
 		write_register(*this, Register::PC, outcome_word.value());
+
+		_call_depth += 1;
 		break;
 	default:
 		return status_code(ProcessorErrc::IllegalUnaryInstruction);
@@ -557,6 +567,8 @@ result<void> isa::pep10::LocalProcessor<enable_history>::nonunary_dispatch(uint8
 		write_register(*this, Register::PC, decoded_operand);
 		// Update SP with new value
 		write_register(*this, Register::SP, sp);
+
+		_call_depth += 1;
         break;
 	case instruction_mnemonic::ADDSP:
 		write_register(*this, Register::SP, sp+decoded_operand);

@@ -57,13 +57,13 @@ private:
 	components::machine::MachineProcessorInterface<uint16_t, enable_history, uint8_t, isa::pep10::MemoryVector>& _owner;
 	std::shared_ptr<components::storage::Block<uint8_t, enable_history, uint16_t>> _registers {nullptr};
 	std::shared_ptr<components::storage::Block<uint8_t, enable_history, bool>> _csrs {nullptr};
-	uint64_t _cycle_count {0}, _last_step_time {0};
+	uint64_t _cycle_count {0}, _last_step_time {0}, _call_depth{0};
 	std::set<uint16_t> _breakpoints;
 
 	result<void> unary_dispatch(uint8_t is);
 	result<void> nonunary_dispatch(uint8_t is, uint16_t os);
 
-	result<uint8_t> get_byte(uint16_t address) const
+	result<uint8_t> get_byte(uint16_t address) const;
 	result<uint8_t> read_byte(uint16_t address) const;
 	result<uint16_t> read_word(uint16_t address) const;
 	result<void> write_byte(uint16_t address, uint8_t value);
