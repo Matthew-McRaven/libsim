@@ -26,7 +26,7 @@ Generate documentation:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: build library
   image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
-  needs: [Build Boost and Emscripten]
+  needs: []
   script:
     - source /emsdk/emsdk_env.sh
     - npm install moxygen -g
@@ -47,7 +47,7 @@ Test C++ bindings:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
   image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
-  needs: [Build Boost and Emscripten]
+  needs: []
   script:
     - source /emsdk/emsdk_env.sh
     - export CXX=$(which clang++)
@@ -61,7 +61,7 @@ Test emscripten bindings:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
   image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
-  needs: [Build Boost and Emscripten]
+  needs: []
   script:
     - source /emsdk/emsdk_env.sh
     - mkdir build && cd build
@@ -76,7 +76,7 @@ coverage:
     GIT_SUBMODULE_STRATEGY: recursive
   stage: test
   image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
-  needs: [Build Boost and Emscripten]
+  needs: []
   script:
     - source /emsdk/emsdk_env.sh
     # lcov_cobertura expects python3 to be named python.
