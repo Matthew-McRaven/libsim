@@ -89,18 +89,20 @@ template<bool enable_history>
 bool isa::pep10::LocalProcessor<enable_history>::can_step_into() const
 {
 	using namespace ::isa::pep10;
+	using ::isa::pep10::read_register;
+
 	static const auto isa = isa::pep10::isa_definition::get_definition();
 
 	auto pc = read_register(*this, Register::PC);
 	// Get rather than read, so as to avoid messing with execution stats.
-	auto result_is = get_byte(*this, pc);
+	auto result_is = get_byte(pc);
 	if(!result_is.has_value()) return false;
 
 	auto is = result_is.value();
 	auto mnemon = isa.riproll[is];
 
 	// Only CALL type instructions can be stepped into.
-	switch(mnemon.instr->mnemonic) {
+	switch(mnemon.inst->mnemonic) {
 	case instruction_mnemonic::USCALL:
 		[[fallthrough]]; 
 	case instruction_mnemonic::CALL:
