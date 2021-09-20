@@ -1,5 +1,3 @@
-image: docker:19
-
 stages:
 - build dependencies
 - build library
@@ -9,17 +7,9 @@ stages:
 variables:
   BUILD_VERSION: v0.5.2
 
-Build Boost and Emscripten:
-  stage: build dependencies
-  needs: []
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - cd ./dependencies/boost_emsdk
-    - (docker pull registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION} && echo success) || (docker build -t registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION} . ) 
-    - docker push registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
-
 Build Catch:
   stage: build dependencies
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
   needs: []
   script:
     - echo "Done"
@@ -27,6 +17,7 @@ Build Catch:
 Build Magic Enum:
   stage: build dependencies
   needs: []
+  image: registry.gitlab.com/pep10/libsim/emboost:${BUILD_VERSION}
   script:
     - echo "Done"
 
