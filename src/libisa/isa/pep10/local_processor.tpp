@@ -88,7 +88,27 @@ result<step::Result> isa::pep10::LocalProcessor<enable_history>::step()
 template<bool enable_history>
 bool isa::pep10::LocalProcessor<enable_history>::can_step_into() const
 {
-	throw std::logic_error("Not implemented.");
+	using namespace ::isa::pep10;
+	static const auto isa = isa::pep10::isa_definition::get_definition();
+
+	auto pc = read_register(*this, Register::PC);
+	// Get rather than read, so as to avoid messing with execution stats.
+	auto result_is = get_byte(*this, pc);
+	if(!result_is.has_value()) return false;
+
+	auto is = result_is.value();
+	auto mnemon = isa.riproll[is];
+
+	// Only CALL type instructions can be stepped into.
+	switch(mnemon.instr->mnemonic) {
+	case instruction_mnemonic::USCALL:
+		[[fallthrough]]; 
+	case instruction_mnemonic::CALL:
+		[[fallthrough]]; 
+	case instruction_mnemonic::SCALL: return true;
+	default: return false;
+	}
+
 }
 
 template<bool enable_history>
@@ -760,6 +780,15 @@ result<void> isa::pep10::LocalProcessor<enable_history>::nonunary_dispatch(uint8
 		return status_code(ProcessorErrc::IllegalNonunaryInstruction);
 	}
 	return result<void>(OUTCOME_V2_NAMESPACE::in_place_type<void>);
+}
+
+template<bool enable_history>
+result<uint8_t> isa::pep10::LocalProcessor<enable_history>::get_byte(uint16_t address) const
+{
+	auto i = _owner.get_memory(address);
+	// Must perform conversion here, because the default move ctor of result produces garbage in some cases.
+	if(i.has_failure()) return i.error().clone();
+	return i.value();
 }
 
 template<bool enable_history>

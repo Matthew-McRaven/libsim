@@ -63,6 +63,7 @@ private:
 	result<void> unary_dispatch(uint8_t is);
 	result<void> nonunary_dispatch(uint8_t is, uint16_t os);
 
+	result<uint8_t> get_byte(uint16_t address) const
 	result<uint8_t> read_byte(uint16_t address) const;
 	result<uint16_t> read_word(uint16_t address) const;
 	result<void> write_byte(uint16_t address, uint8_t value);
