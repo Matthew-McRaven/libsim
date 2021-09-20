@@ -122,6 +122,7 @@ template<bool enable_history>
 void isa::pep10::LocalProcessor<enable_history>::init()
 {
 	_cycle_count = 0;
+	_last_step_time = 0;
 	_registers->clear(0);
 	_csrs->clear(0);
 
