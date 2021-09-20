@@ -26,7 +26,7 @@ public:
 	/*
 	 * Accessors / modifiers for processor.
 	 */
-	result<bool> step();
+	result<step::Result> step();
 	/*
 	 * Implement MachineProcessorInterface.
 	 */

@@ -18,7 +18,7 @@ TEST_CASE("Simple execution trace tests of Pep/10 computer", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::SP, 0x0004);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::SP) == 0x0006);
 	}
 	// Tests ability to bring data into A register.
@@ -34,7 +34,7 @@ TEST_CASE("Simple execution trace tests of Pep/10 computer", "[isa::pep10]")
 		isa::pep10::load_bytes(machine, x, 0).value();
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x1234);
 		CHECK(machine->read_register(isa::pep10::Register::PC) == 0x003);
 	}
@@ -49,7 +49,7 @@ TEST_CASE("Simple execution trace tests of Pep/10 computer", "[isa::pep10]")
 		isa::pep10::load_bytes(machine, x, 0).value();
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::X) == 0x1234);
 		CHECK(machine->read_register(isa::pep10::Register::PC) == 0x003);
 	}
@@ -64,7 +64,7 @@ TEST_CASE("Simple execution trace tests of Pep/10 computer", "[isa::pep10]")
 		isa::pep10::load_bytes(machine, x, 0).value();
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x4100);
 		CHECK(machine->read_register(isa::pep10::Register::PC) == 0x003);
 	}

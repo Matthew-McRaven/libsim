@@ -28,7 +28,8 @@ enum class Result
 {
 	kHalted,     // The machine stopped execution by writing to the pwrOff port, and may not be resumed.
 	kBreakpoint, // The machine stopped execution because of a breakpoint, and may be resumed.
-	kNeedsMMIO,  // The machine stopped execution due to lack of MMIO, and it may be resumed upon enqueueing further data.
+	kNeedsMMI,  // The machine stopped execution due to lack of MMI, and it may be resumed upon enqueueing further data.
+	kNominal, // The machine paused because a single step was finished. It may be immediately resumed by calling step().
 };
 }
 
@@ -45,7 +46,7 @@ public:
 
 
 	// Interface that must be implemented by deriving processor models
-	virtual result<bool> step() = 0;
+	virtual result<step::Result> step() = 0;
 	virtual bool can_step_into() const = 0;
 	virtual uint16_t call_depth() const = 0;
 
@@ -80,8 +81,8 @@ public:
 };
 
 template <typename processor_t>
-result<bool> step(std::shared_ptr<processor_t> cpu, step::Type step, step::Direction direction);
-result<bool> step_while(std::function<bool(void)> condition);
+result<step::Result> step(std::shared_ptr<processor_t> cpu, step::Type step, step::Direction direction);
+result<step::Result> step_while(std::function<bool(void)> condition);
 }
 
 #include "processor_model.tpp"

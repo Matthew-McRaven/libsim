@@ -37,7 +37,7 @@ TEST_CASE("Instruction: CALL,i", "[isa::pep10]")
 
 				auto ret = machine->step();
 				REQUIRE(ret.has_value());
-				CHECK(ret.value());
+				CHECK(ret.value() == step::Result::kNominal);
 				CHECK(machine->get_memory(0xDEAD-2).value() == 0x00);
 				CHECK(machine->get_memory(0xDEAD-1).value() == 0x03);
 				// Check that other registers were not mutated.

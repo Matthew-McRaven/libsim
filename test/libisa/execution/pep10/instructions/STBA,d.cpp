@@ -38,7 +38,7 @@ TEST_CASE("Instruction: STBA,d", "[isa::pep10]")
 
 				auto ret = machine->step();
 				REQUIRE(ret.has_value());
-				CHECK(ret.value());
+				CHECK(ret.value() == step::Result::kNominal);
 				//CHECK(machine->get_memory(opspec-1).value() == 0);
 				CHECK(machine->get_memory(opspec).value() == target_lo);
 				//CHECK(machine->get_memory(opspec+1).value() == 0);

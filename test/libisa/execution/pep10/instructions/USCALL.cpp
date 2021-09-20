@@ -41,7 +41,7 @@ TEST_CASE("Instruction: USCALL", "[isa::pep10]")
 
 			auto ret = machine->step();
 			REQUIRE(ret.has_value());
-			CHECK(ret.value());
+			CHECK(ret.value() == step::Result::kNominal);
 
 			CHECK(machine->read_register(isa::pep10::Register::SP) == 0xFEED - 10);
 			CHECK(machine->read_register(isa::pep10::Register::PC) == 0xD00D);

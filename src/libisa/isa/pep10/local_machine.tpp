@@ -18,7 +18,7 @@ isa::pep10::LocalMachine<enable_history>::LocalMachine(
 }
 
 template<bool enable_history>
-result<bool> isa::pep10::LocalMachine<enable_history>::step()
+result<step::Result> isa::pep10::LocalMachine<enable_history>::step()
 {
 	
 	auto ret = _processor->step();

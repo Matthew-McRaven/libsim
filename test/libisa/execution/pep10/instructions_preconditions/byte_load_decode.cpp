@@ -33,7 +33,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x0034);
 	}
 
@@ -48,7 +48,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x00DE);
 	}
 
@@ -64,7 +64,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x00DE);
 	}
 
@@ -81,7 +81,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x00DE);
 	}
 
@@ -98,7 +98,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x00DE);
 	}
 
@@ -115,7 +115,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x00DE);
 	}
 
@@ -133,7 +133,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x00DE);
 	}
 
@@ -151,7 +151,7 @@ TEST_CASE("Test operand decoding for loading bytes", "[isa::pep10]")
 		machine->write_register(isa::pep10::Register::A, 0xFFFF);
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0x00DE);
 	}
 

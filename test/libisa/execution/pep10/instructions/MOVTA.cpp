@@ -30,7 +30,7 @@ TEST_CASE("Instruction: MOVTA", "[isa::pep10]")
 
 			auto ret = machine->step();
 			REQUIRE(ret.has_value());
-			CHECK(ret.value());
+			CHECK(ret.value() == step::Result::kNominal);
 
 			// Check that other registers were not mutated.
 			CHECK(machine->read_register(isa::pep10::Register::SP) == 0);

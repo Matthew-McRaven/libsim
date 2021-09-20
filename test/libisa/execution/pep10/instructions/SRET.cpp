@@ -46,7 +46,7 @@ TEST_CASE("Instruction: SRET", "[isa::pep10]")
 
 		auto ret = machine->step();
 		REQUIRE(ret.has_value());
-		CHECK(ret.value());
+		CHECK(ret.value() == step::Result::kNominal);
 
 		CHECK(machine->read_packed_csr() == 0b1111);
 		CHECK(machine->read_register(isa::pep10::Register::A) == 0xDEAD);

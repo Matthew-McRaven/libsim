@@ -25,8 +25,18 @@ isa::pep10::LocalProcessor<enable_history>::LocalProcessor(
 }
 
 template <bool enable_history>
-result<bool> isa::pep10::LocalProcessor<enable_history>::step()
+result<step::Result> isa::pep10::LocalProcessor<enable_history>::step()
 {
+	static auto ret_helper = [](isa::pep10::LocalProcessor<enable_history>&proc, auto& x) {
+		// Unwind active instruction only if history is enabled.
+		// If history is enabled, unwind active instruction *must* work.
+		if constexpr(enable_history) proc._owner.unwind_active_instruction().value();
+		
+		if(x.error() == StorageErrc::NoMMInput) return result<step::Result>{step::Result::kNeedsMMI};
+		// Must clone to convert error from reference to value.
+		else return result<step::Result>{x.error().clone()};
+	};
+
 	using ::isa::pep10::read_register;
 	using ::isa::pep10::write_register;
 	auto i_locker = _owner.acquire_instruction_lock();
@@ -36,12 +46,7 @@ result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 
 	// Load instruction spec from memory.
 	auto is = read_byte(pc);
-	if(is.has_failure()) {
-		// We can't handle an error inside an error, so crash if unwinding fails.
-		_owner.unwind_active_instruction().value();
-		// Must clone to convert error from reference to value.
-		return is.error().clone();
-	}
+	if(is.has_failure()) return ret_helper(*this, is);
 	write_register(*this, Register::IS, is.value());
 	
 	// Increment PC
@@ -54,22 +59,11 @@ result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 		static const auto unary_fmt = "{PC} {A} {X}, {SP} ||{IS}";
 		if constexpr(DEBUG_PROC) debug_summary(*this, unary_fmt);
 
-		if(success.has_failure()) {
-			// Unwind active instruction only if history is enabled.
-			// If history is enabled, unwind active instruction *must* work.
-			if constexpr(enable_history) _owner.unwind_active_instruction().value();
-			return success.error().clone();
-		}
+		if(success.has_failure()) return ret_helper(*this, success);
 	} else {
 		// Load operand specifier from memory.
 		auto os = read_word(pc);
-		if(os.has_failure()) {
-			// Unwind active instruction only if history is enabled.
-			// If history is enabled, unwind active instruction *must* work.
-			if constexpr(enable_history) _owner.unwind_active_instruction().value();
-			// Must clone to convert error from reference to value.
-			return os.error().clone();
-		}
+		if(os.has_failure()) return ret_helper(*this, is);
 		write_register(*this, Register::OS, os.value());
 
 		// Increment PC
@@ -80,19 +74,15 @@ result<bool> isa::pep10::LocalProcessor<enable_history>::step()
 		static const auto nonunary_fmt = "{PC} {A} {X}, {SP} ||{IS} {OS},{ADDR}";
 		if constexpr(DEBUG_PROC) debug_summary(*this, nonunary_fmt);
 
-		if(success.has_failure()) {
-			// Unwind active instruction only if history is enabled.
-			// If history is enabled, unwind active instruction *must* work.
-			if constexpr(enable_history) _owner.unwind_active_instruction().value();
-			
-			return success.error().clone();
-		}
+		if(success.has_failure()) return ret_helper(*this, success);
 	}
 	// TODO: Don't ignore errors here! I just need to silence compiler warning for now.
 	if constexpr(enable_history) _owner.save_deltas().value();
 	++_cycle_count;
 	// Step returns false if the machine is halted, therefore must negate condition.
-	return !_owner.halted();
+	if(_owner.halted()) return step::Result::kHalted;
+	else if (_breakpoints.contains(read_register(*this, Register::PC))) return step::Result::kBreakpoint;
+	else return step::Result::kNominal;
 }
 
 template<bool enable_history>
