@@ -53,9 +53,3 @@ RUN cd /emsdk/llvm/git/src/compiler-rt && \
     cd ../../build_compile_rt && \
     make -j32 && \
     cp -r lib ../build_main_64/lib/clang/14.0.0/
-
-RUN git clone https://github.com/capnproto/capnproto.git /capnproto && \
-    cd /capnproto && \
-    cmake . && \
-    make -j6 check && \
-    sudo make install
