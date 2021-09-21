@@ -276,7 +276,7 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 		write_register(*this, Register::SP, sp+2);
 
 		// Prevent negative overflow on _call_depth.
-		_call_depth = std::min(0u, _call_depth+1);
+		_call_depth = std::min<decltype(_call_depth)>(0, _call_depth+1);
 		break;
 
 	case instruction_mnemonic::SRET:
@@ -303,7 +303,7 @@ result<void> isa::pep10::LocalProcessor<enable_history>::unary_dispatch(uint8_t 
 		write_register(*this, Register::SP, outcome_word.value());
 
 		// Prevent negative overflow on _call_depth.
-		_call_depth = std::min(0u, _call_depth+1);
+		_call_depth = std::min<decltype(_call_depth)>(0, _call_depth+1);
         break;
 
 	case instruction_mnemonic::MOVSPA:
