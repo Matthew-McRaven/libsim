@@ -13,3 +13,6 @@
 [submodule "dependencies/builtins"]
 	path = dependencies/builtins
 	url = https://gitlab.com/pep10/builtins
+[submodule "dependencies/cereal"]
+	path = dependencies/cereal
+	url = https://github.com/USCiLab/cereal.git
