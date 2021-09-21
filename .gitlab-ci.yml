@@ -5,7 +5,7 @@ stages:
 - deploy pages
 
 variables:
-  BUILD_VERSION: v0.5.2
+  BUILD_VERSION: v0.6.0
 
 Build Catch:
   stage: build dependencies
