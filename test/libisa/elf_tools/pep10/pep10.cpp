@@ -8,9 +8,10 @@
 #include "isa/pep10/from_elf.hpp"
 #include "masm/ir/directives.hpp"
 #include "masm/ir/macro.hpp"
+#include "masm/project/image.hpp"
 #include "utils/format.hpp"
 
-std::shared_ptr<ELFIO::elfio> os_to_image()
+std::shared_ptr<masm::elf::AnnotatedImage<uint16_t>> os_to_image()
 {
 	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
@@ -32,7 +33,7 @@ std::shared_ptr<ELFIO::elfio> os_to_image()
 	
 }
 
-std::shared_ptr<ELFIO::elfio> joint_to_image(const std::string& user_prog)
+std::shared_ptr<masm::elf::AnnotatedImage<uint16_t>> joint_to_image(const std::string& user_prog)
 {
 	using namespace asmb::pep10::driver;
 	auto driver = make_driver();
@@ -69,7 +70,7 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 	SECTION("ROM in correct location and is correct size.") {	
 		auto image = os_to_image();
-		auto ROM_result = elf_tools::pep10::construct_os_storage<false>(*image);
+		auto ROM_result = elf_tools::pep10::construct_os_storage<false>(image->image());
 		REQUIRE(ROM_result.has_value());
 		auto [ROM_offset, ROM_storage] = ROM_result.value();
 		// OS ROM should not unexpectedly change in size.
@@ -81,7 +82,7 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 	SECTION("RAM in correct location and is correct size.") {	
 		auto image = os_to_image();
-		auto RAM_result = elf_tools::pep10::construct_ram<false>(*image);
+		auto RAM_result = elf_tools::pep10::construct_ram<false>(image->image());
 		REQUIRE(RAM_result.has_value());
 		auto [RAM_offset, RAM_storage] = RAM_result.value();
 		// RAM should not unexpectedly change in size or location.
@@ -91,7 +92,7 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 	SECTION("MMIO definitions are correct.") {	
 		auto image = os_to_image();
-		auto ports_result = elf_tools::pep10::port_definitions(*image);
+		auto ports_result = elf_tools::pep10::port_definitions(image->image());
 		REQUIRE(ports_result.has_value());
 		auto ports = ports_result.value();
 
@@ -118,7 +119,7 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 	SECTION("MMIO ports in correct location and is correct count.") {	
 		auto image = os_to_image();
-		auto ports_result = elf_tools::pep10::construct_mmio_ports<false>(*image);
+		auto ports_result = elf_tools::pep10::construct_mmio_ports<false>(image->image());
 		REQUIRE(ports_result.has_value());
 		auto ports = ports_result.value();
 
@@ -145,7 +146,7 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 	SECTION("Layered memory device has correct layout.") {	
 		auto image = os_to_image();
-		auto storage_result = elf_tools::pep10::construct_memory_map<false>(*image);
+		auto storage_result = elf_tools::pep10::construct_memory_map<false>(image->image());
 		REQUIRE(storage_result.has_value());
 		auto storage = storage_result.value();
 		// Pick two addresses that are definitely RAM/ROM, so that we can check that the correct device is returned.
@@ -195,7 +196,7 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 	SECTION("Validate machine creation.") {
 		auto image = os_to_image();
-		auto machine_result = isa::pep10::machine_from_elf<false>(*image);
+		auto machine_result = isa::pep10::machine_from_elf<false>(image->image());
 		REQUIRE(machine_result.has_value());
 		auto machine = machine_result.value();
 
@@ -215,16 +216,16 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 	SECTION("Buffer user program to diskIn.") {
 		auto image = joint_to_image(".WORD 52\n.WORD28\n.END");
-		auto machine_result = isa::pep10::machine_from_elf<false>(*image);
+		auto machine_result = isa::pep10::machine_from_elf<false>(image->image());
 		REQUIRE(machine_result.has_value());
 		auto machine = machine_result.value();
-		isa::pep10::load_user_program(*image, machine, isa::pep10::Loader::kDiskIn);
+		isa::pep10::load_user_program(image->image(), machine, isa::pep10::Loader::kDiskIn);
 
 		auto diskIn_lookup = machine->input_device("diskIn");
 		CHECK(diskIn_lookup.has_value());
 		auto diskIn = diskIn_lookup.value();
 
-		auto bytes_result = elf_tools::section_as_bytes(*image, "user.text");
+		auto bytes_result = elf_tools::section_as_bytes(image->image(), "user.text");
 		CHECK(bytes_result.has_value());
 		auto formatted_bytes = utils::bytes_to_hex_string(bytes_result.value(), 16, true);
 		auto bytes = std::vector<uint8_t>(formatted_bytes.begin(), formatted_bytes.end());
@@ -237,12 +238,12 @@ TEST_CASE( "Convert ELF image to Pep/10 machine", "[elf_tools::pep10]"  ) {
 
 	SECTION("Buffer user program to RAM.") {
 		auto image = joint_to_image(".WORD 52\n.WORD28\n.END");
-		auto machine_result = isa::pep10::machine_from_elf<false>(*image);
+		auto machine_result = isa::pep10::machine_from_elf<false>(image->image());
 		REQUIRE(machine_result.has_value());
 		auto machine = machine_result.value();
-		isa::pep10::load_user_program(*image, machine, isa::pep10::Loader::kRAM);
+		isa::pep10::load_user_program(image->image(), machine, isa::pep10::Loader::kRAM);
 
-		auto bytes_result = elf_tools::section_as_bytes(*image, "user.text");
+		auto bytes_result = elf_tools::section_as_bytes(image->image(), "user.text");
 		CHECK(bytes_result.has_value());
 		auto bytes = bytes_result.value();
 		CHECK(bytes.size() == 4);

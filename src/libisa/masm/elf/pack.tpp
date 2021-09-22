@@ -101,6 +101,6 @@ bool masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 	if(false) writer->set_entry( 0 );
 	writer->save("hello.elf");
 
-	project->as_elf = writer;
+	project->as_elf = std::make_shared<masm::elf::AnnotatedImage<addr_size_t>>(writer);
 	return true;
 }

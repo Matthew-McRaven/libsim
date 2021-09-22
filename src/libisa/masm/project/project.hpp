@@ -1,14 +1,12 @@
 #pragma once 
 
 #include <climits>
+#include <functional>
 #include <map>
+#include <queue>
 #include <tuple>
 #include <variant>
 #include <vector>
-#include <queue>
-#include <functional>
-
-#include <elfio/elfio.hpp>
 
 #include "masm/project/image.hpp"
 #include "masm/project/message_handler.hpp"
@@ -46,7 +44,7 @@ struct project
 	std::shared_ptr<masm::macro_registry> macro_registry;
 	std::shared_ptr<message_handler<address_size_t> > message_resolver;
 	std::shared_ptr<masm::elf::image<address_size_t>> image;
-	std::shared_ptr<ELFIO::elfio> as_elf;
+	std::shared_ptr<masm::elf::AnnotatedImage<address_size_t>> as_elf;
 };
 
 }
