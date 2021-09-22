@@ -1,7 +1,8 @@
 #include "catch.hpp"
 
-#include "symbol/value.hpp"
 #include "symbol/table.hpp"
+#include "symbol/types.hpp"
+#include "symbol/value.hpp"
 TEST_CASE( "Validate functionality for 1 symbol table." ) {
 	
 	SECTION("Add symbol via reference(std::string).") {
@@ -71,9 +72,9 @@ TEST_CASE( "Validate functionality for 1 symbol table." ) {
 		auto x1 = st->define("h1");
 		auto x2 = st->define("h2");
 
-		x0->value = std::make_shared<symbol::value_location<uint16_t>>(10, 0);
-		x1->value = std::make_shared<symbol::value_location<uint16_t>>(20, 0);
-		x2->value = std::make_shared<symbol::value_location<uint16_t>>(30, 0);
+		x0->value = std::make_shared<symbol::value_location<uint16_t>>(10, 0, symbol::Type::kObject);
+		x1->value = std::make_shared<symbol::value_location<uint16_t>>(20, 0, symbol::Type::kObject);
+		x2->value = std::make_shared<symbol::value_location<uint16_t>>(30, 0, symbol::Type::kCode);
 		symbol::adjust_offset<uint16_t>(st, 1, 10);
 
 		CHECK(x0->value->value() == 11);
@@ -87,9 +88,9 @@ TEST_CASE( "Validate functionality for 1 symbol table." ) {
 		auto x1 = st->define("h1");
 		auto x2 = st->define("h2");
 
-		x0->value = std::make_shared<symbol::value_location<uint16_t>>(10, 0);
-		x1->value = std::make_shared<symbol::value_location<uint16_t>>(20, 0);
-		x2->value = std::make_shared<symbol::value_location<uint16_t>>(30, 0);
+		x0->value = std::make_shared<symbol::value_location<uint16_t>>(10, 0, symbol::Type::kObject);
+		x1->value = std::make_shared<symbol::value_location<uint16_t>>(20, 0, symbol::Type::kObject);
+		x2->value = std::make_shared<symbol::value_location<uint16_t>>(30, 0, symbol::Type::kObject);
 		symbol::adjust_offset<uint16_t>(st, -1, 15);
 
 		CHECK(x0->value->value() == 10);

@@ -63,18 +63,22 @@ enum class definition_state
  * toolchain. As demonstrated in `/src/masm/elf/pack.hpp` there is more-or-less a 1-1 mapping between our types and ELF 
  * types.
  */
-enum class type_t
+enum class Type 
 {
     /*! Represent a not-yet-defined symbol's value. 
     * Maps to ELF's STT_NOTYPE.*/
     kEmpty,
-    /*! The associated symbol represents an address in memory. 
+    /*! The associated symbol is an address in memory of data.
+     * These types arise from symbol declarations like: \code{.s}hi:.WORD 2\endcode
+     * Maps to ELF's STT_OBJECT. */
+    kObject,
+    /*! The associated symbol represents an address in memory of code. 
      * These types arise from symbol declarations like: \code{.s}hi:NOP\endcode
      * Maps to ELF's STT_FUNC. */
-    kLocation,
+    kCode,
     /*! The associated symbol represents an numeric value or string in memory. 
      * These types arise from symbol declarations like: \code{.asm}hi:.EQUATE 10\endcode
-     * Maps to ELF's STT_OBJECT.*/
+     * Maps to ELF's STT_ABS.*/
     kConstant,
     /*! The associated symbol's value is that of another symbol.
      * It was mainly used to migrate IO ports from the operating system to user programs.

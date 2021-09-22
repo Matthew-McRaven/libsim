@@ -16,6 +16,7 @@ public:
     unary_instruction& operator=(unary_instruction other);
     std::shared_ptr<masm::ir::linear_line<uint16_t>> clone() const override;
 
+    masm::ir::ByteType bytes_type() const override;
     // Get the assembler listing, which is memaddress + object code + sourceLine.
     std::string generate_listing_string() const override;
     // Returns the properly formatted source line.
@@ -46,6 +47,7 @@ public:
     nonunary_instruction& operator=(nonunary_instruction other);
     std::shared_ptr<masm::ir::linear_line<uint16_t>> clone() const override;
 
+    masm::ir::ByteType bytes_type() const override;
     // Get the assembler listing, which is memaddress + object code + sourceLine.
     std::string generate_listing_string() const override;
     // Returns the properly formatted source line.

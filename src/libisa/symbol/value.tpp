@@ -35,18 +35,18 @@ value_t symbol::value_empty<value_t>::value() const
 }
 
 template <typename value_t>
-symbol::type_t symbol::value_empty<value_t>::type() const
+symbol::Type symbol::value_empty<value_t>::type() const
 {
-    return type_t::kEmpty;
+    return Type::kEmpty;
 }
 
 
 
 
 template <typename value_t>
-symbol::type_t symbol::value_deleted<value_t>::type() const
+symbol::Type symbol::value_deleted<value_t>::type() const
 {
-    return type_t::kDeleted;
+    return Type::kDeleted;
 }
 
 
@@ -71,17 +71,18 @@ void symbol::value_const<value_t>::set_value(value_t value)
 }
 
 template <typename value_t>
-symbol::type_t symbol::value_const<value_t>::type() const
+symbol::Type symbol::value_const<value_t>::type() const
 {
-    return type_t::kConstant;
+    return Type::kConstant;
 }
 
 
 
 template <typename value_t>
-symbol::value_location<value_t>::value_location(value_t base, value_t offset):
-    abstract_value<value_t>(), base_(base), offset_(offset)
+symbol::value_location<value_t>::value_location(value_t base, value_t offset, symbol::Type type):
+    abstract_value<value_t>(), base_(base), offset_(offset), type_(type)
 {
+    assert(type == symbol::Type::kCode || type == symbol::Type::kObject);
 }
 
 template <typename value_t>
@@ -104,9 +105,9 @@ value_t symbol::value_location<value_t>::value() const
 }
 
 template <typename value_t>
-symbol::type_t symbol::value_location<value_t>::type() const
+symbol::Type symbol::value_location<value_t>::type() const
 {
-    return type_t::kLocation;
+    return type_;
 }
 
 template <typename value_t>
@@ -143,7 +144,7 @@ value_t symbol::value_pointer<value_t>::value() const
 }
 
 template <typename value_t>
-symbol::type_t symbol::value_pointer<value_t>::type() const
+symbol::Type symbol::value_pointer<value_t>::type() const
 {
-    return type_t::kPtrToSym;
+    return Type::kPtrToSym;
 }

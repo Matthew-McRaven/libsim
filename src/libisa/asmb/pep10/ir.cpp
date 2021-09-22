@@ -28,6 +28,11 @@ std::shared_ptr<masm::ir::linear_line<uint16_t>> asmb::pep10::unary_instruction:
     return std::make_shared<unary_instruction>(*this);
 }
 
+masm::ir::ByteType asmb::pep10::unary_instruction::bytes_type() const
+{
+    return masm::ir::ByteType::kCode;
+}
+
 std::string asmb::pep10::unary_instruction::generate_listing_string() const
 {
     // Potentially skip codegen
@@ -99,6 +104,11 @@ asmb::pep10::nonunary_instruction &asmb::pep10::nonunary_instruction::operator=(
 std::shared_ptr<masm::ir::linear_line<uint16_t>> asmb::pep10::nonunary_instruction::clone() const
 {
     return std::make_shared<nonunary_instruction>(*this);
+}
+
+masm::ir::ByteType asmb::pep10::nonunary_instruction::bytes_type() const
+{
+    return masm::ir::ByteType::kCode;
 }
 
 std::string asmb::pep10::nonunary_instruction::generate_listing_string() const

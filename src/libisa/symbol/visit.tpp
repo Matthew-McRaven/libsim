@@ -110,7 +110,7 @@ void symbol::AdjustOffsetVisitor<value_t>::operator() (std::shared_ptr<LeafTable
 	auto rng = table->entries();
 	auto it = rng.begin();
 	while(it != rng.end()) {
-		if((*it)->value->type() == symbol::type_t::kLocation && (*it)->value->value() >= threshhold_) {
+		if((*it)->value->relocatable() && (*it)->value->value() >= threshhold_) {
 			std::static_pointer_cast<symbol::value_location<value_t>>((*it)->value)->set_offset(offset_);
 		}
 		++it;

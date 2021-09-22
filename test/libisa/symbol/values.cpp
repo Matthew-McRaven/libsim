@@ -1,5 +1,7 @@
 #include "catch.hpp"
 
+
+#include "symbol/types.hpp"
 #include "symbol/value.hpp"
 
 
@@ -15,7 +17,7 @@ TEST_CASE( "Test symbol values." ) {
 		auto value = symbol::value_deleted<uint16_t>();
 		CHECK_NOFAIL(value.value());
 		CHECK(value.value() == 0);
-		CHECK(value.type() == symbol::type_t::kDeleted);
+		CHECK(value.type() == symbol::Type::kDeleted);
 	}
 
 	// Check that the values on a numeric value can be mutated.
@@ -32,7 +34,7 @@ TEST_CASE( "Test symbol values." ) {
 	SECTION("Location Value") {
 		auto base=7;
 		auto start_offset=11, end_offset=13;
-		auto value = symbol::value_location<uint16_t>(base, start_offset);
+		auto value = symbol::value_location<uint16_t>(base, start_offset, symbol::Type::kCode);
 		CHECK(value.value() == base + start_offset);
 		CHECK_NOTHROW(value.set_offset(end_offset));
 		CHECK(value.value() == base + end_offset);
