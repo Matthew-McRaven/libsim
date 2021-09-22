@@ -1,11 +1,41 @@
 #include "pack.hpp"
 #include <iostream>
 #include <sstream>
+
+#include <cereal/archives/portable_binary.hpp>
 #include <elfio/elfio.hpp>
 
+#include "masm/elf/addr_line_mapping.hpp"
 #include "masm/elf/mmio.hpp"
 #include "masm/project/section.hpp"
 #include "symbol/types.hpp"
+
+template <typename addr_size_t>	
+void masm::elf::addr_line_mapping(std::ostream& os, const masm::elf::top_level_section<addr_size_t>& section)
+{
+	using namespace ::masm::elf;
+	AddressLineRegionVector<addr_size_t> ret;
+	auto as_code_section = static_cast<const masm::elf::code_section<addr_size_t>>(section);
+	std::function<void(const masm::elf::code_section<addr_size_t>& section)> enumerator;
+	enumerator = [&](const masm::elf::code_section<addr_size_t>& section)->void {
+		for(auto line : section.body_ir->ir_lines) {
+			if(line->object_code_bytes() == 0) continue;
+			if(auto as_macro = std::dynamic_pointer_cast<const masm::ir::macro_invocation<addr_size_t>>(line); as_macro) {
+				auto as_code = std::static_pointer_cast<const masm::elf::code_section<addr_size_t>>(as_macro->macro);
+				enumerator(*as_code);
+			} else {
+				auto item = AddressLineRegion<addr_size_t>{line->base_address(), line->end_address(), line->listing_line};
+				ret.vec.emplace_back(std::move(item));
+			}
+		}
+	};
+	enumerator(as_code_section);
+	{
+		cereal::PortableBinaryOutputArchive archive(os);
+		archive(ret);
+	}
+}
+
 template <typename addr_size_t>
 bool masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >& project, 
 	std::shared_ptr<masm::elf::image<addr_size_t> >& image)
@@ -82,6 +112,16 @@ bool masm::elf::pack_image(std::shared_ptr<masm::project::project<addr_size_t> >
 				mmio_defs.emplace_back(masm::elf::mmio::Definition{x->second, static_cast<uint16_t>(index)});
 			}
 		}
+		auto line_sec = writer->sections.add(prefix+".lines");
+		// Streams can't be moved, so we must allocate it here and pass it to our serialization function.
+		std::stringstream os;
+		addr_line_mapping(os, *section);
+		// MUST SAVE STR!! Failing to save str will cause it to immediately expire, and the c_str will immediately be deleted.
+		const std::string& tmp = os.str();
+		// Type must be set, or the section will take up no space in image. 
+		line_sec->set_type(SHT_LOUSER+0x02);
+		line_sec->set_data((const char*)tmp.c_str(), tmp.size());
+		line_sec->set_addr_align(0x01);
 
 		if(prefix == "os") {
 			// Create symbol table section

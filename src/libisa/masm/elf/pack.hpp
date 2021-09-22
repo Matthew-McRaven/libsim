@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 #include <elfio/elfio.hpp>
 /*
  * At this point in the project, I needed some humor.
@@ -13,7 +15,9 @@
 namespace masm::elf
 {
 
-
+	template <typename addr_size_t>	
+	void addr_line_mapping(std::ostream& os, const masm::elf::top_level_section<addr_size_t>& section);
+		
 	template <typename addr_size_t>
 	bool pack_image(std::shared_ptr<masm::project::project<addr_size_t> >& project, 
 		std::shared_ptr<masm::elf::image<addr_size_t> >& image);

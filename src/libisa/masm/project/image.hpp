@@ -26,6 +26,7 @@ namespace masm::elf {
 	public:
 		AnnotatedImage(std::shared_ptr<ELFIO::elfio> image);
 		std::optional<std::size_t> listing_line_from_address(address_size_t address) const;
+		std::optional<address_size_t> address_from_listing_line(std::size_t address) const;
 		ELFIO::elfio& image();
 	private:
 		std::shared_ptr<masm::elf::AddressLineRegionVector<address_size_t>> _user_lines{nullptr}, _os_lines{nullptr};

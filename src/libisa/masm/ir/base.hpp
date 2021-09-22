@@ -29,6 +29,7 @@ public:
     // Can the code line be addressed?
     virtual bool contains_memory_address() {return object_code_bytes() != 0; } 
     virtual address_size_t base_address() const {return std::get<0>(address_span);};
+    virtual address_size_t end_address() const {return std::get<1>(address_span);};
     virtual void set_begin_address(address_size_t addr) {address_span = {addr, addr+object_code_bytes()-1};}
     virtual void set_end_address(address_size_t addr) {address_span = {addr-object_code_bytes()+1, addr};}
     

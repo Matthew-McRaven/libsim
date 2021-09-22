@@ -14,8 +14,11 @@ namespace masm::elf
 	{
 		addr_size_t start_address, end_address;
 		std::size_t line_number;
-		bool contains(addr_size_t addr) const {
+		bool contains_address(addr_size_t addr) const {
 			return start_address <= addr && addr <= end_address;
+		}
+		bool contains_line(std::size_t line) const {
+			return line_number == line;
 		}
 	private:
 		friend class cereal::access;
@@ -38,9 +41,14 @@ namespace masm::elf
 		 * However, in the one place that it is used, this pattern would lead to ugly code.
 		 * So, this ugly API design will stay for now.
 		 */
-		bool contains(addr_size_t addr) const {
+		bool contains_address(addr_size_t addr) const {
 			for(const auto& item : vec) 
-				if(item.contains(addr)) return true;
+				if(item.contains_address(addr)) return true;
+			return false;
+		}
+		bool contains_line(std::size_t line) const {
+			for(const auto& item : vec) 
+				if(item.contains_line(line)) return true;
 			return false;
 		}
 
@@ -48,7 +56,13 @@ namespace masm::elf
 		// contains(x) == true to be a precondition of this function working correctly. 
 		std::optional<std::size_t> line(addr_size_t addr) const {
 			for(const auto& item : vec) 
-				if(item.contains(addr)) return item.line_number;
+				if(item.contains_address(addr)) return item.line_number;
+			return std::nullopt;
+		}
+		// Returns base (starting) address for corresponding line if present.
+		std::optional<addr_size_t> address(std::size_t line) const {
+			for(const auto& item : vec) 
+				if(item.contains_line(line)) return item.base_address;
 			return std::nullopt;
 		}
 	private:

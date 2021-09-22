@@ -31,8 +31,16 @@ masm::elf::AnnotatedImage<address_size_t>::AnnotatedImage(std::shared_ptr<ELFIO:
 template <typename address_size_t>
 std::optional<std::size_t> masm::elf::AnnotatedImage<address_size_t>::listing_line_from_address(address_size_t address) const 
 {
-	if(_os_lines && _os_lines->contains(address)) return _os_lines->line(address);
-	if(_user_lines && _user_lines->contains(address)) return _user_lines->line(address);
+	if(_os_lines && _os_lines->contains_address(address)) return _os_lines->line(address);
+	if(_user_lines && _user_lines->contains_address(address)) return _user_lines->line(address);
+	return std::nullopt;
+}
+
+template <typename address_size_t>
+std::optional<address_size_t> masm::elf::AnnotatedImage<address_size_t>::address_from_listing_line(std::size_t line) const 
+{
+	if(_os_lines && _os_lines->contains_line(line)) return _os_lines->address(line);
+	if(_user_lines && _user_lines->contains_line(line)) return _user_lines->address(line);
 	return std::nullopt;
 }
 
