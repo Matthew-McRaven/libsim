@@ -103,7 +103,7 @@ result<void> run(std::shared_ptr<LocalMachine<enable_history>> machine);
 
 // Run the machine forever, or until a value is written to the pwrOff port, or a maximum number of steps is exceeded.
 template<bool enable_history>
-result<bool> run(std::shared_ptr<LocalMachine<enable_history>> machine, uint64_t max_timesteps);
+result<step::Result> run(std::shared_ptr<LocalMachine<enable_history>> machine, uint64_t max_timesteps);
 
 } // namespace isa::pep10
 #include "local_machine.tpp"

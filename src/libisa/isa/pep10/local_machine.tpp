@@ -332,14 +332,14 @@ result<void> isa::pep10::run(std::shared_ptr<LocalMachine<enable_history>> machi
 
 // Run the machine forever, or until a value is written to the pwrOff port, or a maximum number of steps is exceeded.
 template<bool enable_history>
-result<bool> isa::pep10::run(std::shared_ptr<LocalMachine<enable_history>> machine, uint64_t max_timesteps)
+result<step::Result> isa::pep10::run(std::shared_ptr<LocalMachine<enable_history>> machine, uint64_t max_timesteps)
 {
-	result<bool> res = true;
+	result<step::Result> res = step::Result::kHalted;
 	do {
-		res =std::move(machine->step());
+		res = std::move(machine->step());
 		if(res.has_error()) return res.error().clone();
 		if(machine->cycle_count()>=max_timesteps) break;
 		// TODO: Add "break" for breakpoints.
-	} while (res.value());
-	return result<bool>(!machine->halted());
+	} while (res.value() == step::Result::kNominal);
+	return res;
 }
