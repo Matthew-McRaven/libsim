@@ -62,7 +62,7 @@ namespace masm::elf
 		// Returns base (starting) address for corresponding line if present.
 		std::optional<addr_size_t> address(std::size_t line) const {
 			for(const auto& item : vec) 
-				if(item.contains_line(line)) return item.base_address;
+				if(item.contains_line(line)) return item.start_address;
 			return std::nullopt;
 		}
 	private:
