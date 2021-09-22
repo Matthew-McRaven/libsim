@@ -18,6 +18,6 @@ for root, dirs, files in os.walk(sys.argv[1]):
 		if os.path.isfile(filename):
 			st = os.stat(filename)
 			if st.st_mode & executable: tests.append(filename)
-regex = "\"(catch)|(elfio/*)|(ngraph)|(magic_enum)|(fmt)|(outcome)|(cereal)|(test/*)\""
+regex = "\"(catch)|(elfio/*)|(ngraph)|(magic_enum)|(fmt)|(outcome)|(cereal/*)|(test/*)\""
 os.system(f'llvm-cov export --ignore-filename-regex={regex} --instr-profile coverage.profdata --format=lcov {" --object ".join(tests)}> coverage.lcov')
 os.system("genhtml -o \"coverage\" coverage.lcov")
