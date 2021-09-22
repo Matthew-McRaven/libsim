@@ -196,6 +196,7 @@ auto asmb::pep10::parser::parse(
 					auto arg = std::dynamic_pointer_cast<masm::ir::dot_equate<uint16_t> >(local_line)->argument->value();
 					auto sym_value = std::make_shared<symbol::value_const<uint16_t>>(arg);
 					local_symbol->value = sym_value;
+					assert(local_symbol->value->type() != symbol::Type::kEmpty);
 				}
 			}
 			else if(boost::iequals(text_dot, "EXPORT")) {
