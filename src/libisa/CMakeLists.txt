@@ -32,4 +32,4 @@ target_include_directories(RTL-Lib PUBLIC "${PROJECT_BINARY_DIR}/")
 target_include_directories(RTL-Lib PUBLIC "${PROJECT_SOURCE_DIR}/")
 
 # TODO: Switch to std::ranges when supported (maybe clang 13).
-target_link_libraries(RTL-Lib PUBLIC magic_enum fmt ngraph elfio outcome)
+target_link_libraries(RTL-Lib PUBLIC magic_enum fmt ngraph elfio outcome cereal)
